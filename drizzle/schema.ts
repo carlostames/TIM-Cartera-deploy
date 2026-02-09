@@ -1,4 +1,4 @@
-import { boolean, int, json, mysqlEnum, mysqlTable, text, timestamp, varchar, decimal } from "drizzle-orm/mysql-core";
+import { boolean, date, int, json, mysqlEnum, mysqlTable, text, timestamp, varchar, decimal } from "drizzle-orm/mysql-core";
 
 /**
  * Core user table backing auth flow.
@@ -174,3 +174,71 @@ export const googleSheetsConfig = mysqlTable("googleSheetsConfig", {
 
 export type GoogleSheetsConfig = typeof googleSheetsConfig.$inferSelect;
 export type InsertGoogleSheetsConfig = typeof googleSheetsConfig.$inferInsert;
+
+/**
+ * Contratos de Arrendamiento - Para proyección de facturación
+ */
+export const contratos = mysqlTable("contratos", {
+  id: int("id").autoincrement().primaryKey(),
+  numeroContrato: varchar("numeroContrato", { length: 50 }).notNull().unique(), // EXP
+  clienteId: int("clienteId").references(() => clientes.id),
+  nombreCliente: varchar("nombreCliente", { length: 255 }).notNull(),
+  empresa: mysqlEnum("empresa", ["tim_transp", "tim_value"]).notNull(),
+  tipoServicio: varchar("tipoServicio", { length: 100 }).notNull(), // ARRENDAMIENTO
+  descripcionActivo: text("descripcionActivo"), // CHEVROLET - AVEO - 2022
+  numeroSerie: varchar("numeroSerie", { length: 50 }), // NS
+  totalRentas: int("totalRentas").notNull(),
+  rentaActual: int("rentaActual").notNull(),
+  montoMensual: decimal("montoMensual", { precision: 15, scale: 2 }).notNull(),
+  fechaInicio: date("fechaInicio"),
+  fechaProximaRenta: date("fechaProximaRenta"),
+  fechaTermino: date("fechaTermino"),
+  activo: boolean("activo").default(true).notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type Contrato = typeof contratos.$inferSelect;
+export type InsertContrato = typeof contratos.$inferInsert;
+
+/**
+ * Proyección Mensual - Ingresos proyectados por contrato
+ */
+export const proyeccionMensual = mysqlTable("proyeccionMensual", {
+  id: int("id").autoincrement().primaryKey(),
+  contratoId: int("contratoId").references(() => contratos.id).notNull(),
+  mes: date("mes").notNull(), // Primer día del mes proyectado
+  montoProyectado: decimal("montoProyectado", { precision: 15, scale: 2 }).notNull(),
+  rentaNumero: int("rentaNumero").notNull(), // Número de renta proyectada
+  esUltimaRenta: boolean("esUltimaRenta").default(false).notNull(),
+  montoReal: decimal("montoReal", { precision: 15, scale: 2 }), // Se llena cuando se factura
+  facturaId: int("facturaId").references(() => facturas.id),
+  generadoEn: timestamp("generadoEn").defaultNow().notNull(),
+});
+
+export type ProyeccionMensual = typeof proyeccionMensual.$inferSelect;
+export type InsertProyeccionMensual = typeof proyeccionMensual.$inferInsert;
+
+/**
+ * Partidas de Factura - Detalle de cada línea de factura
+ */
+export const partidasFactura = mysqlTable("partidasFactura", {
+  id: int("id").autoincrement().primaryKey(),
+  facturaId: int("facturaId").references(() => facturas.id).notNull(),
+  contratoId: int("contratoId").references(() => contratos.id),
+  descripcion: text("descripcion").notNull(),
+  monto: decimal("monto", { precision: 15, scale: 2 }).notNull(),
+  // Campos extraídos del parser
+  tipoServicio: varchar("tipoServicio", { length: 100 }),
+  numeroContrato: varchar("numeroContrato", { length: 50 }), // EXP
+  numeroSerie: varchar("numeroSerie", { length: 50 }), // NS
+  descripcionActivo: text("descripcionActivo"),
+  rentaActual: int("rentaActual"),
+  totalRentas: int("totalRentas"),
+  periodoInicio: date("periodoInicio"),
+  periodoFin: date("periodoFin"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+export type PartidaFactura = typeof partidasFactura.$inferSelect;
+export type InsertPartidaFactura = typeof partidasFactura.$inferInsert;

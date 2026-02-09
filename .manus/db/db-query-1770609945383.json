@@ -1,0 +1,9 @@
+{
+  "query": "CREATE TABLE IF NOT EXISTS partidasFactura (\n  id INT AUTO_INCREMENT PRIMARY KEY,\n  facturaId INT NOT NULL,\n  contratoId INT,\n  descripcion TEXT NOT NULL,\n  monto DECIMAL(15,2) NOT NULL,\n  tipoServicio VARCHAR(100),\n  numeroContrato VARCHAR(50),\n  numeroSerie VARCHAR(50),\n  descripcionActivo TEXT,\n  rentaActual INT,\n  totalRentas INT,\n  periodoInicio DATE,\n  periodoFin DATE,\n  createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,\n  FOREIGN KEY (facturaId) REFERENCES facturas(id),\n  FOREIGN KEY (contratoId) REFERENCES contratos(id)\n);",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway03.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 344B2FJrSHdkSxo.0ab51ce41b50 --database bUSGvjzrZfvVXNhQ347wq4 --execute CREATE TABLE IF NOT EXISTS partidasFactura (\n  id INT AUTO_INCREMENT PRIMARY KEY,\n  facturaId INT NOT NULL,\n  contratoId INT,\n  descripcion TEXT NOT NULL,\n  monto DECIMAL(15,2) NOT NULL,\n  tipoServicio VARCHAR(100),\n  numeroContrato VARCHAR(50),\n  numeroSerie VARCHAR(50),\n  descripcionActivo TEXT,\n  rentaActual INT,\n  totalRentas INT,\n  periodoInicio DATE,\n  periodoFin DATE,\n  createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,\n  FOREIGN KEY (facturaId) REFERENCES facturas(id),\n  FOREIGN KEY (contratoId) REFERENCES contratos(id)\n);",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 564
+}

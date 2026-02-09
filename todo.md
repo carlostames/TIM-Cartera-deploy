@@ -105,3 +105,22 @@
 - [x] Implementar visualización de relaciones cliente-grupo
 - [x] Crear tests para módulo de clientes
 - [x] Documentar estructura de clientes y grupos
+
+## Módulo de Proyección de Facturación Mensual
+- [x] Actualizar esquema de base de datos con tabla de contratos
+- [x] Crear tabla de proyección mensual
+- [x] Implementar parser de descripción de partidas (extraer EXP, NS, RENTA X DE Y)
+- [x] Desarrollar motor de cálculo de rentas pendientes
+- [x] Implementar generación automática de proyección mensual
+- [x] Crear procedimientos backend para gestión de contratos
+- [x] Desarrollar endpoints para proyección por grupo, empresa y contrato
+- [x] Crear página de proyección con dashboard
+- [x] Implementar gráficos de ingresos proyectados
+- [x] Desarrollar tabla de contratos próximos a vencer
+- [x] Agregar filtros por grupo, empresa, cliente y contrato
+- [x] Integrar parser con carga de archivos XLSX
+- [x] Implementar actualización automática de proyección
+- [ ] Crear alertas de contratos por vencer
+- [ ] Desarrollar comparativo Real vs Proyectado
+- [x] Crear tests para parser y motor de proyección
+- [x] Documentar sistema de proyección

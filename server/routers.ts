@@ -121,6 +121,15 @@ export const appRouter = router({
             }
           } else {
             // Insertar o actualizar facturas
+            const facturasConId: Array<{
+              id: number;
+              descripcion: string;
+              monto: number;
+              nombreCliente: string;
+              empresa: 'tim_transp' | 'tim_value';
+              fecha: Date;
+            }> = [];
+            
             for (const factura of result.data || []) {
               // Calcular fecha de vencimiento (30 días después de la fecha de factura)
               const fechaVencimiento = new Date(factura.fecha);
@@ -140,6 +149,36 @@ export const appRouter = router({
                 interesesMoratorios: interesesMoratorios.toString(),
                 totalConIntereses: totalConIntereses.toString(),
               } as any);
+              
+              // Obtener el ID de la factura recién insertada
+              const facturaGuardada = await db.getFacturaByFolio(factura.folio);
+              if (facturaGuardada && factura.descripcion) {
+                facturasConId.push({
+                  id: facturaGuardada.id,
+                  descripcion: factura.descripcion,
+                  monto: parseFloat(factura.importeTotal),
+                  nombreCliente: factura.nombreCliente,
+                  empresa: tipoArchivo as 'tim_transp' | 'tim_value',
+                  fecha: new Date(factura.fecha),
+                });
+              }
+            }
+            
+            // Procesar contratos de las facturas
+            if (facturasConId.length > 0) {
+              const { procesarLoteFacturas } = await import('./contratoIntegration');
+              const resultadoContratos = await procesarLoteFacturas(facturasConId);
+              
+              // Agregar información de contratos al log
+              await db.createAuditLog({
+                usuarioId: ctx.user.id,
+                accion: 'process_contratos',
+                entidad: 'contratos',
+                detalles: {
+                  tipoArchivo,
+                  ...resultadoContratos,
+                },
+              });
             }
           }
           
@@ -563,6 +602,102 @@ export const appRouter = router({
         });
         
         return { success: true };
+      }),
+  }),
+
+  // ============ Proyección de Facturación ============
+  proyeccion: router({
+    // Listar todos los contratos
+    contratos: protectedProcedure.query(async () => {
+      return await db.getAllContratos();
+    }),
+
+    // Obtener contratos activos
+    contratosActivos: protectedProcedure.query(async () => {
+      return await db.getContratosActivos();
+    }),
+
+    // Obtener contratos próximos a vencer
+    contratosProximosAVencer: protectedProcedure
+      .input(z.object({ limite: z.number().optional() }).optional())
+      .query(async ({ input }) => {
+        return await db.getContratosProximosAVencer(input?.limite);
+      }),
+
+    // Obtener contratos por cliente
+    contratosByCliente: protectedProcedure
+      .input(z.object({ clienteId: z.number() }))
+      .query(async ({ input }) => {
+        return await db.getContratosByCliente(input.clienteId);
+      }),
+
+    // Obtener contratos por empresa
+    contratosByEmpresa: protectedProcedure
+      .input(z.object({ empresa: z.enum(['tim_transp', 'tim_value']) }))
+      .query(async ({ input }) => {
+        return await db.getContratosByEmpresa(input.empresa);
+      }),
+
+    // Obtener proyección consolidada por mes
+    proyeccionConsolidada: protectedProcedure
+      .input(z.object({
+        fechaInicio: z.string(),
+        fechaFin: z.string(),
+      }))
+      .query(async ({ input }) => {
+        const fechaInicio = new Date(input.fechaInicio);
+        const fechaFin = new Date(input.fechaFin);
+        return await db.getProyeccionConsolidada(fechaInicio, fechaFin);
+      }),
+
+    // Obtener proyección por empresa
+    proyeccionPorEmpresa: protectedProcedure
+      .input(z.object({
+        fechaInicio: z.string(),
+        fechaFin: z.string(),
+      }))
+      .query(async ({ input }) => {
+        const fechaInicio = new Date(input.fechaInicio);
+        const fechaFin = new Date(input.fechaFin);
+        return await db.getProyeccionPorEmpresa(fechaInicio, fechaFin);
+      }),
+
+    // Obtener proyección por grupo
+    proyeccionPorGrupo: protectedProcedure
+      .input(z.object({
+        fechaInicio: z.string(),
+        fechaFin: z.string(),
+      }))
+      .query(async ({ input }) => {
+        const fechaInicio = new Date(input.fechaInicio);
+        const fechaFin = new Date(input.fechaFin);
+        return await db.getProyeccionPorGrupo(fechaInicio, fechaFin);
+      }),
+
+    // Obtener proyecciones de un contrato específico
+    proyeccionesByContrato: protectedProcedure
+      .input(z.object({ contratoId: z.number() }))
+      .query(async ({ input }) => {
+        return await db.getProyeccionesByContrato(input.contratoId);
+      }),
+
+    // Obtener detalles de un contrato
+    contratoDetalle: protectedProcedure
+      .input(z.object({ numeroContrato: z.string() }))
+      .query(async ({ input }) => {
+        const contrato = await db.getContratoByNumero(input.numeroContrato);
+        if (!contrato) {
+          throw new TRPCError({ code: 'NOT_FOUND', message: 'Contrato no encontrado' });
+        }
+        
+        const proyecciones = await db.getProyeccionesByContrato(contrato.id);
+        const partidas = await db.getPartidasByContrato(contrato.id);
+        
+        return {
+          contrato,
+          proyecciones,
+          partidas,
+        };
       }),
   }),
 });

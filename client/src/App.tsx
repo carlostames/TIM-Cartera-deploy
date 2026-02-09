@@ -13,6 +13,7 @@ import Configuracion from "./pages/Configuracion";
 import AccessDenied from "./pages/AccessDenied";
 import Usuarios from "./pages/Usuarios";
 import GestionClientes from "./pages/GestionClientes";
+import Proyeccion from "./pages/Proyeccion";
 
 function Router() {
   return (
@@ -21,6 +22,7 @@ function Router() {
         <Route path="/" component={Dashboard} />
         <Route path="/upload" component={Upload} />
         <Route path="/facturas" component={Facturas} />
+        <Route path="/proyeccion" component={Proyeccion} />
         <Route path="/reportes" component={Reportes} />
         <Route path="/gestion-clientes" component={GestionClientes} />
         <Route path="/configuracion" component={Configuracion} />

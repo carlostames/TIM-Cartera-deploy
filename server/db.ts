@@ -9,7 +9,10 @@ import {
   historialCargas, HistorialCarga, InsertHistorialCarga,
   configuracion, Configuracion, InsertConfiguracion,
   auditLogs, AuditLog, InsertAuditLog,
-  googleSheetsConfig, GoogleSheetsConfig, InsertGoogleSheetsConfig
+  googleSheetsConfig, GoogleSheetsConfig, InsertGoogleSheetsConfig,
+  contratos, Contrato, InsertContrato,
+  proyeccionMensual, ProyeccionMensual, InsertProyeccionMensual,
+  partidasFactura, PartidaFactura, InsertPartidaFactura
 } from "../drizzle/schema";
 import { ENV } from './_core/env';
 
@@ -586,4 +589,232 @@ export async function getClientesConGrupo() {
     .orderBy(clientes.nombre);
   
   return result;
+}
+
+
+// ============ Contratos Management ============
+
+export async function createContrato(contrato: InsertContrato) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  const result = await db.insert(contratos).values(contrato);
+  return result;
+}
+
+export async function getContratoByNumero(numeroContrato: string) {
+  const db = await getDb();
+  if (!db) return null;
+  
+  const result = await db.select().from(contratos)
+    .where(eq(contratos.numeroContrato, numeroContrato))
+    .limit(1);
+  return result[0] || null;
+}
+
+export async function getAllContratos() {
+  const db = await getDb();
+  if (!db) return [];
+  
+  return await db.select().from(contratos)
+    .orderBy(desc(contratos.createdAt));
+}
+
+export async function getContratosActivos() {
+  const db = await getDb();
+  if (!db) return [];
+  
+  return await db.select().from(contratos)
+    .where(eq(contratos.activo, true))
+    .orderBy(desc(contratos.fechaProximaRenta));
+}
+
+export async function getContratosByCliente(clienteId: number) {
+  const db = await getDb();
+  if (!db) return [];
+  
+  return await db.select().from(contratos)
+    .where(eq(contratos.clienteId, clienteId))
+    .orderBy(desc(contratos.createdAt));
+}
+
+export async function getContratosByEmpresa(empresa: 'tim_transp' | 'tim_value') {
+  const db = await getDb();
+  if (!db) return [];
+  
+  return await db.select().from(contratos)
+    .where(eq(contratos.empresa, empresa))
+    .orderBy(desc(contratos.createdAt));
+}
+
+export async function updateContrato(numeroContrato: string, updates: Partial<InsertContrato>) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  await db.update(contratos)
+    .set({ ...updates, updatedAt: new Date() })
+    .where(eq(contratos.numeroContrato, numeroContrato));
+}
+
+export async function upsertContrato(contrato: InsertContrato) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  const existing = await getContratoByNumero(contrato.numeroContrato);
+  
+  if (existing) {
+    await updateContrato(contrato.numeroContrato, contrato);
+    return existing.id;
+  } else {
+    const result = await createContrato(contrato);
+    return result[0].insertId;
+  }
+}
+
+export async function getContratosProximosAVencer(limite: number = 10) {
+  const db = await getDb();
+  if (!db) return [];
+  
+  // Contratos donde quedan 3 o menos rentas
+  return await db.select().from(contratos)
+    .where(
+      and(
+        eq(contratos.activo, true),
+        sql`(${contratos.totalRentas} - ${contratos.rentaActual}) <= 3 AND (${contratos.totalRentas} - ${contratos.rentaActual}) > 0`
+      )
+    )
+    .orderBy(sql`(${contratos.totalRentas} - ${contratos.rentaActual})`)
+    .limit(limite);
+}
+
+// ============ Proyección Mensual Management ============
+
+export async function createProyeccion(proyeccion: InsertProyeccionMensual) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  const result = await db.insert(proyeccionMensual).values(proyeccion);
+  return result;
+}
+
+export async function getProyeccionesByContrato(contratoId: number) {
+  const db = await getDb();
+  if (!db) return [];
+  
+  return await db.select().from(proyeccionMensual)
+    .where(eq(proyeccionMensual.contratoId, contratoId))
+    .orderBy(proyeccionMensual.mes);
+}
+
+export async function getProyeccionByMes(mes: Date) {
+  const db = await getDb();
+  if (!db) return [];
+  
+  return await db.select().from(proyeccionMensual)
+    .where(eq(proyeccionMensual.mes, mes))
+    .orderBy(proyeccionMensual.contratoId);
+}
+
+export async function deleteProyeccionesByContrato(contratoId: number) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  await db.delete(proyeccionMensual)
+    .where(eq(proyeccionMensual.contratoId, contratoId));
+}
+
+export async function getProyeccionConsolidada(fechaInicio: Date, fechaFin: Date) {
+  const db = await getDb();
+  if (!db) return [];
+  
+  return await db.select({
+    mes: proyeccionMensual.mes,
+    totalProyectado: sql<number>`SUM(${proyeccionMensual.montoProyectado})`,
+    totalReal: sql<number>`SUM(COALESCE(${proyeccionMensual.montoReal}, 0))`,
+    cantidadContratos: sql<number>`COUNT(DISTINCT ${proyeccionMensual.contratoId})`,
+  })
+  .from(proyeccionMensual)
+  .where(
+    and(
+      sql`${proyeccionMensual.mes} >= ${fechaInicio}`,
+      sql`${proyeccionMensual.mes} <= ${fechaFin}`
+    )
+  )
+  .groupBy(proyeccionMensual.mes)
+  .orderBy(proyeccionMensual.mes);
+}
+
+export async function getProyeccionPorEmpresa(fechaInicio: Date, fechaFin: Date) {
+  const db = await getDb();
+  if (!db) return [];
+  
+  return await db.select({
+    mes: proyeccionMensual.mes,
+    empresa: contratos.empresa,
+    totalProyectado: sql<number>`SUM(${proyeccionMensual.montoProyectado})`,
+    cantidadContratos: sql<number>`COUNT(DISTINCT ${proyeccionMensual.contratoId})`,
+  })
+  .from(proyeccionMensual)
+  .innerJoin(contratos, eq(proyeccionMensual.contratoId, contratos.id))
+  .where(
+    and(
+      sql`${proyeccionMensual.mes} >= ${fechaInicio}`,
+      sql`${proyeccionMensual.mes} <= ${fechaFin}`
+    )
+  )
+  .groupBy(proyeccionMensual.mes, contratos.empresa)
+  .orderBy(proyeccionMensual.mes, contratos.empresa);
+}
+
+export async function getProyeccionPorGrupo(fechaInicio: Date, fechaFin: Date) {
+  const db = await getDb();
+  if (!db) return [];
+  
+  return await db.select({
+    mes: proyeccionMensual.mes,
+    grupoId: clientes.grupoId,
+    grupoNombre: gruposClientes.nombre,
+    totalProyectado: sql<number>`SUM(${proyeccionMensual.montoProyectado})`,
+    cantidadContratos: sql<number>`COUNT(DISTINCT ${proyeccionMensual.contratoId})`,
+  })
+  .from(proyeccionMensual)
+  .innerJoin(contratos, eq(proyeccionMensual.contratoId, contratos.id))
+  .leftJoin(clientes, eq(contratos.clienteId, clientes.id))
+  .leftJoin(gruposClientes, eq(clientes.grupoId, gruposClientes.id))
+  .where(
+    and(
+      sql`${proyeccionMensual.mes} >= ${fechaInicio}`,
+      sql`${proyeccionMensual.mes} <= ${fechaFin}`
+    )
+  )
+  .groupBy(proyeccionMensual.mes, clientes.grupoId, gruposClientes.nombre)
+  .orderBy(proyeccionMensual.mes);
+}
+
+// ============ Partidas de Factura Management ============
+
+export async function createPartidaFactura(partida: InsertPartidaFactura) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  const result = await db.insert(partidasFactura).values(partida);
+  return result;
+}
+
+export async function getPartidasByFactura(facturaId: number) {
+  const db = await getDb();
+  if (!db) return [];
+  
+  return await db.select().from(partidasFactura)
+    .where(eq(partidasFactura.facturaId, facturaId))
+    .orderBy(partidasFactura.id);
+}
+
+export async function getPartidasByContrato(contratoId: number) {
+  const db = await getDb();
+  if (!db) return [];
+  
+  return await db.select().from(partidasFactura)
+    .where(eq(partidasFactura.contratoId, contratoId))
+    .orderBy(desc(partidasFactura.createdAt));
 }

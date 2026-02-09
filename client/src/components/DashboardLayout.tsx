@@ -28,13 +28,14 @@ import { useLocation } from "wouter";
 import { DashboardLayoutSkeleton } from './DashboardLayoutSkeleton';
 import { Button } from "./ui/button";
 
-import { Upload, FileText, TrendingUp, Settings, DollarSign } from "lucide-react";
+import { Upload, FileText, TrendingUp, Settings, DollarSign, BarChart3 } from "lucide-react";
 
 const getMenuItems = (userRole?: string) => {
   const baseItems = [
     { icon: LayoutDashboard, label: "Dashboard", path: "/" },
     { icon: Upload, label: "Cargar Archivos", path: "/upload" },
     { icon: FileText, label: "Facturas", path: "/facturas" },
+    { icon: BarChart3, label: "Proyección", path: "/proyeccion" },
     { icon: TrendingUp, label: "Reportes", path: "/reportes" },
     { icon: Users, label: "Clientes", path: "/gestion-clientes" },
     { icon: Settings, label: "Configuración", path: "/configuracion" },
