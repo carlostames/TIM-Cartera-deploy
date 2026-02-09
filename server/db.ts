@@ -2,6 +2,7 @@ import { eq, desc, and, sql } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
 import { 
   InsertUser, users, 
+  gruposClientes, GrupoCliente, InsertGrupoCliente,
   clientes, Cliente, InsertCliente,
   facturas, Factura, InsertFactura,
   pendientesPago, PendientePago, InsertPendientePago,
@@ -104,7 +105,7 @@ export async function createCliente(cliente: InsertCliente) {
   if (!db) throw new Error("Database not available");
   
   const result = await db.insert(clientes).values(cliente);
-  return result;
+  return result[0].insertId;
 }
 
 export async function getClienteByNombre(nombre: string) {
@@ -128,11 +129,16 @@ export async function upsertCliente(cliente: InsertCliente) {
   
   await db.insert(clientes).values(cliente).onDuplicateKeyUpdate({
     set: {
+      nombre: cliente.nombre,
+      rfc: cliente.rfc,
       alias: cliente.alias,
-      grupo: cliente.grupo,
-      asignado: cliente.asignado,
+      grupoId: cliente.grupoId,
+      responsableCobranza: cliente.responsableCobranza,
       correoCobranza: cliente.correoCobranza,
       telefono: cliente.telefono,
+      direccion: cliente.direccion,
+      notas: cliente.notas,
+      activo: cliente.activo,
     },
   });
 }
@@ -471,4 +477,113 @@ export async function getUserStats() {
       porRol: { admin: 0, operador: 0, consulta: 0 }
     };
   }
+}
+
+// ============ Grupos de Clientes ============
+export async function getAllGrupos() {
+  const db = await getDb();
+  if (!db) return [];
+  
+  return await db.select().from(gruposClientes).orderBy(gruposClientes.nombre);
+}
+
+export async function getGrupoById(id: number) {
+  const db = await getDb();
+  if (!db) return undefined;
+  
+  const result = await db.select().from(gruposClientes).where(eq(gruposClientes.id, id)).limit(1);
+  return result.length > 0 ? result[0] : undefined;
+}
+
+export async function createGrupo(grupo: InsertGrupoCliente) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  const result = await db.insert(gruposClientes).values(grupo);
+  return result[0].insertId;
+}
+
+export async function updateGrupo(id: number, grupo: Partial<InsertGrupoCliente>) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  await db.update(gruposClientes).set(grupo).where(eq(gruposClientes.id, id));
+}
+
+export async function deleteGrupo(id: number) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  // Primero desasociar todos los clientes del grupo
+  await db.update(clientes).set({ grupoId: null }).where(eq(clientes.grupoId, id));
+  
+  // Luego eliminar el grupo
+  await db.delete(gruposClientes).where(eq(gruposClientes.id, id));
+}
+
+// ============ Clientes Avanzado ============
+export async function getClienteById(id: number) {
+  const db = await getDb();
+  if (!db) return undefined;
+  
+  const result = await db.select().from(clientes).where(eq(clientes.id, id)).limit(1);
+  return result.length > 0 ? result[0] : undefined;
+}
+
+export async function getClientesByGrupo(grupoId: number) {
+  const db = await getDb();
+  if (!db) return [];
+  
+  return await db.select().from(clientes).where(eq(clientes.grupoId, grupoId)).orderBy(clientes.nombre);
+}
+
+export async function updateCliente(id: number, cliente: Partial<InsertCliente>) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  await db.update(clientes).set(cliente).where(eq(clientes.id, id));
+}
+
+export async function deleteCliente(id: number) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  await db.delete(clientes).where(eq(clientes.id, id));
+}
+
+export async function asignarClienteAGrupo(clienteId: number, grupoId: number | null) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  await db.update(clientes).set({ grupoId }).where(eq(clientes.id, clienteId));
+}
+
+export async function getClientesConGrupo() {
+  const db = await getDb();
+  if (!db) return [];
+  
+  // Realizar un LEFT JOIN para obtener clientes con información de su grupo
+  const result = await db
+    .select({
+      id: clientes.id,
+      nombre: clientes.nombre,
+      rfc: clientes.rfc,
+      alias: clientes.alias,
+      grupoId: clientes.grupoId,
+      responsableCobranza: clientes.responsableCobranza,
+      correoCobranza: clientes.correoCobranza,
+      telefono: clientes.telefono,
+      direccion: clientes.direccion,
+      notas: clientes.notas,
+      activo: clientes.activo,
+      createdAt: clientes.createdAt,
+      updatedAt: clientes.updatedAt,
+      grupoNombre: gruposClientes.nombre,
+      grupoDescripcion: gruposClientes.descripcion,
+    })
+    .from(clientes)
+    .leftJoin(gruposClientes, eq(clientes.grupoId, gruposClientes.id))
+    .orderBy(clientes.nombre);
+  
+  return result;
 }

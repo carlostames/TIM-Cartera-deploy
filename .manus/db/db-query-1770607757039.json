@@ -1,0 +1,9 @@
+{
+  "query": "CREATE TABLE IF NOT EXISTS `gruposClientes` (\n\t`id` int AUTO_INCREMENT NOT NULL,\n\t`nombre` varchar(255) NOT NULL,\n\t`descripcion` text,\n\t`responsable` varchar(100),\n\t`activo` boolean NOT NULL DEFAULT true,\n\t`createdAt` timestamp NOT NULL DEFAULT (now()),\n\t`updatedAt` timestamp NOT NULL DEFAULT (now()) ON UPDATE CURRENT_TIMESTAMP,\n\tCONSTRAINT `gruposClientes_id` PRIMARY KEY(`id`),\n\tCONSTRAINT `gruposClientes_nombre_unique` UNIQUE(`nombre`)\n)",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway03.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 344B2FJrSHdkSxo.0ab51ce41b50 --database bUSGvjzrZfvVXNhQ347wq4 --execute CREATE TABLE IF NOT EXISTS `gruposClientes` (\n\t`id` int AUTO_INCREMENT NOT NULL,\n\t`nombre` varchar(255) NOT NULL,\n\t`descripcion` text,\n\t`responsable` varchar(100),\n\t`activo` boolean NOT NULL DEFAULT true,\n\t`createdAt` timestamp NOT NULL DEFAULT (now()),\n\t`updatedAt` timestamp NOT NULL DEFAULT (now()) ON UPDATE CURRENT_TIMESTAMP,\n\tCONSTRAINT `gruposClientes_id` PRIMARY KEY(`id`),\n\tCONSTRAINT `gruposClientes_nombre_unique` UNIQUE(`nombre`)\n)",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 1057
+}

@@ -20,16 +20,36 @@ export type User = typeof users.$inferSelect;
 export type InsertUser = typeof users.$inferInsert;
 
 /**
+ * Grupos de Clientes - Para agrupar múltiples razones sociales
+ */
+export const gruposClientes = mysqlTable("gruposClientes", {
+  id: int("id").autoincrement().primaryKey(),
+  nombre: varchar("nombre", { length: 255 }).notNull().unique(),
+  descripcion: text("descripcion"),
+  responsable: varchar("responsable", { length: 100 }),
+  activo: boolean("activo").default(true).notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type GrupoCliente = typeof gruposClientes.$inferSelect;
+export type InsertGrupoCliente = typeof gruposClientes.$inferInsert;
+
+/**
  * Clientes - Master data de clientes
  */
 export const clientes = mysqlTable("clientes", {
   id: int("id").autoincrement().primaryKey(),
   nombre: varchar("nombre", { length: 255 }).notNull(),
+  rfc: varchar("rfc", { length: 13 }),
   alias: varchar("alias", { length: 100 }),
-  grupo: varchar("grupo", { length: 255 }),
-  asignado: varchar("asignado", { length: 100 }),
+  grupoId: int("grupoId").references(() => gruposClientes.id),
+  responsableCobranza: varchar("responsableCobranza", { length: 100 }),
   correoCobranza: varchar("correoCobranza", { length: 320 }),
   telefono: varchar("telefono", { length: 50 }),
+  direccion: text("direccion"),
+  notas: text("notas"),
+  activo: boolean("activo").default(true).notNull(),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
 });

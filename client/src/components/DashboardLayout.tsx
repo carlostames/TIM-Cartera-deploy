@@ -36,7 +36,7 @@ const getMenuItems = (userRole?: string) => {
     { icon: Upload, label: "Cargar Archivos", path: "/upload" },
     { icon: FileText, label: "Facturas", path: "/facturas" },
     { icon: TrendingUp, label: "Reportes", path: "/reportes" },
-    { icon: Users, label: "Clientes", path: "/clientes" },
+    { icon: Users, label: "Clientes", path: "/gestion-clientes" },
     { icon: Settings, label: "Configuración", path: "/configuracion" },
   ];
   

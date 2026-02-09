@@ -186,35 +186,6 @@ export const appRouter = router({
       }),
   }),
 
-  // ============ Clientes ============
-  clientes: router({
-    list: protectedProcedure.query(async () => {
-      return await db.getAllClientes();
-    }),
-    
-    create: protectedProcedure
-      .input(z.object({
-        nombre: z.string(),
-        alias: z.string().optional(),
-        grupo: z.string().optional(),
-        asignado: z.string().optional(),
-        correoCobranza: z.string().email().optional(),
-        telefono: z.string().optional(),
-      }))
-      .mutation(async ({ input, ctx }) => {
-        await db.createCliente(input);
-        
-        await db.createAuditLog({
-          usuarioId: ctx.user.id,
-          accion: 'create_cliente',
-          entidad: 'clientes',
-          detalles: input,
-        });
-        
-        return { success: true };
-      }),
-  }),
-
   // ============ Facturas ============
   facturas: router({
     list: protectedProcedure.query(async () => {
@@ -404,6 +375,195 @@ export const appRouter = router({
           return { success: true };
         }),
     }),
+  }),
+  
+  // ============ Clientes y Grupos ============
+  clientes: router({
+    list: protectedProcedure
+      .query(async () => {
+        return await db.getClientesConGrupo();
+      }),
+    
+    getById: protectedProcedure
+      .input(z.object({ id: z.number() }))
+      .query(async ({ input }) => {
+        return await db.getClienteById(input.id);
+      }),
+    
+    getByGrupo: protectedProcedure
+      .input(z.object({ grupoId: z.number() }))
+      .query(async ({ input }) => {
+        return await db.getClientesByGrupo(input.grupoId);
+      }),
+    
+    create: protectedProcedure
+      .input(z.object({
+        nombre: z.string().min(1),
+        rfc: z.string().optional(),
+        alias: z.string().optional(),
+        grupoId: z.number().optional(),
+        responsableCobranza: z.string().optional(),
+        correoCobranza: z.string().email().optional(),
+        telefono: z.string().optional(),
+        direccion: z.string().optional(),
+        notas: z.string().optional(),
+      }))
+      .mutation(async ({ input, ctx }) => {
+        const id = await db.createCliente(input);
+        
+        // Registrar en auditoría
+        await db.createAuditLog({
+          usuarioId: ctx.user.id,
+          accion: 'create_cliente',
+          entidad: 'clientes',
+          entidadId: id,
+          detalles: { nombre: input.nombre },
+        });
+        
+        return { id };
+      }),
+    
+    update: protectedProcedure
+      .input(z.object({
+        id: z.number(),
+        nombre: z.string().min(1).optional(),
+        rfc: z.string().optional(),
+        alias: z.string().optional(),
+        grupoId: z.number().nullable().optional(),
+        responsableCobranza: z.string().optional(),
+        correoCobranza: z.string().email().optional(),
+        telefono: z.string().optional(),
+        direccion: z.string().optional(),
+        notas: z.string().optional(),
+        activo: z.boolean().optional(),
+      }))
+      .mutation(async ({ input, ctx }) => {
+        const { id, ...data } = input;
+        await db.updateCliente(id, data);
+        
+        // Registrar en auditoría
+        await db.createAuditLog({
+          usuarioId: ctx.user.id,
+          accion: 'update_cliente',
+          entidad: 'clientes',
+          entidadId: id,
+          detalles: data,
+        });
+        
+        return { success: true };
+      }),
+    
+    delete: protectedProcedure
+      .input(z.object({ id: z.number() }))
+      .mutation(async ({ input, ctx }) => {
+        await db.deleteCliente(input.id);
+        
+        // Registrar en auditoría
+        await db.createAuditLog({
+          usuarioId: ctx.user.id,
+          accion: 'delete_cliente',
+          entidad: 'clientes',
+          entidadId: input.id,
+          detalles: {},
+        });
+        
+        return { success: true };
+      }),
+    
+    asignarGrupo: protectedProcedure
+      .input(z.object({
+        clienteId: z.number(),
+        grupoId: z.number().nullable(),
+      }))
+      .mutation(async ({ input, ctx }) => {
+        await db.asignarClienteAGrupo(input.clienteId, input.grupoId);
+        
+        // Registrar en auditoría
+        await db.createAuditLog({
+          usuarioId: ctx.user.id,
+          accion: 'asignar_grupo_cliente',
+          entidad: 'clientes',
+          entidadId: input.clienteId,
+          detalles: { grupoId: input.grupoId },
+        });
+        
+        return { success: true };
+      }),
+  }),
+  
+  grupos: router({
+    list: protectedProcedure
+      .query(async () => {
+        return await db.getAllGrupos();
+      }),
+    
+    getById: protectedProcedure
+      .input(z.object({ id: z.number() }))
+      .query(async ({ input }) => {
+        return await db.getGrupoById(input.id);
+      }),
+    
+    create: protectedProcedure
+      .input(z.object({
+        nombre: z.string().min(1),
+        descripcion: z.string().optional(),
+        responsable: z.string().optional(),
+      }))
+      .mutation(async ({ input, ctx }) => {
+        const id = await db.createGrupo(input);
+        
+        // Registrar en auditoría
+        await db.createAuditLog({
+          usuarioId: ctx.user.id,
+          accion: 'create_grupo',
+          entidad: 'gruposClientes',
+          entidadId: id,
+          detalles: { nombre: input.nombre },
+        });
+        
+        return { id };
+      }),
+    
+    update: protectedProcedure
+      .input(z.object({
+        id: z.number(),
+        nombre: z.string().min(1).optional(),
+        descripcion: z.string().optional(),
+        responsable: z.string().optional(),
+        activo: z.boolean().optional(),
+      }))
+      .mutation(async ({ input, ctx }) => {
+        const { id, ...data } = input;
+        await db.updateGrupo(id, data);
+        
+        // Registrar en auditoría
+        await db.createAuditLog({
+          usuarioId: ctx.user.id,
+          accion: 'update_grupo',
+          entidad: 'gruposClientes',
+          entidadId: id,
+          detalles: data,
+        });
+        
+        return { success: true };
+      }),
+    
+    delete: protectedProcedure
+      .input(z.object({ id: z.number() }))
+      .mutation(async ({ input, ctx }) => {
+        await db.deleteGrupo(input.id);
+        
+        // Registrar en auditoría
+        await db.createAuditLog({
+          usuarioId: ctx.user.id,
+          accion: 'delete_grupo',
+          entidad: 'gruposClientes',
+          entidadId: input.id,
+          detalles: {},
+        });
+        
+        return { success: true };
+      }),
   }),
 });
 

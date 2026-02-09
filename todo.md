@@ -90,3 +90,18 @@
 - [x] Implementar middleware de autorización solo para admins
 - [x] Agregar tests para gestión de usuarios
 - [x] Documentar roles y permisos del sistema
+
+## Módulo de Gestión de Clientes
+- [x] Actualizar esquema de base de datos con tabla de clientes
+- [x] Crear tabla de grupos de clientes
+- [x] Implementar relación muchos-a-uno entre clientes y grupos
+- [x] Crear procedimientos backend para CRUD de clientes
+- [x] Implementar procedimientos para gestión de grupos
+- [x] Desarrollar endpoints para asignación de clientes a grupos
+- [x] Crear página de gestión de clientes
+- [x] Implementar formulario de creación/edición de clientes
+- [x] Desarrollar gestión de grupos con modal
+- [x] Agregar búsqueda y filtros por grupo
+- [x] Implementar visualización de relaciones cliente-grupo
+- [x] Crear tests para módulo de clientes
+- [x] Documentar estructura de clientes y grupos
