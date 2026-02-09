@@ -219,3 +219,12 @@
 - [x] Corregir consulta de clientes con deuda según valores reales
 - [x] Corregir consulta de grupos con deuda según valores reales
 - [x] Probar que aparezcan clientes con facturas pendientes
+
+## Ocultar Campo de Intereses Moratorios
+- [x] Identificar todas las vistas que muestran intereses moratorios
+- [x] Ocultar columna de intereses en vista previa de estado de cuenta
+- [x] Ocultar intereses en PDF generado de estado de cuenta
+- [x] Ocultar intereses en tabla de facturas del dashboard
+- [x] Ocultar intereses en vista detallada de facturas
+- [x] Ajustar cálculo de totales para no incluir intereses
+- [x] Probar que los reportes se vean limpios sin el campo de intereses

@@ -174,10 +174,10 @@ export default function Dashboard() {
                     </div>
                     <div className="text-right">
                       <p className="font-semibold">
-                        {formatCurrency(Number(factura.totalConIntereses || factura.importeTotal))}
+                        {formatCurrency(Number(factura.importeTotal))}
                       </p>
                       <p className="text-xs text-muted-foreground">
-                        con intereses
+                        {factura.diasAtraso || 0} días
                       </p>
                     </div>
                   </div>

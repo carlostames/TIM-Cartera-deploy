@@ -69,8 +69,6 @@ export default function Facturas() {
       "Vencimiento",
       "Importe",
       "Días Atraso",
-      "Intereses",
-      "Total con Intereses",
       "Estado",
     ];
 
@@ -82,8 +80,6 @@ export default function Facturas() {
       f.fechaVencimiento ? formatDate(f.fechaVencimiento) : '',
       f.importeTotal,
       f.diasAtraso || 0,
-      f.interesesMoratorios || 0,
-      f.totalConIntereses || f.importeTotal,
       f.estadoPago === 'pendiente' ? 'Pendiente' : 'Pagado',
     ]);
 
@@ -189,7 +185,6 @@ export default function Facturas() {
                     <TableHead>Fecha</TableHead>
                     <TableHead className="text-right">Importe</TableHead>
                     <TableHead className="text-center">Días Atraso</TableHead>
-                    <TableHead className="text-right">Total + Intereses</TableHead>
                     <TableHead className="text-center">Estado</TableHead>
                   </TableRow>
                 </TableHeader>
@@ -213,9 +208,6 @@ export default function Facturas() {
                         ) : (
                           <span className="text-muted-foreground">-</span>
                         )}
-                      </TableCell>
-                      <TableCell className="text-right font-semibold">
-                        {formatCurrency(factura.totalConIntereses || factura.importeTotal)}
                       </TableCell>
                       <TableCell className="text-center">
                         <Badge

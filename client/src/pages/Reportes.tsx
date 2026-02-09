@@ -30,16 +30,12 @@ export default function Reportes() {
       "Cliente",
       "Facturas",
       "Total Saldo",
-      "Total Intereses",
-      "Total con Intereses",
     ];
 
     const rows = carteraVencida.map((item: any) => [
       item.cliente,
       item.facturas.length,
       item.totalSaldo,
-      item.totalIntereses,
-      item.totalConIntereses,
     ]);
 
     const csv = [headers, ...rows].map((row) => row.join(",")).join("\n");
@@ -121,9 +117,7 @@ export default function Reportes() {
                   <TableRow>
                     <TableHead>Cliente</TableHead>
                     <TableHead className="text-center">Facturas</TableHead>
-                    <TableHead className="text-right">Saldo</TableHead>
-                    <TableHead className="text-right">Intereses</TableHead>
-                    <TableHead className="text-right">Total</TableHead>
+                    <TableHead className="text-right">Total Saldo</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -131,14 +125,8 @@ export default function Reportes() {
                     <TableRow key={idx}>
                       <TableCell className="font-medium">{item.cliente}</TableCell>
                       <TableCell className="text-center">{item.facturas.length}</TableCell>
-                      <TableCell className="text-right">
-                        {formatCurrency(item.totalSaldo)}
-                      </TableCell>
-                      <TableCell className="text-right text-orange-600">
-                        {formatCurrency(item.totalIntereses)}
-                      </TableCell>
                       <TableCell className="text-right font-semibold">
-                        {formatCurrency(item.totalConIntereses)}
+                        {formatCurrency(item.totalSaldo)}
                       </TableCell>
                     </TableRow>
                   ))}
@@ -147,19 +135,9 @@ export default function Reportes() {
                     <TableCell className="text-center">
                       {carteraVencida.reduce((sum: number, item: any) => sum + item.facturas.length, 0)}
                     </TableCell>
-                    <TableCell className="text-right">
+                    <TableCell className="text-right font-semibold">
                       {formatCurrency(
                         carteraVencida.reduce((sum: number, item: any) => sum + item.totalSaldo, 0)
-                      )}
-                    </TableCell>
-                    <TableCell className="text-right text-orange-600">
-                      {formatCurrency(
-                        carteraVencida.reduce((sum: number, item: any) => sum + item.totalIntereses, 0)
-                      )}
-                    </TableCell>
-                    <TableCell className="text-right">
-                      {formatCurrency(
-                        carteraVencida.reduce((sum: number, item: any) => sum + item.totalConIntereses, 0)
                       )}
                     </TableCell>
                   </TableRow>
