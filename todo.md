@@ -145,3 +145,6 @@
 - [x] Procesar partidas y generar contratos automáticamente
 - [x] Generar proyecciones mensuales
 - [x] Verificar integridad de datos cargados
+
+## Corrección de Errores
+- [x] Suprimir warning de ResizeObserver en consola del navegador

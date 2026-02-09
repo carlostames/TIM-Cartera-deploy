@@ -8,6 +8,16 @@ import App from "./App";
 import { getLoginUrl } from "./const";
 import "./index.css";
 
+// Suprimir warning de ResizeObserver que no afecta funcionalidad
+const originalError = window.console.error;
+window.console.error = (...args) => {
+  const firstArg = args[0];
+  if (typeof firstArg === 'string' && firstArg.includes('ResizeObserver')) {
+    return;
+  }
+  originalError.call(window.console, ...args);
+};
+
 const queryClient = new QueryClient();
 
 const redirectToLoginIfUnauthorized = (error: unknown) => {
