@@ -4,7 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Upload as UploadIcon, FileSpreadsheet, CheckCircle2, XCircle, AlertCircle } from "lucide-react";
+import { Upload as UploadIcon, FileSpreadsheet, CheckCircle2, XCircle, AlertCircle, Download } from "lucide-react";
 import { toast } from "sonner";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Progress } from "@/components/ui/progress";
@@ -101,6 +101,44 @@ export default function Upload() {
           Sube archivos XLSX de facturación o pendientes de pago para procesarlos automáticamente
         </p>
       </div>
+
+      {/* Plantillas */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Plantillas de Carga</CardTitle>
+          <CardDescription>
+            Descarga las plantillas Excel con el formato correcto para cada tipo de archivo
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <a
+              href="/templates/plantilla_tim_transp.xlsx"
+              download
+              className="flex items-center justify-center gap-2 px-4 py-3 border border-input bg-background hover:bg-accent hover:text-accent-foreground rounded-md transition-colors"
+            >
+              <Download className="h-4 w-4" />
+              <span>Tim Transp (AB)</span>
+            </a>
+            <a
+              href="/templates/plantilla_tim_value.xlsx"
+              download
+              className="flex items-center justify-center gap-2 px-4 py-3 border border-input bg-background hover:bg-accent hover:text-accent-foreground rounded-md transition-colors"
+            >
+              <Download className="h-4 w-4" />
+              <span>Tim Value (AA)</span>
+            </a>
+            <a
+              href="/templates/plantilla_pendientes.xlsx"
+              download
+              className="flex items-center justify-center gap-2 px-4 py-3 border border-input bg-background hover:bg-accent hover:text-accent-foreground rounded-md transition-colors"
+            >
+              <Download className="h-4 w-4" />
+              <span>Pendientes</span>
+            </a>
+          </div>
+        </CardContent>
+      </Card>
 
       <Card>
         <CardHeader>

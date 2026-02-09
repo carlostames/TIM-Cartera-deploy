@@ -153,3 +153,14 @@
 - [x] Diagnosticar problema de carga de archivos de facturas
 - [x] Corregir funcionalidad de upload
 - [x] Verificar que la carga funcione correctamente
+
+## Corrección de Error JSON
+- [ ] Diagnosticar error "Unexpected token '<', '<!DOCTYPE '... is not valid JSON"
+- [ ] Corregir respuesta del servidor
+- [ ] Verificar que la carga funcione correctamente
+
+## Plantillas de Carga
+- [x] Crear plantilla Excel para Tim Transp
+- [x] Crear plantilla Excel para Tim Value
+- [x] Crear plantilla Excel para Pendientes de Pago
+- [x] Agregar funcionalidad de descarga en la interfaz
