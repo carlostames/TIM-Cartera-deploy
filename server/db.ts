@@ -879,10 +879,23 @@ export async function getProyeccionMatricial(
     }
   }
 
-  // Obtener contratos filtrados
-  const contratosData = await db.select().from(contratos)
+  // Obtener contratos filtrados con información de cliente y grupo
+  const contratosData = await db
+    .select({
+      id: contratos.id,
+      numeroContrato: contratos.numeroContrato,
+      clienteId: contratos.clienteId,
+      empresa: contratos.empresa,
+      activo: contratos.activo,
+      nombreCliente: clientes.nombre,
+      grupoId: clientes.grupoId,
+      grupoNombre: gruposClientes.nombre,
+    })
+    .from(contratos)
+    .leftJoin(clientes, eq(contratos.clienteId, clientes.id))
+    .leftJoin(gruposClientes, eq(clientes.grupoId, gruposClientes.id))
     .where(and(...filters))
-    .orderBy(contratos.numeroContrato);
+    .orderBy(gruposClientes.nombre, clientes.nombre, contratos.numeroContrato);
 
   // Generar array de meses del año
   const meses = Array.from({ length: 12 }, (_, i) => {

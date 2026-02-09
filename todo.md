@@ -181,3 +181,11 @@
 - [x] Probar carga del archivo en el sistema
 - [x] Verificar que la lógica de estado de pago funcione correctamente
 - [x] Documentar formato esperado del archivo
+
+## Reorganización de Tabla de Proyección
+- [x] Analizar estructura actual de la tabla de proyección
+- [x] Implementar organización jerárquica: Grupo → Razón Social → Contratos Activos
+- [x] Filtrar años en cero (solo mostrar años con operación)
+- [x] Agregar opción de vista consolidada vs detallada
+- [x] Implementar toggle para alternar entre vistas
+- [x] Probar funcionalidad con datos reales

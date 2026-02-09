@@ -1,21 +1,29 @@
-import { useState } from "react";
+import { useState, Fragment } from "react";
 import DashboardLayout from "@/components/DashboardLayout";
 import { trpc } from "@/lib/trpc";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
-import { Download, Loader2 } from "lucide-react";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
+import { Download, Loader2, ChevronDown, ChevronRight } from "lucide-react";
 import { toast } from "sonner";
 
 export default function TablaProyeccion() {
   const currentYear = new Date().getFullYear();
   const [anioSeleccionado, setAnioSeleccionado] = useState(currentYear);
   const [empresaSeleccionada, setEmpresaSeleccionada] = useState<'todas' | 'tim_transp' | 'tim_value'>('todas');
+  const [vistaConsolidada, setVistaConsolidada] = useState(false);
+  const [gruposExpandidos, setGruposExpandidos] = useState<Set<number>>(new Set());
+  const [clientesExpandidos, setClientesExpandidos] = useState<Set<number>>(new Set());
 
   const { data: proyeccionData, isLoading } = trpc.proyeccion.proyeccionMatricial.useQuery({
     anio: anioSeleccionado,
     empresa: empresaSeleccionada,
   });
+
+  const { data: grupos } = trpc.grupos.list.useQuery();
+  const { data: clientes } = trpc.clientes.list.useQuery();
 
   const meses = [
     "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
@@ -30,41 +38,175 @@ export default function TablaProyeccion() {
     }).format(amount);
   };
 
+  // Función para verificar si un año tiene operaciones
+  const tieneOperaciones = (montosAnuales: number[]) => {
+    return montosAnuales.some(m => m > 0);
+  };
+
+  // Función para obtener solo los meses con operaciones
+  const getMesesConOperaciones = () => {
+    if (!proyeccionData) return [];
+    
+    const mesesActivos = new Set<number>();
+    Object.values(proyeccionData.datos as any).forEach((contratoData: any) => {
+      Object.keys(contratoData).forEach(mesNum => {
+        if (contratoData[mesNum] > 0) {
+          mesesActivos.add(parseInt(mesNum));
+        }
+      });
+    });
+
+    return Array.from(mesesActivos).sort((a, b) => a - b);
+  };
+
+  const mesesActivos = getMesesConOperaciones();
+
+  // Organizar datos por grupo → cliente → contratos
+  const organizarPorJerarquia = () => {
+    if (!proyeccionData) return [];
+
+    const estructura: any[] = [];
+    const gruposMap = new Map<string, any>();
+
+    // Procesar cada contrato y construir jerarquía
+    proyeccionData.contratos.forEach((contrato: any) => {
+      const grupoNombre = contrato.grupoNombre || 'Sin Grupo';
+      const grupoKey = grupoNombre;
+      const clienteNombre = contrato.nombreCliente;
+      const clienteId = contrato.clienteId;
+
+      // Crear grupo si no existe
+      if (!gruposMap.has(grupoKey)) {
+        gruposMap.set(grupoKey, {
+          tipo: grupoNombre === 'Sin Grupo' ? 'sin_grupo' : 'grupo',
+          id: contrato.grupoId || -1,
+          nombre: grupoNombre,
+          clientesMap: new Map<number, any>()
+        });
+      }
+
+      const grupo = gruposMap.get(grupoKey)!;
+
+      // Crear cliente si no existe en el grupo
+      if (!grupo.clientesMap.has(clienteId)) {
+        grupo.clientesMap.set(clienteId, {
+          tipo: 'cliente',
+          id: clienteId,
+          nombre: clienteNombre,
+          contratos: []
+        });
+      }
+
+      // Agregar contrato al cliente
+      grupo.clientesMap.get(clienteId)!.contratos.push(contrato);
+    });
+
+    // Convertir Maps a arrays
+    gruposMap.forEach(grupo => {
+      estructura.push({
+        ...grupo,
+        clientes: Array.from(grupo.clientesMap.values())
+      });
+      delete grupo.clientesMap;
+    });
+
+    return estructura;
+  };
+
+  const jerarquia = organizarPorJerarquia();
+
+  const toggleGrupo = (grupoId: number) => {
+    const newSet = new Set(gruposExpandidos);
+    if (newSet.has(grupoId)) {
+      newSet.delete(grupoId);
+    } else {
+      newSet.add(grupoId);
+    }
+    setGruposExpandidos(newSet);
+  };
+
+  const toggleCliente = (clienteId: number) => {
+    const newSet = new Set(clientesExpandidos);
+    if (newSet.has(clienteId)) {
+      newSet.delete(clienteId);
+    } else {
+      newSet.add(clienteId);
+    }
+    setClientesExpandidos(newSet);
+  };
+
+  // Calcular totales consolidados
+  const calcularTotalesGrupo = (grupo: any) => {
+    const totales: Record<number, number> = {};
+    mesesActivos.forEach(mes => { totales[mes] = 0; });
+
+    grupo.clientes.forEach((cliente: any) => {
+      cliente.contratos.forEach((contrato: any) => {
+        mesesActivos.forEach(mes => {
+          const monto = (proyeccionData?.datos as any)?.[contrato.id]?.[mes] || 0;
+          totales[mes] += monto;
+        });
+      });
+    });
+
+    return totales;
+  };
+
+  const calcularTotalesCliente = (cliente: any) => {
+    const totales: Record<number, number> = {};
+    mesesActivos.forEach(mes => { totales[mes] = 0; });
+
+    cliente.contratos.forEach((contrato: any) => {
+      mesesActivos.forEach(mes => {
+        const monto = (proyeccionData?.datos as any)?.[contrato.id]?.[mes] || 0;
+        totales[mes] += monto;
+      });
+    });
+
+    return totales;
+  };
+
   const exportarCSV = () => {
     if (!proyeccionData || proyeccionData.contratos.length === 0) {
       toast.error("No hay datos para exportar");
       return;
     }
 
-    const headers = ["Contrato", "Razón Social", "Empresa", ...meses, "Total"];
-    const rows = proyeccionData.contratos.map(contrato => {
-      const montosM = Array.from({ length: 12 }, (_, i) => 
-        (proyeccionData.datos as any)?.[contrato.id]?.[i + 1] || 0
-      );
-      const total = proyeccionData.totalesPorContrato?.[contrato.id] || 0;
-      
-      return [
-        contrato.numeroContrato,
-        contrato.nombreCliente,
-        contrato.empresa === 'tim_transp' ? 'Tim Transp' : 'Tim Value',
-        ...montosM.map(m => m.toFixed(2)),
-        total.toFixed(2)
-      ];
+    const headers = ["Grupo", "Cliente", "Contrato", ...mesesActivos.map(m => meses[m - 1]), "Total"];
+    const rows: string[][] = [];
+
+    jerarquia.forEach(grupo => {
+      grupo.clientes.forEach((cliente: any) => {
+        cliente.contratos.forEach((contrato: any) => {
+          const montosM = mesesActivos.map(mes => 
+            (proyeccionData.datos as any)?.[contrato.id]?.[mes] || 0
+          );
+          const total = proyeccionData.totalesPorContrato?.[contrato.id] || 0;
+
+          rows.push([
+            grupo.nombre,
+            cliente.nombre,
+            contrato.numeroContrato,
+            ...montosM.map(m => m.toFixed(2)),
+            total.toFixed(2)
+          ]);
+        });
+      });
     });
 
     const totalesRow = [
       "",
       "",
       "TOTAL",
-      ...Array.from({ length: 12 }, (_, i) => 
-        (proyeccionData.totalesPorMes?.[i + 1] || 0).toFixed(2)
+      ...mesesActivos.map(mes => 
+        (proyeccionData.totalesPorMes?.[mes] || 0).toFixed(2)
       ),
       Object.values(proyeccionData.totalesPorContrato || {}).reduce((sum, val) => sum + val, 0).toFixed(2)
     ];
 
     const csvContent = [
       headers.join(","),
-      ...rows.map(row => row.join(",")),
+      ...rows.map(row => row.map(cell => `"${cell}"`).join(",")),
       totalesRow.join(",")
     ].join("\n");
 
@@ -87,7 +229,7 @@ export default function TablaProyeccion() {
         <div>
           <h1 className="text-3xl font-bold">Tabla de Proyección</h1>
           <p className="text-muted-foreground">
-            Vista matricial de proyección de ingresos por contrato y mes
+            Vista matricial de proyección de ingresos organizada por grupo, cliente y contrato
           </p>
         </div>
 
@@ -97,7 +239,7 @@ export default function TablaProyeccion() {
               <div>
                 <CardTitle>Proyección Anual</CardTitle>
                 <CardDescription>
-                  Visualiza la proyección de ingresos por contrato en formato de tabla
+                  Visualiza la proyección de ingresos en formato jerárquico
                 </CardDescription>
               </div>
               <div className="flex gap-2">
@@ -115,7 +257,7 @@ export default function TablaProyeccion() {
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              <div className="flex gap-4">
+              <div className="flex gap-4 flex-wrap items-center">
                 <div className="flex items-center gap-2">
                   <label className="text-sm font-medium">Año:</label>
                   <Select
@@ -151,32 +293,37 @@ export default function TablaProyeccion() {
                     </SelectContent>
                   </Select>
                 </div>
+
+                <div className="flex items-center gap-2 ml-auto">
+                  <Switch
+                    id="vista-consolidada"
+                    checked={vistaConsolidada}
+                    onCheckedChange={setVistaConsolidada}
+                  />
+                  <Label htmlFor="vista-consolidada" className="text-sm font-medium cursor-pointer">
+                    Vista Consolidada
+                  </Label>
+                </div>
               </div>
 
               {isLoading ? (
                 <div className="flex items-center justify-center py-12">
                   <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
                 </div>
-              ) : proyeccionData && proyeccionData.contratos.length > 0 ? (
+              ) : proyeccionData && proyeccionData.contratos.length > 0 && mesesActivos.length > 0 ? (
                 <div className="overflow-x-auto border rounded-lg">
                   <table className="w-full text-sm">
                     <thead className="bg-muted">
                       <tr>
-                        <th className="px-3 py-2 text-left font-semibold sticky left-0 bg-muted z-10 border-r">
-                          Contrato
+                        <th className="px-3 py-2 text-left font-semibold sticky left-0 bg-muted z-10 border-r min-w-[300px]">
+                          {vistaConsolidada ? 'Grupo / Cliente' : 'Grupo / Cliente / Contrato'}
                         </th>
-                        <th className="px-3 py-2 text-left font-semibold sticky left-24 bg-muted z-10 border-r min-w-[200px]">
-                          Razón Social
-                        </th>
-                        <th className="px-3 py-2 text-left font-semibold border-r">
-                          Empresa
-                        </th>
-                        {meses.map((mes, idx) => (
+                        {mesesActivos.map((mesNum) => (
                           <th
-                            key={idx}
+                            key={mesNum}
                             className="px-3 py-2 text-right font-semibold border-r min-w-[100px]"
                           >
-                            {mes}
+                            {meses[mesNum - 1]}
                           </th>
                         ))}
                         <th className="px-3 py-2 text-right font-semibold bg-muted/50">
@@ -185,57 +332,124 @@ export default function TablaProyeccion() {
                       </tr>
                     </thead>
                     <tbody>
-                      {proyeccionData.contratos.map((contrato, idx) => {
-                        const montosM = Array.from({ length: 12 }, (_, i) => 
-                          (proyeccionData.datos as any)?.[contrato.id]?.[i + 1] || 0
-                        );
-                        const total = proyeccionData.totalesPorContrato?.[contrato.id] || 0;
+                      {jerarquia.map((grupo, gIdx) => {
+                        const totalesGrupo = calcularTotalesGrupo(grupo);
+                        const totalAnualGrupo = Object.values(totalesGrupo).reduce((sum, val) => sum + val, 0);
+                        const grupoExpandido = gruposExpandidos.has(grupo.id);
 
                         return (
-                          <tr
-                            key={contrato.id}
-                            className={idx % 2 === 0 ? 'bg-background' : 'bg-muted/30'}
-                          >
-                            <td className="px-3 py-2 sticky left-0 bg-inherit z-10 border-r font-medium">
-                              {contrato.numeroContrato}
-                            </td>
-                            <td className="px-3 py-2 sticky left-24 bg-inherit z-10 border-r">
-                              {contrato.nombreCliente}
-                            </td>
-                            <td className="px-3 py-2 border-r">
-                              <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
-                                contrato.empresa === 'tim_transp' 
-                                  ? 'bg-blue-100 text-blue-700' 
-                                  : 'bg-green-100 text-green-700'
-                              }`}>
-                                {contrato.empresa === 'tim_transp' ? 'Tim Transp' : 'Tim Value'}
-                              </span>
-                            </td>
-                            {montosM.map((monto, mesIdx) => (
-                              <td
-                                key={mesIdx}
-                                className={`px-3 py-2 text-right border-r ${
-                                  monto > 0 ? 'text-foreground' : 'text-muted-foreground'
-                                }`}
-                              >
-                                {monto > 0 ? formatCurrency(monto) : '$0.00'}
+                          <Fragment key={`grupo-${grupo.id}`}>
+                            {/* Fila de Grupo */}
+                            <tr className="bg-blue-50 font-semibold border-t-2 hover:bg-blue-100 cursor-pointer"
+                                onClick={() => !vistaConsolidada && toggleGrupo(grupo.id)}>
+                              <td className="px-3 py-2 sticky left-0 bg-blue-50 hover:bg-blue-100 z-10 border-r">
+                                <div className="flex items-center gap-2">
+                                  {!vistaConsolidada && (
+                                    grupoExpandido ? 
+                                      <ChevronDown className="h-4 w-4" /> : 
+                                      <ChevronRight className="h-4 w-4" />
+                                  )}
+                                  <span>{grupo.nombre}</span>
+                                </div>
                               </td>
-                            ))}
-                            <td className="px-3 py-2 text-right font-semibold bg-muted/30">
-                              {formatCurrency(total)}
-                            </td>
-                          </tr>
+                              {mesesActivos.map((mesNum) => (
+                                <td key={mesNum} className="px-3 py-2 text-right border-r">
+                                  {formatCurrency(totalesGrupo[mesNum] || 0)}
+                                </td>
+                              ))}
+                              <td className="px-3 py-2 text-right bg-blue-100">
+                                {formatCurrency(totalAnualGrupo)}
+                              </td>
+                            </tr>
+
+                            {/* Filas de Clientes y Contratos */}
+                            {!vistaConsolidada && grupoExpandido && grupo.clientes.map((cliente: any) => {
+                              const totalesCliente = calcularTotalesCliente(cliente);
+                              const totalAnualCliente = Object.values(totalesCliente).reduce((sum, val) => sum + val, 0);
+                              const clienteExpandido = clientesExpandidos.has(cliente.id);
+
+                              return (
+                                <Fragment key={`cliente-${cliente.id}`}>
+                                  {/* Fila de Cliente */}
+                                  <tr className="bg-green-50 font-medium hover:bg-green-100 cursor-pointer"
+                                      onClick={() => toggleCliente(cliente.id)}>
+                                    <td className="px-3 py-2 sticky left-0 bg-green-50 hover:bg-green-100 z-10 border-r">
+                                      <div className="flex items-center gap-2 pl-6">
+                                        {clienteExpandido ? 
+                                          <ChevronDown className="h-4 w-4" /> : 
+                                          <ChevronRight className="h-4 w-4" />
+                                        }
+                                        <span>{cliente.nombre}</span>
+                                      </div>
+                                    </td>
+                                    {mesesActivos.map((mesNum) => (
+                                      <td key={mesNum} className="px-3 py-2 text-right border-r">
+                                        {formatCurrency(totalesCliente[mesNum] || 0)}
+                                      </td>
+                                    ))}
+                                    <td className="px-3 py-2 text-right bg-green-100">
+                                      {formatCurrency(totalAnualCliente)}
+                                    </td>
+                                  </tr>
+
+                                  {/* Filas de Contratos */}
+                                  {clienteExpandido && cliente.contratos.map((contrato: any, cIdx: number) => {
+                                    const montosM = mesesActivos.map(mes => 
+                                      (proyeccionData.datos as any)?.[contrato.id]?.[mes] || 0
+                                    );
+                                    const total = proyeccionData.totalesPorContrato?.[contrato.id] || 0;
+
+                                    return (
+                                      <tr
+                                        key={contrato.id}
+                                        className={cIdx % 2 === 0 ? 'bg-background' : 'bg-muted/30'}
+                                      >
+                                        <td className="px-3 py-2 sticky left-0 bg-inherit z-10 border-r">
+                                          <div className="pl-12 flex items-center gap-2">
+                                            <span className="text-muted-foreground">📄</span>
+                                            <span>{contrato.numeroContrato}</span>
+                                            <span className={`ml-2 inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${
+                                              contrato.empresa === 'tim_transp' 
+                                                ? 'bg-blue-100 text-blue-700' 
+                                                : 'bg-green-100 text-green-700'
+                                            }`}>
+                                              {contrato.empresa === 'tim_transp' ? 'TT' : 'TV'}
+                                            </span>
+                                          </div>
+                                        </td>
+                                        {montosM.map((monto, idx) => (
+                                          <td
+                                            key={idx}
+                                            className={`px-3 py-2 text-right border-r ${
+                                              monto > 0 ? 'text-foreground' : 'text-muted-foreground'
+                                            }`}
+                                          >
+                                            {monto > 0 ? formatCurrency(monto) : '-'}
+                                          </td>
+                                        ))}
+                                        <td className="px-3 py-2 text-right font-medium bg-muted/30">
+                                          {formatCurrency(total)}
+                                        </td>
+                                      </tr>
+                                    );
+                                  })}
+                                </Fragment>
+                              );
+                            })}
+                          </Fragment>
                         );
                       })}
+
+                      {/* Fila de Totales */}
                       <tr className="bg-primary/10 font-bold border-t-2 border-primary">
-                        <td className="px-3 py-3 sticky left-0 bg-primary/10 z-10 border-r" colSpan={3}>
-                          TOTAL
+                        <td className="px-3 py-3 sticky left-0 bg-primary/10 z-10 border-r">
+                          TOTAL GENERAL
                         </td>
-                        {Array.from({ length: 12 }, (_, i) => {
-                          const total = proyeccionData.totalesPorMes?.[i + 1] || 0;
+                        {mesesActivos.map((mesNum) => {
+                          const total = proyeccionData.totalesPorMes?.[mesNum] || 0;
                           return (
                             <td
-                              key={i}
+                              key={mesNum}
                               className="px-3 py-3 text-right border-r"
                             >
                               {formatCurrency(total)}
@@ -253,9 +467,9 @@ export default function TablaProyeccion() {
                 </div>
               ) : (
                 <div className="text-center py-12 text-muted-foreground">
-                  <p>No hay contratos activos para el año seleccionado</p>
+                  <p>No hay contratos activos con operaciones para el año seleccionado</p>
                   <p className="text-sm mt-2">
-                    Intenta seleccionar un año diferente o verifica que existan contratos activos
+                    Intenta seleccionar un año diferente o verifica que existan contratos activos con proyecciones
                   </p>
                 </div>
               )}
