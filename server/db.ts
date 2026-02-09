@@ -976,6 +976,11 @@ export async function getFacturasPendientesPorCliente(clienteId: number) {
   const db = await getDb();
   if (!db) return [];
 
+  // Primero obtener el nombre del cliente
+  const cliente = await db.select({ nombre: clientes.nombre }).from(clientes).where(eq(clientes.id, clienteId)).limit(1);
+  if (cliente.length === 0) return [];
+
+  // Buscar facturas por nombreCliente (no por clienteId)
   const result = await db
     .select({
       folio: facturas.folio,
@@ -988,7 +993,7 @@ export async function getFacturasPendientesPorCliente(clienteId: number) {
     })
     .from(facturas)
     .where(and(
-      eq(facturas.clienteId, clienteId),
+      eq(facturas.nombreCliente, cliente[0].nombre),
       eq(facturas.estadoPago, 'pendiente')
     ))
     .orderBy(facturas.fecha);
@@ -1000,6 +1005,7 @@ export async function getFacturasPendientesPorGrupo(grupoId: number) {
   const db = await getDb();
   if (!db) return [];
 
+  // Buscar facturas por nombreCliente (no por clienteId)
   const result = await db
     .select({
       folio: facturas.folio,
@@ -1012,7 +1018,7 @@ export async function getFacturasPendientesPorGrupo(grupoId: number) {
       clienteNombre: clientes.nombre,
     })
     .from(facturas)
-    .innerJoin(clientes, eq(facturas.clienteId, clientes.id))
+    .innerJoin(clientes, eq(facturas.nombreCliente, clientes.nombre))
     .where(and(
       eq(clientes.grupoId, grupoId),
       eq(facturas.estadoPago, 'pendiente')
@@ -1080,6 +1086,7 @@ export async function getClientesConDeuda() {
   if (!db) return [];
 
   // Consulta optimizada: obtener clientes que tienen facturas pendientes
+  // Nota: Las facturas se relacionan por nombreCliente (texto), no por clienteId
   const clientesConFacturasPendientes = await db
     .selectDistinct({ 
       id: clientes.id,
@@ -1095,7 +1102,7 @@ export async function getClientesConDeuda() {
       updatedAt: clientes.updatedAt,
     })
     .from(clientes)
-    .innerJoin(facturas, eq(facturas.clienteId, clientes.id))
+    .innerJoin(facturas, eq(facturas.nombreCliente, clientes.nombre))
     .where(eq(facturas.estadoPago, 'pendiente'));
   
   return clientesConFacturasPendientes;
@@ -1106,6 +1113,7 @@ export async function getGruposConDeuda() {
   if (!db) return [];
 
   // Consulta optimizada: obtener grupos que tienen clientes con facturas pendientes
+  // Nota: Las facturas se relacionan por nombreCliente (texto), no por clienteId
   const gruposConFacturasPendientes = await db
     .selectDistinct({ 
       id: gruposClientes.id,
@@ -1116,7 +1124,7 @@ export async function getGruposConDeuda() {
     })
     .from(gruposClientes)
     .innerJoin(clientes, eq(clientes.grupoId, gruposClientes.id))
-    .innerJoin(facturas, eq(facturas.clienteId, clientes.id))
+    .innerJoin(facturas, eq(facturas.nombreCliente, clientes.nombre))
     .where(eq(facturas.estadoPago, 'pendiente'));
   
   return gruposConFacturasPendientes;

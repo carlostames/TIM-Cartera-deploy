@@ -213,3 +213,9 @@
 - [x] Actualizar endpoints de tRPC para usar listas filtradas
 - [x] Modificar interfaz para usar nuevos endpoints filtrados
 - [x] Probar que solo aparezcan clientes/grupos con deuda
+
+## Corrección de Filtro de Clientes con Deuda
+- [x] Investigar valores reales del campo estadoPago en facturas
+- [x] Corregir consulta de clientes con deuda según valores reales
+- [x] Corregir consulta de grupos con deuda según valores reales
+- [x] Probar que aparezcan clientes con facturas pendientes
