@@ -970,3 +970,106 @@ export async function getProyeccionMatricial(
     totalesPorContrato,
   };
 }
+
+// ============ Estados de Cuenta ============
+export async function getFacturasPendientesPorCliente(clienteId: number) {
+  const db = await getDb();
+  if (!db) return [];
+
+  const result = await db
+    .select({
+      folio: facturas.folio,
+      fecha: facturas.fecha,
+      importeTotal: facturas.importeTotal,
+      diasAtraso: facturas.diasAtraso,
+      interesesMoratorios: facturas.interesesMoratorios,
+      estadoPago: facturas.estadoPago,
+      sistema: facturas.sistema,
+    })
+    .from(facturas)
+    .where(and(
+      eq(facturas.clienteId, clienteId),
+      eq(facturas.estadoPago, 'pendiente')
+    ))
+    .orderBy(facturas.fecha);
+
+  return result;
+}
+
+export async function getFacturasPendientesPorGrupo(grupoId: number) {
+  const db = await getDb();
+  if (!db) return [];
+
+  const result = await db
+    .select({
+      folio: facturas.folio,
+      fecha: facturas.fecha,
+      importeTotal: facturas.importeTotal,
+      diasAtraso: facturas.diasAtraso,
+      interesesMoratorios: facturas.interesesMoratorios,
+      estadoPago: facturas.estadoPago,
+      sistema: facturas.sistema,
+      clienteNombre: clientes.nombre,
+    })
+    .from(facturas)
+    .innerJoin(clientes, eq(facturas.clienteId, clientes.id))
+    .where(and(
+      eq(clientes.grupoId, grupoId),
+      eq(facturas.estadoPago, 'pendiente')
+    ))
+    .orderBy(clientes.nombre, facturas.fecha);
+
+  return result;
+}
+
+export async function getEstadoCuentaCliente(clienteId: number) {
+  const db = await getDb();
+  if (!db) return null;
+
+  const cliente = await db
+    .select()
+    .from(clientes)
+    .where(eq(clientes.id, clienteId))
+    .limit(1);
+
+  if (cliente.length === 0) return null;
+
+  const facturasResult = await getFacturasPendientesPorCliente(clienteId);
+  
+  const totalPendiente = facturasResult.reduce((sum, f) => sum + Number(f.importeTotal || 0), 0);
+  const totalIntereses = facturasResult.reduce((sum, f) => sum + Number(f.interesesMoratorios || 0), 0);
+
+  return {
+    cliente: cliente[0],
+    facturas: facturasResult,
+    totalPendiente,
+    totalIntereses,
+    totalGeneral: totalPendiente + totalIntereses,
+  };
+}
+
+export async function getEstadoCuentaGrupo(grupoId: number) {
+  const db = await getDb();
+  if (!db) return null;
+
+  const grupo = await db
+    .select()
+    .from(gruposClientes)
+    .where(eq(gruposClientes.id, grupoId))
+    .limit(1);
+
+  if (grupo.length === 0) return null;
+
+  const facturasResult = await getFacturasPendientesPorGrupo(grupoId);
+  
+  const totalPendiente = facturasResult.reduce((sum, f) => sum + Number(f.importeTotal || 0), 0);
+  const totalIntereses = facturasResult.reduce((sum, f) => sum + Number(f.interesesMoratorios || 0), 0);
+
+  return {
+    grupo: grupo[0],
+    facturas: facturasResult,
+    totalPendiente,
+    totalIntereses,
+    totalGeneral: totalPendiente + totalIntereses,
+  };
+}

@@ -15,6 +15,7 @@ import Usuarios from "./pages/Usuarios";
 import GestionClientes from "./pages/GestionClientes";
 import Proyeccion from "./pages/Proyeccion";
 import TablaProyeccion from "./pages/TablaProyeccion";
+import EstadosCuenta from "./pages/EstadosCuenta";
 
 function Router() {
   return (
@@ -25,6 +26,7 @@ function Router() {
         <Route path="/facturas" component={Facturas} />
         <Route path="/proyeccion" component={Proyeccion} />
         <Route path="/tabla-proyeccion" component={TablaProyeccion} />
+        <Route path="/estados-cuenta" component={EstadosCuenta} />
         <Route path="/reportes" component={Reportes} />
         <Route path="/gestion-clientes" component={GestionClientes} />
         <Route path="/configuracion" component={Configuracion} />

@@ -711,6 +711,79 @@ export const appRouter = router({
         return await db.getProyeccionMatricial(input.anio, input.empresa, input.grupoId);
       }),
   }),
+
+  // ============ Estados de Cuenta ============
+  estadosCuenta: router({
+    // Obtener estado de cuenta de un cliente
+    cliente: protectedProcedure
+      .input(z.object({ clienteId: z.number() }))
+      .query(async ({ input }) => {
+        const estado = await db.getEstadoCuentaCliente(input.clienteId);
+        if (!estado) {
+          throw new TRPCError({
+            code: 'NOT_FOUND',
+            message: 'Cliente no encontrado',
+          });
+        }
+        return estado;
+      }),
+
+    // Obtener estado de cuenta de un grupo
+    grupo: protectedProcedure
+      .input(z.object({ grupoId: z.number() }))
+      .query(async ({ input }) => {
+        const estado = await db.getEstadoCuentaGrupo(input.grupoId);
+        if (!estado) {
+          throw new TRPCError({
+            code: 'NOT_FOUND',
+            message: 'Grupo no encontrado',
+          });
+        }
+        return estado;
+      }),
+
+    // Generar PDF de estado de cuenta de cliente
+    generarPDFCliente: protectedProcedure
+      .input(z.object({ clienteId: z.number() }))
+      .mutation(async ({ input }) => {
+        const estado = await db.getEstadoCuentaCliente(input.clienteId);
+        if (!estado) {
+          throw new TRPCError({
+            code: 'NOT_FOUND',
+            message: 'Cliente no encontrado',
+          });
+        }
+        
+        const { generarEstadoCuentaClientePDF } = await import('./pdfGenerator');
+        const pdfBuffer = await generarEstadoCuentaClientePDF(estado);
+        
+        return {
+          pdf: pdfBuffer.toString('base64'),
+          filename: `estado_cuenta_${estado.cliente.nombre.replace(/[^a-zA-Z0-9]/g, '_')}_${new Date().toISOString().split('T')[0]}.pdf`,
+        };
+      }),
+
+    // Generar PDF de estado de cuenta de grupo
+    generarPDFGrupo: protectedProcedure
+      .input(z.object({ grupoId: z.number() }))
+      .mutation(async ({ input }) => {
+        const estado = await db.getEstadoCuentaGrupo(input.grupoId);
+        if (!estado) {
+          throw new TRPCError({
+            code: 'NOT_FOUND',
+            message: 'Grupo no encontrado',
+          });
+        }
+        
+        const { generarEstadoCuentaGrupoPDF } = await import('./pdfGenerator');
+        const pdfBuffer = await generarEstadoCuentaGrupoPDF(estado);
+        
+        return {
+          pdf: pdfBuffer.toString('base64'),
+          filename: `estado_cuenta_grupo_${estado.grupo.nombre.replace(/[^a-zA-Z0-9]/g, '_')}_${new Date().toISOString().split('T')[0]}.pdf`,
+        };
+      }),
+  }),
 });
 
 export type AppRouter = typeof appRouter;

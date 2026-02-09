@@ -194,3 +194,15 @@
 - [x] Mostrar clientes sin grupo como grupos independientes (usar razón social como nombre de grupo)
 - [x] Filtrar contratos que no tienen operaciones en el año seleccionado
 - [x] Probar que solo aparezcan contratos con al menos una factura en el año
+
+## Módulo de Estados de Cuenta en PDF
+- [x] Diseñar estructura de consulta para obtener facturas pendientes por cliente
+- [x] Diseñar estructura de consulta para obtener facturas pendientes por grupo
+- [x] Implementar generador de PDF con información de facturas pendientes
+- [x] Crear diseño profesional del estado de cuenta (encabezado, tabla, totales)
+- [x] Implementar cálculo de totales y subtotales en el PDF
+- [x] Crear página de estados de cuenta en el frontend
+- [x] Implementar selector de cliente o grupo
+- [x] Agregar botón de generación y descarga de PDF
+- [x] Crear tests para generación de PDFs
+- [x] Documentar funcionalidad de estados de cuenta
