@@ -124,3 +124,11 @@
 - [ ] Desarrollar comparativo Real vs Proyectado
 - [x] Crear tests para parser y motor de proyección
 - [x] Documentar sistema de proyección
+
+## Vista de Tabla de Proyección Matricial
+- [x] Crear endpoint backend para proyección en formato matricial (contratos x meses)
+- [x] Implementar agrupación por año
+- [x] Desarrollar componente de tabla con meses como columnas
+- [x] Agregar totales por mes y por contrato
+- [x] Implementar selector de año
+- [x] Agregar exportación de tabla a CSV/Excel

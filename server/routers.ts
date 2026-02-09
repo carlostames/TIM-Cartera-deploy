@@ -699,6 +699,17 @@ export const appRouter = router({
           partidas,
         };
       }),
+
+    // Obtener proyección en formato matricial (contratos x meses)
+    proyeccionMatricial: protectedProcedure
+      .input(z.object({
+        anio: z.number(),
+        empresa: z.enum(['todas', 'tim_transp', 'tim_value']).optional(),
+        grupoId: z.number().optional(),
+      }))
+      .query(async ({ input }) => {
+        return await db.getProyeccionMatricial(input.anio, input.empresa, input.grupoId);
+      }),
   }),
 });
 

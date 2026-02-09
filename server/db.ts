@@ -1,4 +1,4 @@
-import { eq, desc, and, sql } from "drizzle-orm";
+import { eq, desc, and, sql, inArray, gte, lte } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
 import { 
   InsertUser, users, 
@@ -817,4 +817,113 @@ export async function getPartidasByContrato(contratoId: number) {
   return await db.select().from(partidasFactura)
     .where(eq(partidasFactura.contratoId, contratoId))
     .orderBy(desc(partidasFactura.createdAt));
+}
+
+// ============ Proyección Matricial ============
+export async function getProyeccionMatricial(
+  anio: number,
+  empresa?: 'todas' | 'tim_transp' | 'tim_value',
+  grupoId?: number
+) {
+  const db = await getDb();
+  if (!db) return { contratos: [], meses: [], datos: {} };
+
+  // Construir filtros
+  const filters: any[] = [eq(contratos.activo, true)];
+  
+  if (empresa && empresa !== 'todas') {
+    filters.push(eq(contratos.empresa, empresa));
+  }
+  
+  if (grupoId) {
+    // Obtener clientes del grupo
+    const clientesDelGrupo = await db.select().from(clientes)
+      .where(eq(clientes.grupoId, grupoId));
+    
+    const clienteIds = clientesDelGrupo.map(c => c.id);
+    if (clienteIds.length > 0) {
+      filters.push(inArray(contratos.clienteId, clienteIds));
+    } else {
+      // Si no hay clientes en el grupo, retornar vacío
+      return { contratos: [], meses: [], datos: {} };
+    }
+  }
+
+  // Obtener contratos filtrados
+  const contratosData = await db.select().from(contratos)
+    .where(and(...filters))
+    .orderBy(contratos.numeroContrato);
+
+  // Generar array de meses del año
+  const meses = Array.from({ length: 12 }, (_, i) => {
+    const mes = new Date(anio, i, 1);
+    return {
+      numero: i + 1,
+      nombre: mes.toLocaleString('es-MX', { month: 'long' }),
+      fecha: mes,
+    };
+  });
+
+  // Obtener proyecciones del año
+  const fechaInicio = new Date(anio, 0, 1);
+  const fechaFin = new Date(anio, 11, 31);
+
+  const proyecciones = await db.select().from(proyeccionMensual)
+    .where(
+      and(
+        gte(proyeccionMensual.mes, fechaInicio),
+        lte(proyeccionMensual.mes, fechaFin)
+      )
+    );
+
+  // Construir matriz de datos: { contratoId: { mesNumero: monto } }
+  const datos: Record<number, Record<number, number>> = {};
+  
+  for (const contrato of contratosData) {
+    datos[contrato.id] = {};
+    
+    // Inicializar todos los meses en 0
+    for (let i = 1; i <= 12; i++) {
+      datos[contrato.id][i] = 0;
+    }
+  }
+
+  // Llenar con proyecciones reales
+  for (const proyeccion of proyecciones) {
+    const mesNumero = new Date(proyeccion.mes).getMonth() + 1;
+    const contratoId = proyeccion.contratoId;
+    
+    if (datos[contratoId]) {
+      datos[contratoId][mesNumero] = parseFloat(proyeccion.montoProyectado);
+    }
+  }
+
+  // Calcular totales por mes
+  const totalesPorMes: Record<number, number> = {};
+  for (let i = 1; i <= 12; i++) {
+    totalesPorMes[i] = 0;
+  }
+
+  for (const contratoId in datos) {
+    for (const mesNumero in datos[contratoId]) {
+      totalesPorMes[parseInt(mesNumero)] += datos[contratoId][parseInt(mesNumero)];
+    }
+  }
+
+  // Calcular totales por contrato
+  const totalesPorContrato: Record<number, number> = {};
+  for (const contrato of contratosData) {
+    totalesPorContrato[contrato.id] = 0;
+    for (let i = 1; i <= 12; i++) {
+      totalesPorContrato[contrato.id] += datos[contrato.id][i];
+    }
+  }
+
+  return {
+    contratos: contratosData,
+    meses,
+    datos,
+    totalesPorMes,
+    totalesPorContrato,
+  };
 }
