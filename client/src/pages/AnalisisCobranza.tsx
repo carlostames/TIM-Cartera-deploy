@@ -52,7 +52,7 @@ export default function AnalisisCobranza() {
 
       {/* Cards de resumen */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        <Card>
+        <Card key="total-pendiente">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Total Pendiente</CardTitle>
             <DollarSign className="h-4 w-4 text-muted-foreground" />
@@ -65,7 +65,7 @@ export default function AnalisisCobranza() {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card key="facturas-pendientes">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Facturas Pendientes</CardTitle>
             <Clock className="h-4 w-4 text-muted-foreground" />
@@ -78,7 +78,7 @@ export default function AnalisisCobranza() {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card key="clientes-morosos">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Clientes Morosos</CardTitle>
             <Users className="h-4 w-4 text-muted-foreground" />
@@ -91,7 +91,7 @@ export default function AnalisisCobranza() {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card key="promedio-atraso">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Promedio Atraso</CardTitle>
             <TrendingUp className="h-4 w-4 text-muted-foreground" />

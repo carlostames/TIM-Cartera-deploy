@@ -247,3 +247,8 @@
 - [x] Corregir consulta de evolución temporal (manejar fechas NULL)
 - [x] Usar SQL raw con números de posición para compatibilidad con ONLY_FULL_GROUP_BY
 - [x] Probar que ambos gráficos carguen correctamente (parcialmente: gráficos funcionan pero requieren datos históricos)
+
+## Corrección de Error de React Key Prop
+- [x] Identificar elementos sin key prop en AnalisisCobranza
+- [x] Agregar keys únicos a todos los elementos de lista
+- [x] Verificar que el error desaparezca
