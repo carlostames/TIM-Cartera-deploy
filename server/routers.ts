@@ -114,7 +114,43 @@ export const appRouter = router({
             // Actualizar estado de facturas basado en pendientes
             const allFacturas = await db.getAllFacturas();
             const foliosPendientes = new Set((result.data || []).map((p: any) => p.folio));
+            const foliosExistentes = new Set(allFacturas.map(f => f.folio));
             
+            // Crear facturas para folios que no existen en la BD
+            const foliosFaltantes = (result.data || []).filter((p: any) => !foliosExistentes.has(p.folio));
+            
+            for (const pendiente of foliosFaltantes) {
+              const diasAtraso = pendiente.diasVencido || 0;
+              const saldo = parseFloat(pendiente.saldo || '0');
+              
+              const fechaVencimiento = new Date();
+              fechaVencimiento.setDate(fechaVencimiento.getDate() - diasAtraso);
+              
+              const fechaFactura = new Date(fechaVencimiento);
+              fechaFactura.setDate(fechaFactura.getDate() - 30);
+              
+              const { interesesMoratorios, totalConIntereses } = calcularAtrasoEIntereses(
+                fechaVencimiento,
+                saldo,
+                tasaInteres
+              );
+              
+              await db.upsertFactura({
+                folio: pendiente.folio,
+                fecha: fechaFactura,
+                fechaVencimiento,
+                importeTotal: saldo.toString(),
+                nombreCliente: pendiente.nombreCliente || 'CLIENTE DESCONOCIDO',
+                descripcion: 'Factura creada automáticamente desde archivo de pendientes',
+                estadoPago: 'pendiente',
+                diasAtraso,
+                interesesMoratorios: interesesMoratorios.toString(),
+                totalConIntereses: totalConIntereses.toString(),
+                sistema: 'tim_transp',
+              } as any);
+            }
+            
+            // Actualizar estado de facturas existentes
             for (const factura of allFacturas) {
               const estadoPago = foliosPendientes.has(factura.folio) ? 'pendiente' : 'pagado';
               await db.updateFacturaEstadoPago(factura.folio, estadoPago);

@@ -272,3 +272,12 @@
 - [x] Actualizar cálculo de totales para incluir intereses moratorios
 - [x] Actualizar vista previa si muestra la tabla
 - [x] Probar generación de PDF con nuevas columnas
+
+## Corrección de Discrepancia en Carga de Archivo Excel
+- [x] Analizar archivo Excel "10febrero.xlsx" (221 partidas, $2,222,685.33)
+- [x] Identificar que dashboard solo mostraba facturas con atraso > 0 ($1,561,431.26)
+- [x] Identificar 6 folios faltantes en BD (AB12140, AB12142, AA1644, AA1645, AA1642, AA1643)
+- [x] Agregar métrica totalCarteraPendiente en getDashboardStats()
+- [x] Actualizar Dashboard para mostrar cartera total pendiente ($2,185,402.47)
+- [x] Modificar procesador de pendientes para crear facturas faltantes automáticamente
+- [x] Validar correcciones con tests unitarios

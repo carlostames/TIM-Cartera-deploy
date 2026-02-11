@@ -382,8 +382,14 @@ export async function getDashboardStats() {
     .from(facturas)
     .where(eq(facturas.estadoPago, 'pendiente'));
   
+  const totalCarteraPendiente = await db
+    .select({ total: sql<number>`COALESCE(SUM(${facturas.importeTotal}), 0)` })
+    .from(facturas)
+    .where(eq(facturas.estadoPago, 'pendiente'));
+  
   return {
     totalCarteraVencida: totalCarteraVencida[0]?.total || 0,
+    totalCarteraPendiente: totalCarteraPendiente[0]?.total || 0,
     clientesConAtraso: clientesConAtraso[0]?.count || 0,
     facturasPendientes: facturasPendientes[0]?.count || 0,
   };
