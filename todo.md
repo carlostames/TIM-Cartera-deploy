@@ -297,3 +297,14 @@
 - [ ] Probar carga de archivo de pendientes con nueva lógica
 - [ ] Probar generación de estados de cuenta con diferentes tasas
 - [ ] Validar dashboard y modales
+
+## Sistema de Permisos por Rol
+- [x] Agregar campo permisos (JSON) a tabla users en schema.ts
+- [x] Ejecutar migración de base de datos
+- [x] Inicializar permisos para usuarios existentes
+- [x] Definir constante de módulos disponibles con rutas y nombres
+- [x] Crear funciones en db.ts para actualizar permisos
+- [x] Crear interfaz en página Usuarios para asignar permisos por usuario
+- [x] Actualizar DashboardLayout/sidebar para filtrar menús según permisos
+- [x] Crear hook usePermissions para verificar permisos en el frontend
+- [x] Probar sistema con diferentes roles y permisos

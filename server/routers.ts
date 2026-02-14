@@ -421,6 +421,29 @@ export const appRouter = router({
           return { success: true };
         }),
       
+      updatePermisos: adminProcedure
+        .input(z.object({
+          userId: z.number(),
+          permisos: z.array(z.string()),
+        }))
+        .mutation(async ({ input, ctx }) => {
+          await db.updateUserPermisos(input.userId, input.permisos);
+          
+          // Registrar en auditoría
+          await db.createAuditLog({
+            usuarioId: ctx.user.id,
+            accion: 'update_user_permisos',
+            entidad: 'users',
+            entidadId: input.userId,
+            detalles: {
+              permisos: input.permisos,
+              changedBy: ctx.user.email,
+            },
+          });
+          
+          return { success: true };
+        }),
+      
       updateStatus: adminProcedure
         .input(z.object({
           userId: z.number(),

@@ -10,6 +10,7 @@ export const users = mysqlTable("users", {
   email: varchar("email", { length: 320 }),
   loginMethod: varchar("loginMethod", { length: 64 }),
   role: mysqlEnum("role", ["admin", "operador", "consulta"]).default("consulta").notNull(),
+  permisos: json("permisos").$type<string[]>(),
   activo: boolean("activo").default(true).notNull(),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),

@@ -30,26 +30,28 @@ import { Button } from "./ui/button";
 
 import { Upload, FileText, TrendingUp, Settings, DollarSign, BarChart3, Table, Receipt } from "lucide-react";
 
-const getMenuItems = (userRole?: string) => {
-  const baseItems = [
-    { icon: LayoutDashboard, label: "Dashboard", path: "/" },
-    { icon: Upload, label: "Cargar Archivos", path: "/upload" },
-    { icon: FileText, label: "Facturas", path: "/facturas" },
-    { icon: BarChart3, label: "Proyección", path: "/proyeccion" },
-    { icon: Table, label: "Tabla Proyección", path: "/tabla-proyeccion" },
-    { icon: Receipt, label: "Estados de Cuenta", path: "/estados-cuenta" },
-    { icon: TrendingUp, label: "Análisis de Cobranza", path: "/analisis-cobranza" },
-    { icon: TrendingUp, label: "Reportes", path: "/reportes" },
-    { icon: Users, label: "Clientes", path: "/gestion-clientes" },
-    { icon: Settings, label: "Configuración", path: "/configuracion" },
+const getMenuItems = (userRole?: string, permisos?: string[]) => {
+  const allItems = [
+    { icon: LayoutDashboard, label: "Dashboard", path: "/", permiso: "dashboard" },
+    { icon: Upload, label: "Cargar Archivos", path: "/upload", permiso: "cargar-archivos" },
+    { icon: FileText, label: "Facturas", path: "/facturas", permiso: "facturas" },
+    { icon: BarChart3, label: "Proyección", path: "/proyeccion", permiso: "proyeccion" },
+    { icon: Table, label: "Tabla Proyección", path: "/tabla-proyeccion", permiso: "tabla-proyeccion" },
+    { icon: Receipt, label: "Estados de Cuenta", path: "/estados-cuenta", permiso: "estados-cuenta" },
+    { icon: TrendingUp, label: "Análisis de Cobranza", path: "/analisis-cobranza", permiso: "analisis-cobranza" },
+    { icon: TrendingUp, label: "Reportes", path: "/reportes", permiso: "reportes" },
+    { icon: Users, label: "Clientes", path: "/gestion-clientes", permiso: "clientes" },
+    { icon: Settings, label: "Configuración", path: "/configuracion", permiso: "configuracion" },
+    { icon: Shield, label: "Usuarios", path: "/usuarios", permiso: "usuarios" },
   ];
   
-  // Solo mostrar Usuarios si el usuario es admin
+  // Admin tiene acceso a todo
   if (userRole === 'admin') {
-    baseItems.push({ icon: Shield, label: "Usuarios", path: "/usuarios" });
+    return allItems;
   }
   
-  return baseItems;
+  // Filtrar por permisos del usuario
+  return allItems.filter(item => permisos?.includes(item.permiso));
 };
 
 const SIDEBAR_WIDTH_KEY = "sidebar-width";
@@ -141,7 +143,7 @@ function DashboardLayoutContent({
   const isCollapsed = state === "collapsed";
   const [isResizing, setIsResizing] = useState(false);
   const sidebarRef = useRef<HTMLDivElement>(null);
-  const menuItems = getMenuItems(user?.role);
+  const menuItems = getMenuItems(user?.role, user?.permisos || undefined);
   const activeMenuItem = menuItems.find(item => item.path === location);
   const isMobile = useIsMobile();
 
@@ -211,7 +213,7 @@ function DashboardLayoutContent({
 
           <SidebarContent className="gap-0">
             <SidebarMenu className="px-2 py-1">
-              {getMenuItems(user?.role).map(item => {
+              {getMenuItems(user?.role, user?.permisos || undefined).map(item => {
                 const isActive = location === item.path;
                 return (
                   <SidebarMenuItem key={item.path}>

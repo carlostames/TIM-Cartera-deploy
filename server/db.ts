@@ -72,6 +72,13 @@ export async function upsertUser(user: InsertUser): Promise<void> {
       values.role = 'admin';
       updateSet.role = 'admin';
     }
+    
+    // Asignar permisos por defecto según el rol al crear usuario
+    if (user.permisos === undefined) {
+      const { PERMISOS_POR_ROL } = await import('../shared/modulos');
+      const role = values.role || 'consulta';
+      values.permisos = PERMISOS_POR_ROL[role] || [];
+    }
 
     if (!values.lastSignedIn) {
       values.lastSignedIn = new Date();
@@ -504,6 +511,27 @@ export async function updateUserRole(userId: number, newRole: "admin" | "operado
     return true;
   } catch (error) {
     console.error("[Database] Failed to update user role:", error);
+    throw error;
+  }
+}
+
+/**
+ * Actualizar permisos de un usuario
+ */
+export async function updateUserPermisos(userId: number, permisos: string[]) {
+  const db = await getDb();
+  if (!db) {
+    throw new Error("Database not available");
+  }
+
+  try {
+    await db.update(users)
+      .set({ permisos, updatedAt: new Date() })
+      .where(eq(users.id, userId));
+    
+    return true;
+  } catch (error) {
+    console.error("[Database] Failed to update user permisos:", error);
     throw error;
   }
 }

@@ -28,10 +28,13 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { trpc } from "@/lib/trpc";
-import { Shield, UserCheck, UserX, Search, Users as UsersIcon } from "lucide-react";
+import { Shield, UserCheck, UserX, Search, Users as UsersIcon, Lock } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import { useLocation } from "wouter";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Label } from "@/components/ui/label";
+import { MODULOS_SISTEMA } from "../../../shared/modulos";
 
 export default function Usuarios() {
   const { user } = useAuth();
@@ -40,8 +43,9 @@ export default function Usuarios() {
   const [filterRole, setFilterRole] = useState<string>("all");
   const [filterStatus, setFilterStatus] = useState<string>("all");
   const [selectedUser, setSelectedUser] = useState<any>(null);
-  const [dialogType, setDialogType] = useState<"role" | "status" | null>(null);
+  const [dialogType, setDialogType] = useState<"role" | "status" | "permisos" | null>(null);
   const [newRole, setNewRole] = useState<"admin" | "operador" | "consulta">("consulta");
+  const [selectedPermisos, setSelectedPermisos] = useState<string[]>([]);
 
   // Verificar que el usuario sea admin
   if (user?.role !== 'admin') {
@@ -65,6 +69,7 @@ export default function Usuarios() {
   const { data: stats } = trpc.admin.users.stats.useQuery();
   const updateRoleMutation = trpc.admin.users.updateRole.useMutation();
   const updateStatusMutation = trpc.admin.users.updateStatus.useMutation();
+  const updatePermisosMutation = trpc.admin.users.updatePermisos.useMutation();
 
   const handleUpdateRole = async () => {
     if (!selectedUser) return;
@@ -98,6 +103,31 @@ export default function Usuarios() {
     } catch (error: any) {
       toast.error(error.message || "Error al actualizar el estado");
     }
+  };
+
+  const handleUpdatePermisos = async () => {
+    if (!selectedUser) return;
+
+    try {
+      await updatePermisosMutation.mutateAsync({
+        userId: selectedUser.id,
+        permisos: selectedPermisos,
+      });
+      toast.success("Permisos actualizados exitosamente");
+      refetch();
+      setDialogType(null);
+      setSelectedUser(null);
+    } catch (error: any) {
+      toast.error(error.message || "Error al actualizar los permisos");
+    }
+  };
+
+  const handleTogglePermiso = (moduloId: string) => {
+    setSelectedPermisos(prev => 
+      prev.includes(moduloId)
+        ? prev.filter(id => id !== moduloId)
+        : [...prev, moduloId]
+    );
   };
 
   const filteredUsers = users.filter((u) => {
@@ -272,6 +302,18 @@ export default function Usuarios() {
                             Cambiar Rol
                           </Button>
                           <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => {
+                              setSelectedUser(u);
+                              setSelectedPermisos(u.permisos || []);
+                              setDialogType("permisos");
+                            }}
+                          >
+                            <Lock className="h-4 w-4 mr-1" />
+                            Permisos
+                          </Button>
+                          <Button
                             variant={u.activo ? "outline" : "default"}
                             size="sm"
                             onClick={() => {
@@ -352,6 +394,53 @@ export default function Usuarios() {
                   : selectedUser?.activo
                   ? "Desactivar"
                   : "Activar"}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+
+        {/* Dialog para gestionar permisos */}
+        <Dialog open={dialogType === "permisos"} onOpenChange={(open) => !open && setDialogType(null)}>
+          <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle>Gestionar Permisos</DialogTitle>
+              <DialogDescription>
+                Selecciona los módulos a los que {selectedUser?.name || selectedUser?.email} puede acceder.
+              </DialogDescription>
+            </DialogHeader>
+            <div className="space-y-4 py-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {MODULOS_SISTEMA.map((modulo) => (
+                  <div key={modulo.id} className="flex items-start space-x-3 p-3 border rounded-lg hover:bg-accent/50 transition-colors">
+                    <Checkbox
+                      id={`permiso-${modulo.id}`}
+                      checked={selectedPermisos.includes(modulo.id)}
+                      onCheckedChange={() => handleTogglePermiso(modulo.id)}
+                    />
+                    <div className="flex-1">
+                      <Label
+                        htmlFor={`permiso-${modulo.id}`}
+                        className="font-medium cursor-pointer"
+                      >
+                        {modulo.nombre}
+                      </Label>
+                      <p className="text-sm text-muted-foreground mt-1">
+                        {modulo.descripcion}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setDialogType(null)}>
+                Cancelar
+              </Button>
+              <Button
+                onClick={handleUpdatePermisos}
+                disabled={updatePermisosMutation.isPending}
+              >
+                {updatePermisosMutation.isPending ? "Guardando..." : "Guardar Permisos"}
               </Button>
             </DialogFooter>
           </DialogContent>
