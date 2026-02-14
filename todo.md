@@ -326,3 +326,11 @@
 ## Ajustar Tamaño de Fuente en Gráfica de Análisis de Cobranza
 - [x] Reducir tamaño de fuente de nombres de clientes en eje Y
 - [x] Probar visualización mejorada
+
+## Exportación Masiva de Estados de Cuenta
+- [x] Crear endpoint backend para generar múltiples PDFs
+- [x] Implementar compresión de PDFs en archivo ZIP
+- [x] Agregar checkboxes de selección en lista de clientes
+- [x] Agregar botón "Exportar Seleccionados" en frontend
+- [x] Implementar lógica de selección múltiple
+- [x] Probar exportación masiva con múltiples clientes

@@ -12,6 +12,7 @@ export default function EstadosCuenta() {
   const [clienteSeleccionado, setClienteSeleccionado] = useState<string>('');
   const [grupoSeleccionado, setGrupoSeleccionado] = useState<string>('');
   const [tasaInteresMoratorio, setTasaInteresMoratorio] = useState<number>(0);
+  const [clientesSeleccionados, setClientesSeleccionados] = useState<number[]>([]);
 
   const { data: clientes, isLoading: loadingClientes } = trpc.estadosCuenta.clientesConDeuda.useQuery();
   const { data: grupos, isLoading: loadingGrupos } = trpc.estadosCuenta.gruposConDeuda.useQuery();
@@ -78,6 +79,35 @@ export default function EstadosCuenta() {
     },
   });
 
+  const generarPDFsMasivos = trpc.estadosCuenta.generarPDFsMasivos.useMutation({
+    onSuccess: (data) => {
+      // Convertir base64 a blob y descargar ZIP
+      const byteCharacters = atob(data.zip);
+      const byteNumbers = new Array(byteCharacters.length);
+      for (let i = 0; i < byteCharacters.length; i++) {
+        byteNumbers[i] = byteCharacters.charCodeAt(i);
+      }
+      const byteArray = new Uint8Array(byteNumbers);
+      const blob = new Blob([byteArray], { type: 'application/zip' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = data.filename;
+      link.click();
+      URL.revokeObjectURL(url);
+
+      toast.success('Estados de cuenta generados', {
+        description: `Se han generado ${clientesSeleccionados.length} estados de cuenta en formato ZIP.`,
+      });
+      
+      // Limpiar selección
+      setClientesSeleccionados([]);
+    },
+    onError: (error) => {
+      toast.error(error.message);
+    },
+  })
+
   const handleGenerarPDF = () => {
     if (tipoSeleccion === 'cliente' && clienteSeleccionado) {
       generarPDFCliente.mutate({ 
@@ -110,7 +140,7 @@ export default function EstadosCuenta() {
 
   const estadoActual = tipoSeleccion === 'cliente' ? estadoCliente : estadoGrupo;
   const isLoading = tipoSeleccion === 'cliente' ? loadingEstadoCliente : loadingEstadoGrupo;
-  const isGenerating = generarPDFCliente.isPending || generarPDFGrupo.isPending;
+  const isGenerating = generarPDFCliente.isPending || generarPDFGrupo.isPending || generarPDFsMasivos.isPending;
 
   return (
     <div className="container py-8">
@@ -137,27 +167,79 @@ export default function EstadosCuenta() {
               </TabsList>
 
               <TabsContent value="cliente" className="space-y-4 mt-4">
-                <div>
-                  <label className="text-sm font-medium mb-2 block">Seleccionar Cliente</label>
-                  <Select value={clienteSeleccionado} onValueChange={setClienteSeleccionado}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Selecciona un cliente..." />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {loadingClientes ? (
-                        <SelectItem value="loading" disabled>
-                          Cargando...
-                        </SelectItem>
-                      ) : (
-                        clientes?.map((cliente) => (
-                          <SelectItem key={cliente.id} value={String(cliente.id)}>
-                            {cliente.nombre}
+                <div className="flex gap-4 items-end">
+                  <div className="flex-1">
+                    <label className="text-sm font-medium mb-2 block">Seleccionar Cliente</label>
+                    <Select value={clienteSeleccionado} onValueChange={setClienteSeleccionado}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Selecciona un cliente..." />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {loadingClientes ? (
+                          <SelectItem value="loading" disabled>
+                            Cargando...
                           </SelectItem>
-                        ))
-                      )}
-                    </SelectContent>
-                  </Select>
+                        ) : (
+                          clientes?.map((cliente) => (
+                            <SelectItem key={cliente.id} value={String(cliente.id)}>
+                              {cliente.nombre}
+                            </SelectItem>
+                          ))
+                        )}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <Button
+                    onClick={() => {
+                      if (clientesSeleccionados.length === 0) {
+                        toast.error('Selecciona al menos un cliente');
+                        return;
+                      }
+                      generarPDFsMasivos.mutate({ 
+                        clienteIds: clientesSeleccionados,
+                        tasaInteresMoratorio 
+                      });
+                    }}
+                    disabled={clientesSeleccionados.length === 0 || generarPDFsMasivos.isPending}
+                  >
+                    {generarPDFsMasivos.isPending ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Generando...
+                      </>
+                    ) : (
+                      <>
+                        <Download className="mr-2 h-4 w-4" />
+                        Exportar Seleccionados ({clientesSeleccionados.length})
+                      </>
+                    )}
+                  </Button>
                 </div>
+                
+                {clientes && clientes.length > 0 && (
+                  <div className="border rounded-lg p-4 max-h-64 overflow-y-auto">
+                    <p className="text-sm font-medium mb-3">Seleccionar clientes para exportación masiva:</p>
+                    <div className="space-y-2">
+                      {clientes.map((cliente) => (
+                        <label key={cliente.id} className="flex items-center gap-2 cursor-pointer hover:bg-accent p-2 rounded">
+                          <input
+                            type="checkbox"
+                            checked={clientesSeleccionados.includes(cliente.id)}
+                            onChange={(e) => {
+                              if (e.target.checked) {
+                                setClientesSeleccionados([...clientesSeleccionados, cliente.id]);
+                              } else {
+                                setClientesSeleccionados(clientesSeleccionados.filter(id => id !== cliente.id));
+                              }
+                            }}
+                            className="h-4 w-4"
+                          />
+                          <span className="text-sm">{cliente.nombre}</span>
+                        </label>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </TabsContent>
 
               <TabsContent value="grupo" className="space-y-4 mt-4">

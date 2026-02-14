@@ -837,6 +837,47 @@ export const appRouter = router({
         };
       }),
 
+    // Generar PDFs masivos de estados de cuenta en ZIP
+    generarPDFsMasivos: protectedProcedure
+      .input(z.object({ 
+        clienteIds: z.array(z.number()),
+        tasaInteresMoratorio: z.number().default(0)
+      }))
+      .mutation(async ({ input }) => {
+        const { generarEstadoCuentaClientePDF } = await import('./pdfGenerator');
+        const archiver = await import('archiver');
+        const { Readable } = await import('stream');
+        
+        // Crear un buffer para el ZIP
+        const chunks: Buffer[] = [];
+        const archive = archiver.default('zip', { zlib: { level: 9 } });
+        
+        archive.on('data', (chunk: Buffer) => chunks.push(chunk));
+        
+        const zipPromise = new Promise<Buffer>((resolve, reject) => {
+          archive.on('end', () => resolve(Buffer.concat(chunks)));
+          archive.on('error', reject);
+        });
+        
+        // Generar PDF para cada cliente y agregarlo al ZIP
+        for (const clienteId of input.clienteIds) {
+          const estado = await db.getEstadoCuentaCliente(clienteId);
+          if (estado) {
+            const pdfBuffer = await generarEstadoCuentaClientePDF(estado, input.tasaInteresMoratorio);
+            const filename = `${estado.cliente.nombre.replace(/[^a-zA-Z0-9]/g, '_')}.pdf`;
+            archive.append(pdfBuffer, { name: filename });
+          }
+        }
+        
+        archive.finalize();
+        const zipBuffer = await zipPromise;
+        
+        return {
+          zip: zipBuffer.toString('base64'),
+          filename: `estados_cuenta_${new Date().toISOString().split('T')[0]}.zip`,
+        };
+      }),
+
     // Generar PDF de estado de cuenta de grupo
     generarPDFGrupo: protectedProcedure
       .input(z.object({ 
