@@ -1254,21 +1254,35 @@ export async function getTopDeudores(limit: number = 10) {
   const db = await getDb();
   if (!db) return [];
 
+  // Primero obtener el total de cartera para calcular porcentajes
+  const totalCarteraResult = await db
+    .select({
+      total: sql<number>`SUM(COALESCE(${facturas.saldoPendiente}, ${facturas.importeTotal}))`
+    })
+    .from(facturas)
+    .where(eq(facturas.estadoPago, 'pendiente'));
+  
+  const totalCartera = Number(totalCarteraResult[0]?.total || 0);
+
   // Obtener clientes con mayor deuda pendiente
   const result = await db
     .select({
       cliente: facturas.nombreCliente,
       cantidadFacturas: sql<number>`COUNT(*)`,
-      totalDeuda: sql<number>`SUM(${facturas.importeTotal})`,
+      totalDeuda: sql<number>`SUM(COALESCE(${facturas.saldoPendiente}, ${facturas.importeTotal}))`,
       diasPromedioAtraso: sql<number>`AVG(${facturas.diasAtraso})`,
     })
     .from(facturas)
     .where(eq(facturas.estadoPago, 'pendiente'))
     .groupBy(facturas.nombreCliente)
-    .orderBy(sql`SUM(${facturas.importeTotal}) DESC`)
+    .orderBy(sql`SUM(COALESCE(${facturas.saldoPendiente}, ${facturas.importeTotal})) DESC`)
     .limit(limit);
 
-  return result;
+  // Agregar porcentaje a cada cliente
+  return result.map(r => ({
+    ...r,
+    porcentaje: totalCartera > 0 ? (Number(r.totalDeuda) / totalCartera) * 100 : 0
+  }));
 }
 
 export async function getDistribucionPorAntiguedad() {

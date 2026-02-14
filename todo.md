@@ -313,3 +313,12 @@
 - [x] Verificar campo correoCobranza en schema de clientes
 - [x] Actualizar tabla en página Clientes para mostrar columna de correo
 - [x] Probar visualización de correos en la tabla
+
+## Mejorar Análisis de Cobranza
+- [x] Revisar código actual de AnalisisCobranza.tsx
+- [x] Eliminar primera gráfica de la página
+- [x] Actualizar backend para calcular métricas adicionales (porcentaje, días promedio, número de facturas)
+- [x] Expandir Top 10 a Top 15 clientes
+- [x] Agregar filtro superior para seleccionar métrica a visualizar
+- [x] Implementar visualización dinámica según filtro seleccionado
+- [x] Probar todas las opciones de filtro

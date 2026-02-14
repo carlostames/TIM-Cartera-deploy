@@ -1,9 +1,9 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { trpc } from "@/lib/trpc";
-import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, Cell } from 'recharts';
 import { TrendingUp, Users, Clock, DollarSign } from "lucide-react";
-
-
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useState } from "react";
 
 const formatCurrency = (value: number) => {
   return new Intl.NumberFormat('es-MX', {
@@ -12,34 +12,97 @@ const formatCurrency = (value: number) => {
   }).format(value);
 };
 
+type MetricType = 'monto' | 'porcentaje' | 'diasAtraso' | 'facturas';
+
 export default function AnalisisCobranza() {
   const { data: dashboardData } = trpc.dashboard.stats.useQuery();
-  const { data: evolucion, isLoading: loadingEvolucion } = trpc.analisis.evolucionCobranza.useQuery();
-  const { data: topDeudores, isLoading: loadingTop } = trpc.analisis.topDeudores.useQuery({ limit: 10 });
-
-
-  // Procesar datos de evolución para el gráfico de líneas
-  const evolucionData = evolucion ? (() => {
-    const mesesMap = new Map<string, { mes: string; pagadas: number; pendientes: number }>();
-    
-    evolucion.forEach((item: any) => {
-      if (!mesesMap.has(item.mes)) {
-        mesesMap.set(item.mes, { mes: item.mes, pagadas: 0, pendientes: 0 });
-      }
-      const mesData = mesesMap.get(item.mes)!;
-      if (item.estadoPago === 'pagado') {
-        mesData.pagadas = Number(item.monto);
-      } else {
-        mesData.pendientes = Number(item.monto);
-      }
-    });
-
-    return Array.from(mesesMap.values());
-  })() : [];
+  const { data: topDeudores, isLoading: loadingTop } = trpc.analisis.topDeudores.useQuery({ limit: 15 });
+  const [selectedMetric, setSelectedMetric] = useState<MetricType>('monto');
 
   // Usar datos del dashboard para totales
   const totalPendiente = dashboardData?.totalCarteraPendiente || 0;
   const totalFacturas = dashboardData?.facturasPendientes || 0;
+
+  // Preparar datos según la métrica seleccionada
+  const chartData = topDeudores?.map(d => {
+    let value = 0;
+    let label = '';
+    
+    switch (selectedMetric) {
+      case 'monto':
+        value = Number(d.totalDeuda);
+        label = 'Monto';
+        break;
+      case 'porcentaje':
+        value = Number(d.porcentaje);
+        label = 'Porcentaje';
+        break;
+      case 'diasAtraso':
+        value = Math.round(Number(d.diasPromedioAtraso || 0));
+        label = 'Días Promedio';
+        break;
+      case 'facturas':
+        value = Number(d.cantidadFacturas);
+        label = 'Facturas';
+        break;
+    }
+    
+    return {
+      cliente: d.cliente,
+      value,
+      label,
+      // Datos adicionales para tooltip
+      totalDeuda: Number(d.totalDeuda),
+      porcentaje: Number(d.porcentaje),
+      diasAtraso: Math.round(Number(d.diasPromedioAtraso || 0)),
+      facturas: Number(d.cantidadFacturas),
+    };
+  }) || [];
+
+  // Colores para las barras según la métrica
+  const getBarColor = (index: number) => {
+    const colors = [
+      '#ef4444', '#dc2626', '#b91c1c', '#991b1b', '#7f1d1d',
+      '#f97316', '#ea580c', '#c2410c', '#9a3412', '#7c2d12',
+      '#f59e0b', '#d97706', '#b45309', '#92400e', '#78350f',
+    ];
+    return colors[index % colors.length];
+  };
+
+  // Formatear valor según métrica
+  const formatValue = (value: number) => {
+    switch (selectedMetric) {
+      case 'monto':
+        return formatCurrency(value);
+      case 'porcentaje':
+        return `${value.toFixed(1)}%`;
+      case 'diasAtraso':
+        return `${value} días`;
+      case 'facturas':
+        return `${value} facturas`;
+      default:
+        return value.toString();
+    }
+  };
+
+  // Tooltip personalizado
+  const CustomTooltip = ({ active, payload }: any) => {
+    if (active && payload && payload.length) {
+      const data = payload[0].payload;
+      return (
+        <div className="bg-background border rounded-lg p-3 shadow-lg">
+          <p className="font-semibold mb-2">{data.cliente}</p>
+          <div className="space-y-1 text-sm">
+            <p><span className="text-muted-foreground">Monto:</span> {formatCurrency(data.totalDeuda)}</p>
+            <p><span className="text-muted-foreground">Porcentaje:</span> {data.porcentaje.toFixed(1)}%</p>
+            <p><span className="text-muted-foreground">Días atraso:</span> {data.diasAtraso} días</p>
+            <p><span className="text-muted-foreground">Facturas:</span> {data.facturas}</p>
+          </div>
+        </div>
+      );
+    }
+    return null;
+  };
 
   return (
     <div className="container mx-auto p-6 space-y-6">
@@ -113,69 +176,62 @@ export default function AnalisisCobranza() {
         </Card>
       </div>
 
-      {/* Gráfico de evolución temporal */}
+      {/* Gráfico de top deudores con filtros */}
       <Card>
         <CardHeader>
-          <CardTitle>Evolución de Cobranza</CardTitle>
-          <CardDescription>
-            Comparación mensual de facturas pagadas vs pendientes
-          </CardDescription>
+          <div className="flex items-center justify-between">
+            <div>
+              <CardTitle>Top 15 Clientes con Mayor Deuda</CardTitle>
+              <CardDescription>
+                Ranking de clientes por diferentes métricas
+              </CardDescription>
+            </div>
+            <Select value={selectedMetric} onValueChange={(value) => setSelectedMetric(value as MetricType)}>
+              <SelectTrigger className="w-[220px]">
+                <SelectValue placeholder="Seleccionar métrica" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="monto">Monto de Deuda</SelectItem>
+                <SelectItem value="porcentaje">% del Total</SelectItem>
+                <SelectItem value="diasAtraso">Días Promedio Atraso</SelectItem>
+                <SelectItem value="facturas">Número de Facturas</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
         </CardHeader>
         <CardContent>
-          {loadingEvolucion ? (
-            <div className="h-[300px] flex items-center justify-center">
+          {loadingTop ? (
+            <div className="h-[600px] flex items-center justify-center">
               <p className="text-muted-foreground">Cargando datos...</p>
             </div>
-          ) : evolucionData.length > 0 ? (
-            <ResponsiveContainer width="100%" height={300}>
-              <LineChart data={evolucionData}>
+          ) : chartData.length > 0 ? (
+            <ResponsiveContainer width="100%" height={600}>
+              <BarChart data={chartData} layout="vertical" margin={{ left: 20, right: 30 }}>
                 <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="mes" />
-                <YAxis tickFormatter={(value) => `$${(value / 1000).toFixed(0)}k`} />
-                <Tooltip formatter={(value: number) => formatCurrency(value)} />
-                <Legend />
-                <Line type="monotone" dataKey="pagadas" stroke="#10b981" name="Pagadas" strokeWidth={2} />
-                <Line type="monotone" dataKey="pendientes" stroke="#ef4444" name="Pendientes" strokeWidth={2} />
-              </LineChart>
+                <XAxis 
+                  type="number" 
+                  tickFormatter={(value) => {
+                    if (selectedMetric === 'monto') return `$${(value / 1000).toFixed(0)}k`;
+                    if (selectedMetric === 'porcentaje') return `${value.toFixed(0)}%`;
+                    return value.toString();
+                  }}
+                />
+                <YAxis type="category" dataKey="cliente" width={180} />
+                <Tooltip content={<CustomTooltip />} />
+                <Bar dataKey="value" name={chartData[0]?.label || 'Valor'}>
+                  {chartData.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={getBarColor(index)} />
+                  ))}
+                </Bar>
+              </BarChart>
             </ResponsiveContainer>
           ) : (
-            <div className="h-[300px] flex items-center justify-center">
+            <div className="h-[600px] flex items-center justify-center">
               <p className="text-muted-foreground">No hay datos disponibles</p>
             </div>
           )}
         </CardContent>
       </Card>
-
-      {/* Gráfico de top deudores */}
-      <Card>
-          <CardHeader>
-            <CardTitle>Top 10 Clientes con Mayor Deuda</CardTitle>
-            <CardDescription>
-              Ranking de clientes por saldo pendiente
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            {loadingTop ? (
-              <div className="h-[400px] flex items-center justify-center">
-                <p className="text-muted-foreground">Cargando datos...</p>
-              </div>
-            ) : topDeudores && topDeudores.length > 0 ? (
-              <ResponsiveContainer width="100%" height={400}>
-                <BarChart data={topDeudores} layout="vertical">
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis type="number" tickFormatter={(value) => `$${(value / 1000).toFixed(0)}k`} />
-                  <YAxis type="category" dataKey="cliente" width={150} />
-                  <Tooltip formatter={(value: number) => formatCurrency(value)} />
-                  <Bar dataKey="totalDeuda" fill="#ef4444" name="Deuda Total" />
-                </BarChart>
-              </ResponsiveContainer>
-            ) : (
-              <div className="h-[400px] flex items-center justify-center">
-                <p className="text-muted-foreground">No hay datos disponibles</p>
-              </div>
-            )}
-          </CardContent>
-        </Card>
     </div>
   );
 }
