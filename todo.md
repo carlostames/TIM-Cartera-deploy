@@ -322,3 +322,7 @@
 - [x] Agregar filtro superior para seleccionar métrica a visualizar
 - [x] Implementar visualización dinámica según filtro seleccionado
 - [x] Probar todas las opciones de filtro
+
+## Ajustar Tamaño de Fuente en Gráfica de Análisis de Cobranza
+- [x] Reducir tamaño de fuente de nombres de clientes en eje Y
+- [x] Probar visualización mejorada

@@ -216,7 +216,12 @@ export default function AnalisisCobranza() {
                     return value.toString();
                   }}
                 />
-                <YAxis type="category" dataKey="cliente" width={180} />
+                <YAxis 
+                  type="category" 
+                  dataKey="cliente" 
+                  width={180}
+                  tick={{ fontSize: 11 }}
+                />
                 <Tooltip content={<CustomTooltip />} />
                 <Bar dataKey="value" name={chartData[0]?.label || 'Valor'}>
                   {chartData.map((entry, index) => (
