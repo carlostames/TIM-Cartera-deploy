@@ -5,16 +5,22 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import { Settings, Save } from "lucide-react";
+import { Settings, Save, DollarSign } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { OPCIONES_FORMATO, type FormatoMoneda } from "@/../../shared/formatoMoneda";
 
 export default function Configuracion() {
   const [tasaInteres, setTasaInteres] = useState("1.5");
   const [diasGracia, setDiasGracia] = useState("0");
+  const [formatoMoneda, setFormatoMoneda] = useState<FormatoMoneda>("completo");
   const [saving, setSaving] = useState(false);
+  const [savingFormato, setSavingFormato] = useState(false);
 
+  const { data: user } = trpc.auth.me.useQuery();
   const { data: configs, isLoading } = trpc.config.getAll.useQuery();
   const setConfigMutation = trpc.config.set.useMutation();
+  const updateFormatoMutation = trpc.auth.updateFormatoMoneda.useMutation();
   const utils = trpc.useUtils();
 
   useEffect(() => {
@@ -26,6 +32,25 @@ export default function Configuracion() {
       if (diasConfig) setDiasGracia(diasConfig.valor);
     }
   }, [configs]);
+
+  useEffect(() => {
+    if (user?.formatoMoneda) {
+      setFormatoMoneda(user.formatoMoneda);
+    }
+  }, [user]);
+
+  const handleSaveFormato = async () => {
+    setSavingFormato(true);
+    try {
+      await updateFormatoMutation.mutateAsync({ formato: formatoMoneda });
+      utils.auth.me.invalidate();
+      toast.success('Formato de moneda actualizado');
+    } catch (error: any) {
+      toast.error(error.message || 'Error al actualizar formato');
+    } finally {
+      setSavingFormato(false);
+    }
+  };
 
   const handleSave = async () => {
     setSaving(true);
@@ -144,6 +169,50 @@ export default function Configuracion() {
               </div>
             </>
           )}
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <DollarSign className="h-5 w-5" />
+            Formato de Cifras Monetarias
+          </CardTitle>
+          <CardDescription>
+            Elige cómo deseas visualizar las cantidades en el sistema
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-6">
+          <div className="space-y-2">
+            <Label htmlFor="formato-moneda">
+              Formato de Visualización
+            </Label>
+            <Select value={formatoMoneda} onValueChange={(value) => setFormatoMoneda(value as FormatoMoneda)}>
+              <SelectTrigger id="formato-moneda">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {OPCIONES_FORMATO.map((opcion) => (
+                  <SelectItem key={opcion.value} value={opcion.value}>
+                    <div className="flex flex-col">
+                      <span className="font-medium">{opcion.label}</span>
+                      <span className="text-xs text-muted-foreground">Ejemplo: {opcion.ejemplo}</span>
+                    </div>
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <p className="text-sm text-muted-foreground">
+              Este formato se aplicará en el Dashboard, Proyección, Análisis de Cobranza y modales
+            </p>
+          </div>
+
+          <div className="flex gap-3">
+            <Button onClick={handleSaveFormato} disabled={savingFormato} className="gap-2">
+              <Save className="h-4 w-4" />
+              {savingFormato ? 'Guardando...' : 'Guardar Formato'}
+            </Button>
+          </div>
         </CardContent>
       </Card>
 

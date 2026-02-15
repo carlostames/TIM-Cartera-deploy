@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useMemo, useState } from "react";
 import { trpc } from "@/lib/trpc";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
@@ -11,8 +11,10 @@ import { BarChart3, TrendingUp, AlertTriangle, Calendar, DollarSign, Building2, 
 import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
 import { format, addMonths, startOfMonth } from "date-fns";
 import { es } from "date-fns/locale";
+import { formatearMoneda } from "@/../../shared/formatoMoneda";
 
 export default function Proyeccion() {
+  const { data: user } = trpc.auth.me.useQuery();
   const [mesesProyeccion, setMesesProyeccion] = useState(6);
   const [empresaFiltro, setEmpresaFiltro] = useState<"todas" | "tim_transp" | "tim_value">("todas");
   const [modalContratosOpen, setModalContratosOpen] = useState(false);
@@ -85,10 +87,7 @@ export default function Proyeccion() {
   }, [proyeccionPorEmpresa]);
 
   const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat("es-MX", {
-      style: "currency",
-      currency: "MXN",
-    }).format(value);
+    return formatearMoneda(value, user?.formatoMoneda || "completo");
   };
 
   const calcularRentasPendientes = (rentaActual: number, totalRentas: number) => {

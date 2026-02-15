@@ -11,6 +11,7 @@ export const users = mysqlTable("users", {
   loginMethod: varchar("loginMethod", { length: 64 }),
   role: mysqlEnum("role", ["admin", "operador", "consulta"]).default("consulta").notNull(),
   permisos: json("permisos").$type<string[]>(),
+  formatoMoneda: mysqlEnum("formatoMoneda", ["completo", "miles", "millones"]).default("completo").notNull(),
   activo: boolean("activo").default(true).notNull(),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),

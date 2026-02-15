@@ -4,20 +4,19 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Responsive
 import { TrendingUp, Users, Clock, DollarSign } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useState } from "react";
-
-const formatCurrency = (value: number) => {
-  return new Intl.NumberFormat('es-MX', {
-    style: 'currency',
-    currency: 'MXN',
-  }).format(value);
-};
+import { formatearMoneda } from "@/../../shared/formatoMoneda";
 
 type MetricType = 'monto' | 'porcentaje' | 'diasAtraso' | 'facturas';
 
 export default function AnalisisCobranza() {
+  const { data: user } = trpc.auth.me.useQuery();
   const { data: dashboardData } = trpc.dashboard.stats.useQuery();
   const { data: topDeudores, isLoading: loadingTop } = trpc.analisis.topDeudores.useQuery({ limit: 15 });
   const [selectedMetric, setSelectedMetric] = useState<MetricType>('monto');
+
+  const formatCurrency = (value: number) => {
+    return formatearMoneda(value, user?.formatoMoneda || "completo");
+  };
 
   // Usar datos del dashboard para totales
   const totalPendiente = dashboardData?.totalCarteraPendiente || 0;

@@ -558,6 +558,27 @@ export async function updateUserStatus(userId: number, activo: boolean) {
 }
 
 /**
+ * Actualizar formato de moneda de un usuario
+ */
+export async function updateUserFormatoMoneda(userId: number, formato: "completo" | "miles" | "millones") {
+  const db = await getDb();
+  if (!db) {
+    throw new Error("Database not available");
+  }
+
+  try {
+    await db.update(users)
+      .set({ formatoMoneda: formato, updatedAt: new Date() })
+      .where(eq(users.id, userId));
+    
+    return true;
+  } catch (error) {
+    console.error("[Database] Failed to update user formato moneda:", error);
+    throw error;
+  }
+}
+
+/**
  * Obtener estadísticas de usuarios
  */
 export async function getUserStats() {

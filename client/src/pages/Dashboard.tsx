@@ -5,17 +5,16 @@ import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
+import { formatearMoneda } from "@/../../shared/formatoMoneda";
 
 export default function Dashboard() {
+  const { data: user } = trpc.auth.me.useQuery();
   const { data: stats, isLoading: statsLoading } = trpc.dashboard.stats.useQuery();
   const { data: facturasPendientes, isLoading: facturasLoading } = trpc.dashboard.facturasPendientes.useQuery();
   const { data: historial, isLoading: historialLoading } = trpc.dashboard.historialCargas.useQuery();
 
   const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat('es-MX', {
-      style: 'currency',
-      currency: 'MXN',
-    }).format(value);
+    return formatearMoneda(value, user?.formatoMoneda || "completo");
   };
 
   const formatDate = (date: Date) => {

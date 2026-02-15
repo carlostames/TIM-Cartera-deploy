@@ -346,3 +346,16 @@
 - [x] Mover checkboxes y lista de clientes a la nueva tab
 - [x] Reorganizar interfaz para mejor visualización
 - [x] Probar funcionalidad en la nueva tab
+
+## Sistema de Formateo de Cifras Monetarias
+- [x] Agregar campo formatoMoneda a tabla users en schema.ts
+- [x] Ejecutar migración de base de datos (pnpm db:push)
+- [x] Crear función utilitaria de formateo con 3 opciones (Completo sin decimales, Miles K, Millones M)
+- [x] Crear endpoint tRPC para actualizar preferencia de formato
+- [x] Agregar selector de formato en página Configuración
+- [x] Aplicar formato en cards del Dashboard
+- [x] Aplicar formato en modales de Dashboard (Próximos a Vencer, etc.)
+- [x] Aplicar formato en página de Proyección
+- [x] Aplicar formato en gráficas de Análisis de Cobranza
+- [x] Aplicar formato en tooltips de gráficas
+- [x] Probar sistema con las 3 opciones de formato

@@ -24,6 +24,14 @@ export const appRouter = router({
         success: true,
       } as const;
     }),
+    updateFormatoMoneda: protectedProcedure
+      .input(z.object({
+        formato: z.enum(["completo", "miles", "millones"]),
+      }))
+      .mutation(async ({ input, ctx }) => {
+        await db.updateUserFormatoMoneda(ctx.user.id, input.formato);
+        return { success: true };
+      }),
   }),
 
   // ============ Dashboard ============
