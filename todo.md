@@ -359,3 +359,11 @@
 - [x] Aplicar formato en gráficas de Análisis de Cobranza
 - [x] Aplicar formato en tooltips de gráficas
 - [x] Probar sistema con las 3 opciones de formato
+
+## Corrección de Cálculos en Estados de Cuenta
+- [x] Investigar por qué los días de atraso no se calculan correctamente
+- [x] Investigar por qué los intereses moratorios no se calculan correctamente
+- [x] Corregir lógica de cálculo de días de atraso en generación de estados de cuenta
+- [x] Corregir lógica de cálculo de intereses moratorios en generación de estados de cuenta
+- [x] Probar generación de estados de cuenta con datos reales
+- [x] Verificar que los cálculos sean correctos en el PDF generado

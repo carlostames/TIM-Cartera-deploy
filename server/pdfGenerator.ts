@@ -4,6 +4,7 @@ import { Readable } from 'stream';
 interface FacturaPendiente {
   folio: string;
   fecha: Date | null;
+  fechaVencimiento?: Date | null;
   importeTotal: string;
   saldoPendiente: string;
   diasAtraso: number | null;
@@ -135,7 +136,17 @@ export async function generarEstadoCuentaClientePDF(
         }
 
         const saldoPendiente = Number(factura.saldoPendiente || 0);
-        const diasAtraso = Number(factura.diasAtraso || 0);
+        
+        // Calcular días de atraso en tiempo real desde la fecha de vencimiento
+        let diasAtraso = 0;
+        if (factura.fechaVencimiento) {
+          const fechaVenc = new Date(factura.fechaVencimiento);
+          const hoy = new Date();
+          const diffTime = hoy.getTime() - fechaVenc.getTime();
+          diasAtraso = Math.max(0, Math.floor(diffTime / (1000 * 60 * 60 * 24)));
+        }
+        
+        // Calcular intereses moratorios con la tasa proporcionada
         const intereses = saldoPendiente * (tasaInteresMoratorio / 100) * (diasAtraso / 30);
         
         subtotal += saldoPendiente;
@@ -285,7 +296,17 @@ export async function generarEstadoCuentaGrupoPDF(
         }
 
         const saldoPendiente = Number(factura.saldoPendiente || 0);
-        const diasAtraso = Number(factura.diasAtraso || 0);
+        
+        // Calcular días de atraso en tiempo real desde la fecha de vencimiento
+        let diasAtraso = 0;
+        if (factura.fechaVencimiento) {
+          const fechaVenc = new Date(factura.fechaVencimiento);
+          const hoy = new Date();
+          const diffTime = hoy.getTime() - fechaVenc.getTime();
+          diasAtraso = Math.max(0, Math.floor(diffTime / (1000 * 60 * 60 * 24)));
+        }
+        
+        // Calcular intereses moratorios con la tasa proporcionada
         const intereses = saldoPendiente * (tasaInteresMoratorio / 100) * (diasAtraso / 30);
         
         subtotal += saldoPendiente;
