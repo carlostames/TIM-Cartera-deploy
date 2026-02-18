@@ -1,0 +1,22 @@
+{
+  "query": "SELECT id, folio, fecha, fechaVencimiento, importeTotal, saldoPendiente, nombreCliente, sistema, estadoPago, createdAt FROM facturas WHERE folio = 'AA1513' ORDER BY id;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway03.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 344B2FJrSHdkSxo.0ab51ce41b50 --database bUSGvjzrZfvVXNhQ347wq4 --execute SELECT id, folio, fecha, fechaVencimiento, importeTotal, saldoPendiente, nombreCliente, sistema, estadoPago, createdAt FROM facturas WHERE folio = 'AA1513' ORDER BY id;",
+  "rows": [
+    {
+      "id": "6854",
+      "folio": "AA1513",
+      "fecha": "2026-02-02 00:00:00",
+      "fechaVencimiento": "2026-03-04 00:00:00",
+      "importeTotal": "9280.00",
+      "saldoPendiente": "9280.00",
+      "nombreCliente": "BOTANAS CAMPESINAS",
+      "sistema": "tim_value",
+      "estadoPago": "pendiente",
+      "createdAt": "2026-02-09 16:26:36"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tfolio\tfecha\tfechaVencimiento\timporteTotal\tsaldoPendiente\tnombreCliente\tsistema\testadoPago\tcreatedAt\n6854\tAA1513\t2026-02-02 00:00:00\t2026-03-04 00:00:00\t9280.00\t9280.00\tBOTANAS CAMPESINAS\ttim_value\tpendiente\t2026-02-09 16:26:36\n",
+  "stderr": "",
+  "execution_time_ms": 76
+}

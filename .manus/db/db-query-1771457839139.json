@@ -1,0 +1,22 @@
+{
+  "query": "SELECT f.folio, p.id as partida_id, p.numeroContrato, p.descripcion FROM facturas f LEFT JOIN partidasFactura p ON f.id = p.facturaId WHERE f.folio = 'AA1513';",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway03.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 344B2FJrSHdkSxo.0ab51ce41b50 --database bUSGvjzrZfvVXNhQ347wq4 --execute SELECT f.folio, p.id as partida_id, p.numeroContrato, p.descripcion FROM facturas f LEFT JOIN partidasFactura p ON f.id = p.facturaId WHERE f.folio = 'AA1513';",
+  "rows": [
+    {
+      "folio": "AA1513",
+      "partida_id": "791",
+      "numeroContrato": "0047",
+      "descripcion": "ARRENDAMIENTO VEHICULOS SEDAN, CUPE O CAMIONETA EXP: 0047 BMW-MINI MINI COOPER CONVERTIBLE ICONIC AUT 2024 NS:40892: RENTA 8 DE 24 DEL 02 de febrero de 2026 AL 01 de marzo de 2026"
+    },
+    {
+      "folio": "AA1513",
+      "partida_id": "30531",
+      "numeroContrato": "0047",
+      "descripcion": "ARRENDAMIENTO VEHICULOS SEDAN, CUPE O CAMIONETA EXP: 0047 BMW-MINI MINI COOPER CONVERTIBLE ICONIC AUT 2024 NS:40892: RENTA 8 DE 24 DEL 02 de febrero de 2026 AL 01 de marzo de 2026"
+    }
+  ],
+  "messages": [],
+  "stdout": "folio\tpartida_id\tnumeroContrato\tdescripcion\nAA1513\t791\t0047\tARRENDAMIENTO VEHICULOS SEDAN, CUPE O CAMIONETA EXP: 0047 BMW-MINI MINI COOPER CONVERTIBLE ICONIC AUT 2024 NS:40892: RENTA 8 DE 24 DEL 02 de febrero de 2026 AL 01 de marzo de 2026\nAA1513\t30531\t0047\tARRENDAMIENTO VEHICULOS SEDAN, CUPE O CAMIONETA EXP: 0047 BMW-MINI MINI COOPER CONVERTIBLE ICONIC AUT 2024 NS:40892: RENTA 8 DE 24 DEL 02 de febrero de 2026 AL 01 de marzo de 2026\n",
+  "stderr": "",
+  "execution_time_ms": 60
+}

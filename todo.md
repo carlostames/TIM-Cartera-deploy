@@ -385,3 +385,13 @@
 - [x] Corregir importación de columna "Vence" a fechaVencimiento para facturas TT
 - [x] Actualizar fechas de vencimiento de facturas TT existentes en base de datos
 - [x] Probar generación de estados de cuenta con facturas TT actualizadas
+
+## Corrección de Folios Duplicados en Vista Previa de Estados de Cuenta
+- [x] Consultar base de datos para identificar folios duplicados (no hay duplicados en BD)
+- [x] Confirmar que folio AA1513 aparece duplicado en vista previa
+- [x] Identificar que el problema está en la consulta de facturas para estado de cuenta
+- [x] Revisar función getEstadoCuentaCliente en db.ts
+- [x] Revisar endpoint de estados de cuenta en routers.ts
+- [x] Identificar por qué la consulta retorna facturas duplicadas (LEFT JOIN con partidasFactura)
+- [x] Corregir consulta para evitar duplicados (usar subconsulta en lugar de LEFT JOIN)
+- [x] Probar vista previa de estado de cuenta con BOTANAS CAMPESINAS

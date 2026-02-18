@@ -1088,6 +1088,7 @@ export async function getFacturasPendientesPorCliente(clienteId: number) {
 
   // Buscar facturas por nombreCliente (no por clienteId)
   // Incluir número de contrato de la primera partida (si existe)
+  // Usar subconsulta para obtener solo la primera partida y evitar duplicados
   const result = await db
     .select({
       folio: facturas.folio,
@@ -1099,10 +1100,14 @@ export async function getFacturasPendientesPorCliente(clienteId: number) {
       interesesMoratorios: facturas.interesesMoratorios,
       estadoPago: facturas.estadoPago,
       sistema: facturas.sistema,
-      numeroContrato: partidasFactura.numeroContrato,
+      numeroContrato: sql<string>`(
+        SELECT numeroContrato 
+        FROM partidasFactura 
+        WHERE partidasFactura.facturaId = ${facturas.id} 
+        LIMIT 1
+      )`,
     })
     .from(facturas)
-    .leftJoin(partidasFactura, eq(facturas.id, partidasFactura.facturaId))
     .where(and(
       eq(facturas.nombreCliente, cliente[0].nombre),
       eq(facturas.estadoPago, 'pendiente')
@@ -1118,6 +1123,7 @@ export async function getFacturasPendientesPorGrupo(grupoId: number) {
 
   // Buscar facturas por nombreCliente (no por clienteId)
   // Incluir número de contrato de la primera partida (si existe)
+  // Usar subconsulta para obtener solo la primera partida y evitar duplicados
   const result = await db
     .select({
       folio: facturas.folio,
@@ -1130,11 +1136,15 @@ export async function getFacturasPendientesPorGrupo(grupoId: number) {
       estadoPago: facturas.estadoPago,
       sistema: facturas.sistema,
       clienteNombre: clientes.nombre,
-      numeroContrato: partidasFactura.numeroContrato,
+      numeroContrato: sql<string>`(
+        SELECT numeroContrato 
+        FROM partidasFactura 
+        WHERE partidasFactura.facturaId = ${facturas.id} 
+        LIMIT 1
+      )`,
     })
     .from(facturas)
     .innerJoin(clientes, eq(facturas.nombreCliente, clientes.nombre))
-    .leftJoin(partidasFactura, eq(facturas.id, partidasFactura.facturaId))
     .where(and(
       eq(clientes.grupoId, grupoId),
       eq(facturas.estadoPago, 'pendiente')
