@@ -410,3 +410,15 @@
 - [x] Migrar contratos existentes de partidasFactura a facturas
 - [x] Actualizar consultas de estados de cuenta para usar numeroContrato de facturas
 - [x] Probar estados de cuenta con contratos visibles (0047 visible correctamente)
+
+## Módulo de Análisis de Contratos
+- [x] Crear función en db.ts para buscar facturas por número de contrato
+- [x] Crear función en db.ts para obtener contratos por cliente con saldos
+- [x] Crear endpoints tRPC para análisis de contratos
+- [x] Crear página AnalisisContratos.tsx con tabs de búsqueda
+- [x] Implementar búsqueda por número de contrato
+- [x] Implementar búsqueda por cliente con lista de contratos
+- [x] Agrupar facturas sin contrato como "Otros"
+- [x] Agregar ruta en App.tsx
+- [x] Agregar enlace en DashboardLayout
+- [x] Probar búsquedas y verificar cálculos de saldos

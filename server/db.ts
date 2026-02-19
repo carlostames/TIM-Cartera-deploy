@@ -1354,3 +1354,63 @@ export async function getDistribucionPorAntiguedad() {
     return [];
   }
 }
+
+// ============ Análisis de Contratos ============
+export async function getFacturasPorContrato(numeroContrato: string) {
+  const db = await getDb();
+  if (!db) return [];
+
+  const result = await db
+    .select({
+      folio: facturas.folio,
+      fecha: facturas.fecha,
+      fechaVencimiento: facturas.fechaVencimiento,
+      nombreCliente: facturas.nombreCliente,
+      importeTotal: facturas.importeTotal,
+      saldoPendiente: facturas.saldoPendiente,
+      diasAtraso: sql<number>`GREATEST(0, DATEDIFF(CURDATE(), ${facturas.fechaVencimiento}))`,
+      sistema: facturas.sistema,
+      estadoPago: facturas.estadoPago,
+    })
+    .from(facturas)
+    .where(and(
+      eq(facturas.numeroContrato, numeroContrato),
+      eq(facturas.estadoPago, 'pendiente')
+    ))
+    .orderBy(facturas.fecha);
+
+  return result;
+}
+
+export async function getContratosPorCliente(clienteId: number) {
+  const db = await getDb();
+  if (!db) return [];
+
+  // Obtener nombre del cliente
+  const cliente = await db
+    .select()
+    .from(clientes)
+    .where(eq(clientes.id, clienteId))
+    .limit(1);
+
+  if (cliente.length === 0) return [];
+
+  // Agrupar facturas pendientes por numeroContrato
+  const result = await db
+    .select({
+      numeroContrato: facturas.numeroContrato,
+      totalFacturas: sql<number>`COUNT(*)`,
+      totalAdeudado: sql<string>`SUM(${facturas.saldoPendiente})`,
+      ultimaFactura: sql<string>`MAX(${facturas.folio})`,
+      ultimaFecha: sql<Date>`MAX(${facturas.fecha})`,
+    })
+    .from(facturas)
+    .where(and(
+      eq(facturas.nombreCliente, cliente[0].nombre),
+      eq(facturas.estadoPago, 'pendiente')
+    ))
+    .groupBy(facturas.numeroContrato)
+    .orderBy(sql`SUM(${facturas.saldoPendiente}) DESC`);
+
+  return result;
+}

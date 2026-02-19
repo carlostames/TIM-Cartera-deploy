@@ -929,6 +929,20 @@ export const appRouter = router({
     distribucionAntiguedad: protectedProcedure.query(async () => {
       return await db.getDistribucionPorAntiguedad();
     }),
+
+    // Obtener facturas por número de contrato
+    facturasPorContrato: protectedProcedure
+      .input(z.object({ numeroContrato: z.string() }))
+      .query(async ({ input }) => {
+        return await db.getFacturasPorContrato(input.numeroContrato);
+      }),
+
+    // Obtener contratos agrupados por cliente
+    contratosPorCliente: protectedProcedure
+      .input(z.object({ clienteId: z.number() }))
+      .query(async ({ input }) => {
+        return await db.getContratosPorCliente(input.clienteId);
+      }),
   }),
 });
 

@@ -28,7 +28,7 @@ import { useLocation } from "wouter";
 import { DashboardLayoutSkeleton } from './DashboardLayoutSkeleton';
 import { Button } from "./ui/button";
 
-import { Upload, FileText, TrendingUp, Settings, DollarSign, BarChart3, Table, Receipt } from "lucide-react";
+import { Upload, FileText, TrendingUp, Settings, DollarSign, BarChart3, Table, Receipt, FileSearch } from "lucide-react";
 
 const getMenuItems = (userRole?: string, permisos?: string[]) => {
   const allItems = [
@@ -39,6 +39,7 @@ const getMenuItems = (userRole?: string, permisos?: string[]) => {
     { icon: Table, label: "Tabla Proyección", path: "/tabla-proyeccion", permiso: "tabla-proyeccion" },
     { icon: Receipt, label: "Estados de Cuenta", path: "/estados-cuenta", permiso: "estados-cuenta" },
     { icon: TrendingUp, label: "Análisis de Cobranza", path: "/analisis-cobranza", permiso: "analisis-cobranza" },
+    { icon: FileSearch, label: "Análisis de Contratos", path: "/analisis-contratos", permiso: "analisis-contratos" },
     { icon: TrendingUp, label: "Reportes", path: "/reportes", permiso: "reportes" },
     { icon: Users, label: "Clientes", path: "/gestion-clientes", permiso: "clientes" },
     { icon: Settings, label: "Configuración", path: "/configuracion", permiso: "configuracion" },
