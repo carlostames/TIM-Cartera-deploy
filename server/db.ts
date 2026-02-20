@@ -1414,8 +1414,24 @@ export async function getContratosPorCliente(clienteId: number) {
     // Calcular pagos faltantes
     const pagosFaltantes = contrato.totalRentas - contrato.rentaActual;
     
-    // Calcular deuda proyectada (pagos faltantes * monto mensual)
-    const deudaProyectada = pagosFaltantes * Number(contrato.montoMensual);
+    // Obtener saldo pendiente actual de facturas del contrato
+    const facturasPendientes = await db
+      .select()
+      .from(facturas)
+      .where(
+        and(
+          eq(facturas.numeroContrato, contrato.numeroContrato),
+          eq(facturas.estadoPago, 'pendiente')
+        )
+      );
+    
+    const saldoPendienteActual = facturasPendientes.reduce(
+      (sum, f) => sum + Number(f.saldoPendiente), 
+      0
+    );
+    
+    // Calcular deuda proyectada total (adeudo actual + pagos futuros)
+    const deudaProyectada = saldoPendienteActual + (pagosFaltantes * Number(contrato.montoMensual));
     
     resultado.push({
       numeroContrato: contrato.numeroContrato,

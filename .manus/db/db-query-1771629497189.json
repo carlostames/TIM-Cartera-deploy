@@ -1,0 +1,29 @@
+{
+  "query": "SELECT * FROM contratos WHERE numeroContrato = '263';",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway03.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 344B2FJrSHdkSxo.0ab51ce41b50 --database bUSGvjzrZfvVXNhQ347wq4 --execute SELECT * FROM contratos WHERE numeroContrato = '263';",
+  "rows": [
+    {
+      "id": "78",
+      "numeroContrato": "263",
+      "clienteId": "30290",
+      "nombreCliente": "SACAR DEL CENTRO MEXICO",
+      "empresa": "tim_transp",
+      "tipoServicio": "ARRENDAMIENTO",
+      "descripcionActivo": "EXP:263 - MICROSOFT - SURFACE PRO 9 - 2023",
+      "numeroSerie": "F0086C314E2F",
+      "totalRentas": "36",
+      "rentaActual": "34",
+      "montoMensual": "3331.65",
+      "fechaInicio": "2025-01-01",
+      "fechaProximaRenta": "2026-04-01",
+      "fechaTermino": "2026-05-01",
+      "activo": "1",
+      "createdAt": "2026-02-09 15:54:13",
+      "updatedAt": "2026-02-10 23:03:27"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tnumeroContrato\tclienteId\tnombreCliente\tempresa\ttipoServicio\tdescripcionActivo\tnumeroSerie\ttotalRentas\trentaActual\tmontoMensual\tfechaInicio\tfechaProximaRenta\tfechaTermino\tactivo\tcreatedAt\tupdatedAt\n78\t263\t30290\tSACAR DEL CENTRO MEXICO\ttim_transp\tARRENDAMIENTO\tEXP:263 - MICROSOFT - SURFACE PRO 9 - 2023\tF0086C314E2F\t36\t34\t3331.65\t2025-01-01\t2026-04-01\t2026-05-01\t1\t2026-02-09 15:54:13\t2026-02-10 23:03:27\n",
+  "stderr": "",
+  "execution_time_ms": 82
+}

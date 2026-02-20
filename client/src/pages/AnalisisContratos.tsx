@@ -329,31 +329,25 @@ export default function AnalisisContratos() {
                         </TableRow>
                       </TableHeader>
                       <TableBody>
-                        {contratosCliente.map((contrato: any, idx: number) => {
-                          const proyeccion = calcularProyeccion(contrato.ultimaDescripcion, contrato.ultimoImporte);
-                          return (
-                            <TableRow key={idx}>
-                              <TableCell className="font-medium">
-                                {contrato.numeroContrato || (
-                                  <span className="text-muted-foreground italic">Otros</span>
-                                )}
-                              </TableCell>
-                              <TableCell className="text-right">
-                                {proyeccion ? (
-                                  <span className="font-medium">{proyeccion.pagosFaltantes}</span>
-                                ) : (
-                                  <span className="text-muted-foreground">-</span>
-                                )}
-                              </TableCell>
-                              <TableCell className="text-right font-medium text-destructive">
-                                {formatearMoneda(
-                                  proyeccion ? proyeccion.deudaProyectada : parseFloat(contrato.totalAdeudado || '0'),
-                                  formatoUsuario
-                                )}
-                              </TableCell>
-                            </TableRow>
-                          );
-                        })}
+                        {contratosCliente.map((contrato: any, idx: number) => (
+                          <TableRow key={idx}>
+                            <TableCell className="font-medium">
+                              {contrato.numeroContrato || (
+                                <span className="text-muted-foreground italic">Otros</span>
+                              )}
+                            </TableCell>
+                            <TableCell className="text-right">
+                              {contrato.pagosFaltantes !== null && contrato.pagosFaltantes !== undefined ? (
+                                <span className="font-medium">{contrato.pagosFaltantes}</span>
+                              ) : (
+                                <span className="text-muted-foreground">-</span>
+                              )}
+                            </TableCell>
+                            <TableCell className="text-right font-medium text-destructive">
+                              {formatearMoneda(contrato.deudaProyectada || 0, formatoUsuario)}
+                            </TableCell>
+                          </TableRow>
+                        ))}
                       </TableBody>
                     </Table>
                   </CardContent>

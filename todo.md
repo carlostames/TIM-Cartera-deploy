@@ -453,3 +453,10 @@
 - [x] Calcular pagos faltantes y deuda proyectada desde información del contrato
 - [x] Probar con cliente SACAR (debe mostrar contrato 263)
 - [x] Verificar que otros clientes con contratos también funcionen correctamente
+
+## Corrección: Proyección de deuda no se muestra correctamente
+- [x] Verificar datos del contrato 263 (totalRentas, rentaActual, montoMensual)
+- [x] Revisar cálculo de deuda proyectada en getContratosPorCliente (incluir saldo pendiente actual)
+- [x] Corregir lógica de cálculo en backend (adeudo actual + pagos futuros)
+- [x] Corregir frontend para usar datos directos del backend en lugar de calcularProyeccion()
+- [x] Probar con contrato 263 y BOTANAS CAMPESINAS - funcionando correctamente
