@@ -422,3 +422,12 @@
 - [x] Agregar ruta en App.tsx
 - [x] Agregar enlace en DashboardLayout
 - [x] Probar búsquedas y verificar cálculos de saldos
+
+## Corrección de Análisis de Contratos - Proyección de Pagos
+- [x] Actualizar función getFacturasPorContrato para extraer "X de Y" de descripción
+- [x] Calcular pagos faltantes (Y - X) y deuda proyectada
+- [x] Crear tabla de proyección mensual similar a Tabla Proyección
+- [x] Actualizar función getContratosPorCliente con misma lógica
+- [x] Facturas sin contrato: mostrar solo como pendiente (sin proyección)
+- [x] Solo aplicar proyección a facturas con formato "X de Y"
+- [x] Probar con contrato 0047 y cliente BOTANAS CAMPESINAS

@@ -1371,13 +1371,14 @@ export async function getFacturasPorContrato(numeroContrato: string) {
       diasAtraso: sql<number>`GREATEST(0, DATEDIFF(CURDATE(), ${facturas.fechaVencimiento}))`,
       sistema: facturas.sistema,
       estadoPago: facturas.estadoPago,
+      descripcion: facturas.descripcion,
     })
     .from(facturas)
     .where(and(
       eq(facturas.numeroContrato, numeroContrato),
       eq(facturas.estadoPago, 'pendiente')
     ))
-    .orderBy(facturas.fecha);
+    .orderBy(desc(facturas.fecha));
 
   return result;
 }
@@ -1395,22 +1396,24 @@ export async function getContratosPorCliente(clienteId: number) {
 
   if (cliente.length === 0) return [];
 
-  // Agrupar facturas pendientes por numeroContrato
-  const result = await db
-    .select({
-      numeroContrato: facturas.numeroContrato,
-      totalFacturas: sql<number>`COUNT(*)`,
-      totalAdeudado: sql<string>`SUM(${facturas.saldoPendiente})`,
-      ultimaFactura: sql<string>`MAX(${facturas.folio})`,
-      ultimaFecha: sql<Date>`MAX(${facturas.fecha})`,
-    })
-    .from(facturas)
-    .where(and(
-      eq(facturas.nombreCliente, cliente[0].nombre),
-      eq(facturas.estadoPago, 'pendiente')
-    ))
-    .groupBy(facturas.numeroContrato)
-    .orderBy(sql`SUM(${facturas.saldoPendiente}) DESC`);
+  // Obtener contratos con información de última factura
+  const contratos: any = await db.execute(sql`
+    SELECT 
+      f1.numeroContrato,
+      COUNT(*) as totalFacturas,
+      SUM(f1.saldoPendiente) as totalAdeudado,
+      f2.folio as ultimaFactura,
+      f2.fecha as ultimaFecha,
+      f2.descripcion as ultimaDescripcion,
+      f2.importeTotal as ultimoImporte
+    FROM facturas f1
+    LEFT JOIN facturas f2 ON f1.numeroContrato = f2.numeroContrato
+      AND f2.fecha = (SELECT MAX(fecha) FROM facturas WHERE numeroContrato = f1.numeroContrato)
+    WHERE f1.nombreCliente = ${cliente[0].nombre}
+      AND f1.estadoPago = 'pendiente'
+    GROUP BY f1.numeroContrato, f2.folio, f2.fecha, f2.descripcion, f2.importeTotal
+    ORDER BY SUM(f1.saldoPendiente) DESC
+  `);
 
-  return result;
+  return Array.isArray(contratos) ? contratos : (contratos.rows || []);
 }
