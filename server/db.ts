@@ -1402,16 +1402,42 @@ export async function getContratosPorCliente(clienteId: number) {
       f1.numeroContrato,
       COUNT(*) as totalFacturas,
       SUM(f1.saldoPendiente) as totalAdeudado,
-      f2.folio as ultimaFactura,
-      f2.fecha as ultimaFecha,
-      f2.descripcion as ultimaDescripcion,
-      f2.importeTotal as ultimoImporte
+      (
+        SELECT folio 
+        FROM facturas 
+        WHERE numeroContrato = f1.numeroContrato 
+          AND estadoPago = 'pendiente'
+        ORDER BY fecha DESC 
+        LIMIT 1
+      ) as ultimaFactura,
+      (
+        SELECT fecha 
+        FROM facturas 
+        WHERE numeroContrato = f1.numeroContrato 
+          AND estadoPago = 'pendiente'
+        ORDER BY fecha DESC 
+        LIMIT 1
+      ) as ultimaFecha,
+      (
+        SELECT descripcion 
+        FROM facturas 
+        WHERE numeroContrato = f1.numeroContrato 
+          AND estadoPago = 'pendiente'
+        ORDER BY fecha DESC 
+        LIMIT 1
+      ) as ultimaDescripcion,
+      (
+        SELECT importeTotal 
+        FROM facturas 
+        WHERE numeroContrato = f1.numeroContrato 
+          AND estadoPago = 'pendiente'
+        ORDER BY fecha DESC 
+        LIMIT 1
+      ) as ultimoImporte
     FROM facturas f1
-    LEFT JOIN facturas f2 ON f1.numeroContrato = f2.numeroContrato
-      AND f2.fecha = (SELECT MAX(fecha) FROM facturas WHERE numeroContrato = f1.numeroContrato)
     WHERE f1.nombreCliente = ${cliente[0].nombre}
       AND f1.estadoPago = 'pendiente'
-    GROUP BY f1.numeroContrato, f2.folio, f2.fecha, f2.descripcion, f2.importeTotal
+    GROUP BY f1.numeroContrato
     ORDER BY SUM(f1.saldoPendiente) DESC
   `);
 

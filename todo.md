@@ -431,3 +431,8 @@
 - [x] Facturas sin contrato: mostrar solo como pendiente (sin proyección)
 - [x] Solo aplicar proyección a facturas con formato "X de Y"
 - [x] Probar con contrato 0047 y cliente BOTANAS CAMPESINAS
+
+## Corrección de Error SQL en Análisis de Contratos por Cliente
+- [x] Corregir consulta getContratosPorCliente para evitar error de GROUP BY
+- [x] Probar búsqueda por cliente AFIMSA
+- [x] Verificar que no haya errores SQL
