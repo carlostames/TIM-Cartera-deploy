@@ -1,0 +1,19 @@
+{
+  "query": "SELECT \n  numeroContrato,\n  nombreCliente,\n  totalRentas,\n  rentaActual,\n  montoMensual,\n  (totalRentas - rentaActual) as pagosFaltantesCalculado,\n  activo\nFROM contratos \nWHERE numeroContrato = '263';",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway03.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 344B2FJrSHdkSxo.0ab51ce41b50 --database bUSGvjzrZfvVXNhQ347wq4 --execute SELECT \n  numeroContrato,\n  nombreCliente,\n  totalRentas,\n  rentaActual,\n  montoMensual,\n  (totalRentas - rentaActual) as pagosFaltantesCalculado,\n  activo\nFROM contratos \nWHERE numeroContrato = '263';",
+  "rows": [
+    {
+      "numeroContrato": "263",
+      "nombreCliente": "SACAR DEL CENTRO MEXICO",
+      "totalRentas": "36",
+      "rentaActual": "34",
+      "montoMensual": "3331.65",
+      "pagosFaltantesCalculado": "2",
+      "activo": "1"
+    }
+  ],
+  "messages": [],
+  "stdout": "numeroContrato\tnombreCliente\ttotalRentas\trentaActual\tmontoMensual\tpagosFaltantesCalculado\tactivo\n263\tSACAR DEL CENTRO MEXICO\t36\t34\t3331.65\t2\t1\n",
+  "stderr": "",
+  "execution_time_ms": 85
+}

@@ -1,0 +1,190 @@
+{
+  "query": "SELECT \n  folio,\n  fecha,\n  numeroContrato,\n  descripcion,\n  importeTotal,\n  saldoPendiente,\n  estadoPago\nFROM facturas \nWHERE nombreCliente LIKE '%SACAR%'\nORDER BY fecha DESC\nLIMIT 20;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway03.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 344B2FJrSHdkSxo.0ab51ce41b50 --database bUSGvjzrZfvVXNhQ347wq4 --execute SELECT \n  folio,\n  fecha,\n  numeroContrato,\n  descripcion,\n  importeTotal,\n  saldoPendiente,\n  estadoPago\nFROM facturas \nWHERE nombreCliente LIKE '%SACAR%'\nORDER BY fecha DESC\nLIMIT 20;",
+  "rows": [
+    {
+      "folio": "AB11927",
+      "fecha": "2026-02-02 00:00:00",
+      "numeroContrato": "299",
+      "descripcion": "ARRENDAMIENTO - EXP:299 - TOYOTA - HILUX DOBLE CABINA - 2023 - NS:340597: RENTA 31 DE 48 DEL 02 de febrero de 2026 AL 01 de marzo de 2026",
+      "importeTotal": "12969.61",
+      "saldoPendiente": "0.00",
+      "estadoPago": "pagado"
+    },
+    {
+      "folio": "AB11962",
+      "fecha": "2026-02-02 00:00:00",
+      "numeroContrato": "407",
+      "descripcion": "ARRENDAMIENTO - EXP:407 - TOYOTA - HILUX DOBLE CABINA DIESEL4X4 - 2024 - NS:201302: RENTA 20 DE 48 DEL 02 de febrero de 2026 AL 01 de marzo de 2026",
+      "importeTotal": "11745.92",
+      "saldoPendiente": "0.00",
+      "estadoPago": "pagado"
+    },
+    {
+      "folio": "AB11926",
+      "fecha": "2026-02-02 00:00:00",
+      "numeroContrato": "259",
+      "descripcion": "ARRENDAMIENTO - EXP:259 - EQUIPO DE COMPUTO DELL - LATITUDE 3420 - 2023 - NS:001: RENTA 35 DE 36 DEL 02 de febrero de 2026 AL 01 de marzo de 2026",
+      "importeTotal": "4345.75",
+      "saldoPendiente": "0.00",
+      "estadoPago": "pagado"
+    },
+    {
+      "folio": "AB11919",
+      "fecha": "2026-02-02 00:00:00",
+      "numeroContrato": "293",
+      "descripcion": "ARRENDAMIENTO - EXP:293 - AIRE ACONDICIONADO YORK - MINISPLIT - 2023 - NS:0002: RENTA 32 DE 36 DEL 02 de febrero de 2026 AL 01 de marzo de 2026",
+      "importeTotal": "3029.70",
+      "saldoPendiente": "0.00",
+      "estadoPago": "pagado"
+    },
+    {
+      "folio": "AB11914",
+      "fecha": "2026-02-02 00:00:00",
+      "numeroContrato": "287",
+      "descripcion": "ARRENDAMIENTO - EXP:287 - MOBILIARIO - OFICINA - 2023 - NS:000002: RENTA 32 DE 36 DEL 02 de febrero de 2026 AL 01 de marzo de 2026",
+      "importeTotal": "8282.30",
+      "saldoPendiente": "0.00",
+      "estadoPago": "pagado"
+    },
+    {
+      "folio": "AB11915",
+      "fecha": "2026-02-02 00:00:00",
+      "numeroContrato": "NULL",
+      "descripcion": "200314SCT - CLUB TIM: , 29 DE 36",
+      "importeTotal": "3045.94",
+      "saldoPendiente": "0.00",
+      "estadoPago": "pagado"
+    },
+    {
+      "folio": "AB11925",
+      "fecha": "2026-02-02 00:00:00",
+      "numeroContrato": "362",
+      "descripcion": "ARRENDAMIENTO - EXP:362 - TOYOTA - HILUX TS - 2024 - NS:006024: RENTA 25 DE 48 DEL 02 de febrero de 2026 AL 01 de marzo de 2026",
+      "importeTotal": "13429.78",
+      "saldoPendiente": "0.00",
+      "estadoPago": "pagado"
+    },
+    {
+      "folio": "AB11922",
+      "fecha": "2026-02-02 00:00:00",
+      "numeroContrato": "270",
+      "descripcion": "ARRENDAMIENTO - EXP:270 - RAM - 700 LARAMIE CREW - 2023 - NS:Y71704: RENTA 33 DE 48 DEL 02 de febrero de 2026 AL 01 de marzo de 2026",
+      "importeTotal": "10060.99",
+      "saldoPendiente": "0.00",
+      "estadoPago": "pagado"
+    },
+    {
+      "folio": "AB11918",
+      "fecha": "2026-02-02 00:00:00",
+      "numeroContrato": "263",
+      "descripcion": "ARRENDAMIENTO - EXP:263 - MICROSOFT - SURFACE PRO 9 - 2023 - NS:F0086C314E2F: RENTA 34 DE 36 DEL 02 de febrero de 2026 AL 01 de marzo de 2026",
+      "importeTotal": "3331.65",
+      "saldoPendiente": "3331.65",
+      "estadoPago": "pendiente"
+    },
+    {
+      "folio": "AB11916",
+      "fecha": "2026-02-02 00:00:00",
+      "numeroContrato": "314",
+      "descripcion": "ARRENDAMIENTO - EXP:314 - TOYOTA - YARIS HATCHBACK S CVT - 2023 - NS:257923: RENTA 29 DE 36 DEL 02 de febrero de 2026 AL 01 de marzo de 2026",
+      "importeTotal": "6960.00",
+      "saldoPendiente": "0.00",
+      "estadoPago": "pagado"
+    },
+    {
+      "folio": "AB11913",
+      "fecha": "2026-02-02 00:00:00",
+      "numeroContrato": "288",
+      "descripcion": "ARRENDAMIENTO - EXP:288 - MOBILIARIO - OFICINA - 2023 - NS:000001: RENTA 32 DE 36 DEL 02 de febrero de 2026 AL 01 de marzo de 2026",
+      "importeTotal": "5212.70",
+      "saldoPendiente": "0.00",
+      "estadoPago": "pagado"
+    },
+    {
+      "folio": "AB11912",
+      "fecha": "2026-02-02 00:00:00",
+      "numeroContrato": "292",
+      "descripcion": "ARRENDAMIENTO - EXP:292 - EQUIPO DE COMPUTO DELL - LATITUD 3420 - 2023 - NS:0002: RENTA 32 DE 36 DEL 02 de febrero de 2026 AL 01 de marzo de 2026",
+      "importeTotal": "3518.84",
+      "saldoPendiente": "0.00",
+      "estadoPago": "pagado"
+    },
+    {
+      "folio": "AB11910",
+      "fecha": "2026-02-02 00:00:00",
+      "numeroContrato": "NULL",
+      "descripcion": "200385SCT - CLUB TIM: , 22 DE 48",
+      "importeTotal": "3894.69",
+      "saldoPendiente": "0.00",
+      "estadoPago": "pagado"
+    },
+    {
+      "folio": "AB11911",
+      "fecha": "2026-02-02 00:00:00",
+      "numeroContrato": "385",
+      "descripcion": "ARRENDAMIENTO - EXP:385 - KIA - FORTE - 2024 - NS:756031: RENTA 22 DE 48 DEL 02 de febrero de 2026 AL 01 de marzo de 2026",
+      "importeTotal": "6960.00",
+      "saldoPendiente": "0.00",
+      "estadoPago": "pagado"
+    },
+    {
+      "folio": "AB11924",
+      "fecha": "2026-02-02 00:00:00",
+      "numeroContrato": "271",
+      "descripcion": "ARRENDAMIENTO - EXP:271 - RAM - 700 LARAMIE CREW - 2023 - NS:Y71228: RENTA 33 DE 48 DEL 02 de febrero de 2026 AL 01 de marzo de 2026",
+      "importeTotal": "10060.99",
+      "saldoPendiente": "0.00",
+      "estadoPago": "pagado"
+    },
+    {
+      "folio": "AB11923",
+      "fecha": "2026-02-02 00:00:00",
+      "numeroContrato": "264",
+      "descripcion": "ARRENDAMIENTO - EXP:264 - MIRAGE - AIRE ACONDICIONADO INVERTER - 2023 - NS:F0086C314E2F: RENTA 34 DE 36 DEL 02 de febrero de 2026 AL 01 de marzo de 2026",
+      "importeTotal": "4319.36",
+      "saldoPendiente": "4319.36",
+      "estadoPago": "pendiente"
+    },
+    {
+      "folio": "AB11921",
+      "fecha": "2026-02-02 00:00:00",
+      "numeroContrato": "305",
+      "descripcion": "ARRENDAMIENTO - EXP:305 - NISSAN - FRONTIER PLATINUM - 2023 - NS:862634: RENTA 30 DE 48 DEL 02 de febrero de 2026 AL 01 de marzo de 2026",
+      "importeTotal": "11712.09",
+      "saldoPendiente": "0.00",
+      "estadoPago": "pagado"
+    },
+    {
+      "folio": "AB11920",
+      "fecha": "2026-02-02 00:00:00",
+      "numeroContrato": "289",
+      "descripcion": "ARRENDAMIENTO - EXP:289 - MOBILIARIO - OFICINA - 2023 - NS:000003: RENTA 32 DE 36 DEL 02 de febrero de 2026 AL 01 de marzo de 2026",
+      "importeTotal": "4604.39",
+      "saldoPendiente": "0.00",
+      "estadoPago": "pagado"
+    },
+    {
+      "folio": "AB11917",
+      "fecha": "2026-02-02 00:00:00",
+      "numeroContrato": "307",
+      "descripcion": "ARRENDAMIENTO - EXP:307 - SEGYCOM - EQUIPO TECNOLOGICO - 2023 - NS:000001: RENTA 30 DE 36 DEL 02 de febrero de 2026 AL 01 de marzo de 2026",
+      "importeTotal": "5112.87",
+      "saldoPendiente": "0.00",
+      "estadoPago": "pagado"
+    },
+    {
+      "folio": "AB11969",
+      "fecha": "2026-02-02 00:00:00",
+      "numeroContrato": "415",
+      "descripcion": "ARRENDAMIENTO - EXP:415 - KIA - K3 SEDAN LX - 2024 - NS:056046: RENTA 20 DE 48 DEL 02 de febrero de 2026 AL 01 de marzo de 2026",
+      "importeTotal": "6894.84",
+      "saldoPendiente": "0.00",
+      "estadoPago": "pagado"
+    }
+  ],
+  "messages": [],
+  "stdout": "folio\tfecha\tnumeroContrato\tdescripcion\timporteTotal\tsaldoPendiente\testadoPago\nAB11927\t2026-02-02 00:00:00\t299\tARRENDAMIENTO - EXP:299 - TOYOTA - HILUX DOBLE CABINA - 2023 - NS:340597: RENTA 31 DE 48 DEL 02 de febrero de 2026 AL 01 de marzo de 2026\t12969.61\t0.00\tpagado\nAB11962\t2026-02-02 00:00:00\t407\tARRENDAMIENTO - EXP:407 - TOYOTA - HILUX DOBLE CABINA DIESEL4X4 - 2024 - NS:201302: RENTA 20 DE 48 DEL 02 de febrero de 2026 AL 01 de marzo de 2026\t11745.92\t0.00\tpagado\nAB11926\t2026-02-02 00:00:00\t259\tARRENDAMIENTO - EXP:259 - EQUIPO DE COMPUTO DELL - LATITUDE 3420 - 2023 - NS:001: RENTA 35 DE 36 DEL 02 de febrero de 2026 AL 01 de marzo de 2026\t4345.75\t0.00\tpagado\nAB11919\t2026-02-02 00:00:00\t293\tARRENDAMIENTO - EXP:293 - AIRE ACONDICIONADO YORK - MINISPLIT - 2023 - NS:0002: RENTA 32 DE 36 DEL 02 de febrero de 2026 AL 01 de marzo de 2026\t3029.70\t0.00\tpagado\nAB11914\t2026-02-02 00:00:00\t287\tARRENDAMIENTO - EXP:287 - MOBILIARIO - OFICINA - 2023 - NS:000002: RENTA 32 DE 36 DEL 02 de febrero de 2026 AL 01 de marzo de 2026\t8282.30\t0.00\tpagado\nAB11915\t2026-02-02 00:00:00\tNULL\t200314SCT - CLUB TIM: , 29 DE 36\t3045.94\t0.00\tpagado\nAB11925\t2026-02-02 00:00:00\t362\tARRENDAMIENTO - EXP:362 - TOYOTA - HILUX TS - 2024 - NS:006024: RENTA 25 DE 48 DEL 02 de febrero de 2026 AL 01 de marzo de 2026\t13429.78\t0.00\tpagado\nAB11922\t2026-02-02 00:00:00\t270\tARRENDAMIENTO - EXP:270 - RAM - 700 LARAMIE CREW - 2023 - NS:Y71704: RENTA 33 DE 48 DEL 02 de febrero de 2026 AL 01 de marzo de 2026\t10060.99\t0.00\tpagado\nAB11918\t2026-02-02 00:00:00\t263\tARRENDAMIENTO - EXP:263 - MICROSOFT - SURFACE PRO 9 - 2023 - NS:F0086C314E2F: RENTA 34 DE 36 DEL 02 de febrero de 2026 AL 01 de marzo de 2026\t3331.65\t3331.65\tpendiente\nAB11916\t2026-02-02 00:00:00\t314\tARRENDAMIENTO - EXP:314 - TOYOTA - YARIS HATCHBACK S CVT - 2023 - NS:257923: RENTA 29 DE 36 DEL 02 de febrero de 2026 AL 01 de marzo de 2026\t6960.00\t0.00\tpagado\nAB11913\t2026-02-02 00:00:00\t288\tARRENDAMIENTO - EXP:288 - MOBILIARIO - OFICINA - 2023 - NS:000001: RENTA 32 DE 36 DEL 02 de febrero de 2026 AL 01 de marzo de 2026\t5212.70\t0.00\tpagado\nAB11912\t2026-02-02 00:00:00\t292\tARRENDAMIENTO - EXP:292 - EQUIPO DE COMPUTO DELL - LATITUD 3420 - 2023 - NS:0002: RENTA 32 DE 36 DEL 02 de febrero de 2026 AL 01 de marzo de 2026\t3518.84\t0.00\tpagado\nAB11910\t2026-02-02 00:00:00\tNULL\t200385SCT - CLUB TIM: , 22 DE 48\t3894.69\t0.00\tpagado\nAB11911\t2026-02-02 00:00:00\t385\tARRENDAMIENTO - EXP:385 - KIA - FORTE - 2024 - NS:756031: RENTA 22 DE 48 DEL 02 de febrero de 2026 AL 01 de marzo de 2026\t6960.00\t0.00\tpagado\nAB11924\t2026-02-02 00:00:00\t271\tARRENDAMIENTO - EXP:271 - RAM - 700 LARAMIE CREW - 2023 - NS:Y71228: RENTA 33 DE 48 DEL 02 de febrero de 2026 AL 01 de marzo de 2026\t10060.99\t0.00\tpagado\nAB11923\t2026-02-02 00:00:00\t264\tARRENDAMIENTO - EXP:264 - MIRAGE - AIRE ACONDICIONADO INVERTER - 2023 - NS:F0086C314E2F: RENTA 34 DE 36 DEL 02 de febrero de 2026 AL 01 de marzo de 2026\t4319.36\t4319.36\tpendiente\nAB11921\t2026-02-02 00:00:00\t305\tARRENDAMIENTO - EXP:305 - NISSAN - FRONTIER PLATINUM - 2023 - NS:862634: RENTA 30 DE 48 DEL 02 de febrero de 2026 AL 01 de marzo de 2026\t11712.09\t0.00\tpagado\nAB11920\t2026-02-02 00:00:00\t289\tARRENDAMIENTO - EXP:289 - MOBILIARIO - OFICINA - 2023 - NS:000003: RENTA 32 DE 36 DEL 02 de febrero de 2026 AL 01 de marzo de 2026\t4604.39\t0.00\tpagado\nAB11917\t2026-02-02 00:00:00\t307\tARRENDAMIENTO - EXP:307 - SEGYCOM - EQUIPO TECNOLOGICO - 2023 - NS:000001: RENTA 30 DE 36 DEL 02 de febrero de 2026 AL 01 de marzo de 2026\t5112.87\t0.00\tpagado\nAB11969\t2026-02-02 00:00:00\t415\tARRENDAMIENTO - EXP:415 - KIA - K3 SEDAN LX - 2024 - NS:056046: RENTA 20 DE 48 DEL 02 de febrero de 2026 AL 01 de marzo de 2026\t6894.84\t0.00\tpagado\n",
+  "stderr": "",
+  "execution_time_ms": 174
+}

@@ -1396,50 +1396,57 @@ export async function getContratosPorCliente(clienteId: number) {
 
   if (cliente.length === 0) return [];
 
-  // Obtener contratos con información de última factura
-  const contratos: any = await db.execute(sql`
+  // Obtener todos los contratos activos del cliente desde la tabla contratos
+  const contratosActivos = await db
+    .select()
+    .from(contratos)
+    .where(
+      and(
+        eq(contratos.nombreCliente, cliente[0].nombre),
+        eq(contratos.activo, true)
+      )
+    );
+
+  // Para cada contrato, calcular información de facturas y proyección
+  const resultado = [];
+  
+  for (const contrato of contratosActivos) {
+    // Calcular pagos faltantes
+    const pagosFaltantes = contrato.totalRentas - contrato.rentaActual;
+    
+    // Calcular deuda proyectada (pagos faltantes * monto mensual)
+    const deudaProyectada = pagosFaltantes * Number(contrato.montoMensual);
+    
+    resultado.push({
+      numeroContrato: contrato.numeroContrato,
+      pagosFaltantes: pagosFaltantes,
+      deudaProyectada: deudaProyectada
+    });
+  }
+
+  // También incluir facturas sin contrato ("Otros")
+  const facturasSinContrato: any = await db.execute(sql`
     SELECT 
-      f1.numeroContrato,
+      'Otros' as numeroContrato,
       COUNT(*) as totalFacturas,
-      SUM(f1.saldoPendiente) as totalAdeudado,
-      (
-        SELECT folio 
-        FROM facturas 
-        WHERE numeroContrato = f1.numeroContrato 
-          AND estadoPago = 'pendiente'
-        ORDER BY fecha DESC 
-        LIMIT 1
-      ) as ultimaFactura,
-      (
-        SELECT fecha 
-        FROM facturas 
-        WHERE numeroContrato = f1.numeroContrato 
-          AND estadoPago = 'pendiente'
-        ORDER BY fecha DESC 
-        LIMIT 1
-      ) as ultimaFecha,
-      (
-        SELECT descripcion 
-        FROM facturas 
-        WHERE numeroContrato = f1.numeroContrato 
-          AND estadoPago = 'pendiente'
-        ORDER BY fecha DESC 
-        LIMIT 1
-      ) as ultimaDescripcion,
-      (
-        SELECT importeTotal 
-        FROM facturas 
-        WHERE numeroContrato = f1.numeroContrato 
-          AND estadoPago = 'pendiente'
-        ORDER BY fecha DESC 
-        LIMIT 1
-      ) as ultimoImporte
+      SUM(f1.saldoPendiente) as totalAdeudado
     FROM facturas f1
     WHERE f1.nombreCliente = ${cliente[0].nombre}
       AND f1.estadoPago = 'pendiente'
-    GROUP BY f1.numeroContrato
-    ORDER BY SUM(f1.saldoPendiente) DESC
+      AND (f1.numeroContrato IS NULL OR f1.numeroContrato = '')
   `);
 
-  return Array.isArray(contratos) ? contratos : (contratos.rows || []);
+  const facturasSinContratoRows = Array.isArray(facturasSinContrato) 
+    ? facturasSinContrato 
+    : (facturasSinContrato.rows || []);
+
+  if (facturasSinContratoRows.length > 0 && facturasSinContratoRows[0].totalFacturas > 0) {
+    resultado.push({
+      numeroContrato: 'Otros',
+      pagosFaltantes: null,
+      deudaProyectada: facturasSinContratoRows[0].totalAdeudado || 0
+    });
+  }
+
+  return resultado;
 }

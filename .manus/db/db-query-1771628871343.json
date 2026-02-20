@@ -1,0 +1,40 @@
+{
+  "query": "SELECT \n  folio,\n  fecha,\n  numeroContrato,\n  nombreCliente,\n  descripcion,\n  importeTotal,\n  saldoPendiente,\n  estadoPago\nFROM facturas \nWHERE numeroContrato = '263'\nORDER BY fecha DESC\nLIMIT 50;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway03.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 344B2FJrSHdkSxo.0ab51ce41b50 --database bUSGvjzrZfvVXNhQ347wq4 --execute SELECT \n  folio,\n  fecha,\n  numeroContrato,\n  nombreCliente,\n  descripcion,\n  importeTotal,\n  saldoPendiente,\n  estadoPago\nFROM facturas \nWHERE numeroContrato = '263'\nORDER BY fecha DESC\nLIMIT 50;",
+  "rows": [
+    {
+      "folio": "AB11918",
+      "fecha": "2026-02-02 00:00:00",
+      "numeroContrato": "263",
+      "nombreCliente": "SACAR DEL CENTRO MEXICO",
+      "descripcion": "ARRENDAMIENTO - EXP:263 - MICROSOFT - SURFACE PRO 9 - 2023 - NS:F0086C314E2F: RENTA 34 DE 36 DEL 02 de febrero de 2026 AL 01 de marzo de 2026",
+      "importeTotal": "3331.65",
+      "saldoPendiente": "3331.65",
+      "estadoPago": "pendiente"
+    },
+    {
+      "folio": "AB11450",
+      "fecha": "2026-01-02 00:00:00",
+      "numeroContrato": "263",
+      "nombreCliente": "SACAR DEL CENTRO MEXICO",
+      "descripcion": "ARRENDAMIENTO - EXP:263 - MICROSOFT - SURFACE PRO 9 - 2023 - NS:F0086C314E2F: RENTA 33 DE 36 DEL 02 de enero de 2026 AL 01 de febrero de 2026",
+      "importeTotal": "3331.65",
+      "saldoPendiente": "0.00",
+      "estadoPago": "pagado"
+    },
+    {
+      "folio": "AB6702",
+      "fecha": "2025-01-01 00:00:00",
+      "numeroContrato": "263",
+      "nombreCliente": "SACAR DEL CENTRO MEXICO",
+      "descripcion": "ARRENDAMIENTO - EXP:263 - MICROSOFT - SURFACE PRO 9 - 2023 - NS:F0086C314E2F: RENTA 21 DE 36 DEL 01 de enero de 2025 AL 31 de enero de 2025",
+      "importeTotal": "3331.65",
+      "saldoPendiente": "0.00",
+      "estadoPago": "pagado"
+    }
+  ],
+  "messages": [],
+  "stdout": "folio\tfecha\tnumeroContrato\tnombreCliente\tdescripcion\timporteTotal\tsaldoPendiente\testadoPago\nAB11918\t2026-02-02 00:00:00\t263\tSACAR DEL CENTRO MEXICO\tARRENDAMIENTO - EXP:263 - MICROSOFT - SURFACE PRO 9 - 2023 - NS:F0086C314E2F: RENTA 34 DE 36 DEL 02 de febrero de 2026 AL 01 de marzo de 2026\t3331.65\t3331.65\tpendiente\nAB11450\t2026-01-02 00:00:00\t263\tSACAR DEL CENTRO MEXICO\tARRENDAMIENTO - EXP:263 - MICROSOFT - SURFACE PRO 9 - 2023 - NS:F0086C314E2F: RENTA 33 DE 36 DEL 02 de enero de 2026 AL 01 de febrero de 2026\t3331.65\t0.00\tpagado\nAB6702\t2025-01-01 00:00:00\t263\tSACAR DEL CENTRO MEXICO\tARRENDAMIENTO - EXP:263 - MICROSOFT - SURFACE PRO 9 - 2023 - NS:F0086C314E2F: RENTA 21 DE 36 DEL 01 de enero de 2025 AL 31 de enero de 2025\t3331.65\t0.00\tpagado\n",
+  "stderr": "",
+  "execution_time_ms": 108
+}

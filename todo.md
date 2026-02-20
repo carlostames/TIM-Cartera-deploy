@@ -439,3 +439,17 @@
 
 ## Simplificación de Tabla por Cliente en Análisis de Contratos
 - [x] Simplificar tabla de búsqueda por cliente para mostrar solo: Número de Contrato, Pagos Faltantes, Deuda Proyectada
+
+## Corrección de Error en Búsqueda por Cliente - Análisis de Contratos
+- [x] Diagnosticar error en búsqueda por cliente (no funciona)
+- [x] Revisar logs del servidor y navegador
+- [x] Identificar causa raíz del problema (servidor no reiniciado)
+- [x] Implementar corrección (reiniciar servidor)
+- [x] Probar con múltiples clientes (AFIMSA, AA DE SAN LUIS)
+
+## Corrección: Búsqueda por Cliente debe mostrar todos los contratos activos
+- [x] Revisar estructura de tabla contratos en schema
+- [x] Modificar getContratosPorCliente para consultar tabla contratos en lugar de solo facturas pendientes
+- [x] Calcular pagos faltantes y deuda proyectada desde información del contrato
+- [x] Probar con cliente SACAR (debe mostrar contrato 263)
+- [x] Verificar que otros clientes con contratos también funcionen correctamente
