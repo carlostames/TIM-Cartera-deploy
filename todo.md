@@ -566,5 +566,7 @@
 
 - [ ] BUG: Error "Unexpected token '<', '<!doctype '... is not valid JSON" al cargar archivos en /upload
 
+- [x] BUG: Resumen de deuda no se despliega después de cargar archivo de contratos
+
 - [x] BUG: Select.Item con valor vacío en Análisis de Contratos
 - [x] BUG: Elementos de lista sin key prop en Análisis de Contratos

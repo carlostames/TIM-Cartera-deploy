@@ -1,0 +1,70 @@
+{
+  "query": "SELECT id, numeroContrato, clienteId, nombreCliente FROM contratos LIMIT 10;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway03.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 344B2FJrSHdkSxo.0ab51ce41b50 --database bUSGvjzrZfvVXNhQ347wq4 --execute SELECT id, numeroContrato, clienteId, nombreCliente FROM contratos LIMIT 10;",
+  "rows": [
+    {
+      "id": "1",
+      "numeroContrato": "342",
+      "clienteId": "30058",
+      "nombreCliente": "EMBUTIDOS SAN LUIS"
+    },
+    {
+      "id": "2",
+      "numeroContrato": "195",
+      "clienteId": "30063",
+      "nombreCliente": "ESTRUCTURAS Y PAILERIA ESPECIALIZADA"
+    },
+    {
+      "id": "3",
+      "numeroContrato": "325",
+      "clienteId": "30064",
+      "nombreCliente": "EUROGAS DE SAN LUIS"
+    },
+    {
+      "id": "4",
+      "numeroContrato": "266",
+      "clienteId": "30064",
+      "nombreCliente": "EUROGAS DE SAN LUIS"
+    },
+    {
+      "id": "5",
+      "numeroContrato": "239",
+      "clienteId": "30064",
+      "nombreCliente": "EUROGAS DE SAN LUIS"
+    },
+    {
+      "id": "6",
+      "numeroContrato": "332",
+      "clienteId": "30064",
+      "nombreCliente": "EUROGAS DE SAN LUIS"
+    },
+    {
+      "id": "7",
+      "numeroContrato": "166",
+      "clienteId": "30066",
+      "nombreCliente": "EUROKING"
+    },
+    {
+      "id": "8",
+      "numeroContrato": "169",
+      "clienteId": "30066",
+      "nombreCliente": "EUROKING"
+    },
+    {
+      "id": "9",
+      "numeroContrato": "175",
+      "clienteId": "30066",
+      "nombreCliente": "EUROKING"
+    },
+    {
+      "id": "10",
+      "numeroContrato": "326",
+      "clienteId": "30066",
+      "nombreCliente": "EUROKING"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tnumeroContrato\tclienteId\tnombreCliente\n1\t342\t30058\tEMBUTIDOS SAN LUIS\n2\t195\t30063\tESTRUCTURAS Y PAILERIA ESPECIALIZADA\n3\t325\t30064\tEUROGAS DE SAN LUIS\n4\t266\t30064\tEUROGAS DE SAN LUIS\n5\t239\t30064\tEUROGAS DE SAN LUIS\n6\t332\t30064\tEUROGAS DE SAN LUIS\n7\t166\t30066\tEUROKING\n8\t169\t30066\tEUROKING\n9\t175\t30066\tEUROKING\n10\t326\t30066\tEUROKING\n",
+  "stderr": "",
+  "execution_time_ms": 78
+}

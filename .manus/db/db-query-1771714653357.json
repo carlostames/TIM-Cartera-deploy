@@ -1,0 +1,50 @@
+{
+  "query": "SELECT DISTINCT c.id, c.nombre\nFROM clientes c\nWHERE EXISTS (\n  SELECT 1 FROM facturas f \n  WHERE f.nombreCliente = c.nombre \n    AND f.descripcion REGEXP '[0-9]+ de [0-9]+'\n    AND CAST(f.saldoPendiente AS DECIMAL(10,2)) > 0\n)\nOR EXISTS (\n  SELECT 1 FROM contratos ct\n  WHERE ct.clienteId = c.id\n)\nORDER BY c.nombre ASC\nLIMIT 10;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway03.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 344B2FJrSHdkSxo.0ab51ce41b50 --database bUSGvjzrZfvVXNhQ347wq4 --execute SELECT DISTINCT c.id, c.nombre\nFROM clientes c\nWHERE EXISTS (\n  SELECT 1 FROM facturas f \n  WHERE f.nombreCliente = c.nombre \n    AND f.descripcion REGEXP '[0-9]+ de [0-9]+'\n    AND CAST(f.saldoPendiente AS DECIMAL(10,2)) > 0\n)\nOR EXISTS (\n  SELECT 1 FROM contratos ct\n  WHERE ct.clienteId = c.id\n)\nORDER BY c.nombre ASC\nLIMIT 10;",
+  "rows": [
+    {
+      "id": "30010",
+      "nombre": "AA DE SAN LUIS"
+    },
+    {
+      "id": "30011",
+      "nombre": "ADMINISTRADORA GASTRONOMICA LA JAULA"
+    },
+    {
+      "id": "30013",
+      "nombre": "AEROGAS DE SAN LUIS"
+    },
+    {
+      "id": "30017",
+      "nombre": "ALPHA PACK DEL BAJIO"
+    },
+    {
+      "id": "30018",
+      "nombre": "ALTOSPAZIO EXCLUSIVO"
+    },
+    {
+      "id": "30019",
+      "nombre": "AUTOEDICIONES DEL POTOSI"
+    },
+    {
+      "id": "30020",
+      "nombre": "B2B LATAM"
+    },
+    {
+      "id": "30021",
+      "nombre": "BALEROS Y ABASTOS DE SAN LUIS"
+    },
+    {
+      "id": "30022",
+      "nombre": "BALEROS Y ABASTOS INDUSTRIALES"
+    },
+    {
+      "id": "30023",
+      "nombre": "BAZA TOUR"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tnombre\n30010\tAA DE SAN LUIS\n30011\tADMINISTRADORA GASTRONOMICA LA JAULA\n30013\tAEROGAS DE SAN LUIS\n30017\tALPHA PACK DEL BAJIO\n30018\tALTOSPAZIO EXCLUSIVO\n30019\tAUTOEDICIONES DEL POTOSI\n30020\tB2B LATAM\n30021\tBALEROS Y ABASTOS DE SAN LUIS\n30022\tBALEROS Y ABASTOS INDUSTRIALES\n30023\tBAZA TOUR\n",
+  "stderr": "",
+  "execution_time_ms": 60
+}
