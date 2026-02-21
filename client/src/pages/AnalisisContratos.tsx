@@ -37,7 +37,8 @@ export default function AnalisisContratos() {
   );
 
   // Queries para resumen de deuda
-  const { data: grupos } = trpc.grupos.list.useQuery();
+  const { data: clientesConContratos } = trpc.analisis.clientesConContratosActivos.useQuery();
+  const { data: gruposConContratos } = trpc.analisis.gruposConContratosActivos.useQuery();
   const { data: deudaCliente, isLoading: loadingDeudaCliente } = trpc.analisis.deudaTotalCliente.useQuery(
     { clienteId: clienteResumenId! },
     { enabled: clienteResumenId !== null && tipoResumen === 'cliente' }
@@ -411,7 +412,7 @@ export default function AnalisisContratos() {
                         <SelectValue placeholder="Selecciona un cliente" />
                       </SelectTrigger>
                       <SelectContent>
-                        {clientes?.map((cliente: any) => (
+                        {clientesConContratos?.map((cliente: any) => (
                           <SelectItem key={cliente.id} value={cliente.id.toString()}>
                             {cliente.nombre}
                           </SelectItem>
@@ -429,7 +430,7 @@ export default function AnalisisContratos() {
                         <SelectValue placeholder="Selecciona un grupo" />
                       </SelectTrigger>
                       <SelectContent>
-                        {grupos?.map((grupo: any) => (
+                        {gruposConContratos?.map((grupo: any) => (
                           <SelectItem key={grupo.id} value={grupo.id.toString()}>
                             {grupo.nombre}
                           </SelectItem>

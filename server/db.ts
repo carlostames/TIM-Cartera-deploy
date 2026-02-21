@@ -1767,3 +1767,45 @@ export async function getDeudaTotalGrupo(grupoId: number) {
     deudaPorCliente
   };
 }
+
+
+/**
+ * Obtiene lista de clientes que tienen contratos activos (facturas con formato "X de Y")
+ */
+export async function getClientesConContratosActivos() {
+  const db = await getDb();
+  if (!db) return [];
+
+  const result: any = await db.execute(sql`
+    SELECT DISTINCT c.id, c.nombre
+    FROM clientes c
+    INNER JOIN facturas f ON f.nombreCliente = c.nombre
+    WHERE f.descripcion REGEXP '[0-9]+ de [0-9]+'
+      AND CAST(f.saldoPendiente AS DECIMAL(10,2)) > 0
+    ORDER BY c.nombre ASC
+  `);
+
+  const rows = Array.isArray(result) ? result : (result.rows || []);
+  return rows;
+}
+
+/**
+ * Obtiene lista de grupos que tienen clientes con contratos activos
+ */
+export async function getGruposConContratosActivos() {
+  const db = await getDb();
+  if (!db) return [];
+
+  const result: any = await db.execute(sql`
+    SELECT DISTINCT g.id, g.nombre
+    FROM gruposClientes g
+    INNER JOIN clientes c ON c.grupoId = g.id
+    INNER JOIN facturas f ON f.nombreCliente = c.nombre
+    WHERE f.descripcion REGEXP '[0-9]+ de [0-9]+'
+      AND CAST(f.saldoPendiente AS DECIMAL(10,2)) > 0
+    ORDER BY g.nombre ASC
+  `);
+
+  const rows = Array.isArray(result) ? result : (result.rows || []);
+  return rows;
+}

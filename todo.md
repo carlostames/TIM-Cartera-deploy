@@ -542,3 +542,5 @@
 - [x] Mostrar detalle de cada contrato con sus líneas (234, A234, C234, O234)
 - [x] Agregar tab "Resumen de Deuda" en página de Análisis de Contratos
 - [ ] Probar cálculos con casos reales
+
+- [x] Filtrar selectores de Resumen de Deuda para mostrar solo clientes/grupos con contratos activos

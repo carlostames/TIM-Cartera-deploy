@@ -1083,6 +1083,16 @@ export const appRouter = router({
       .query(async ({ input }) => {
         return await db.getDeudaTotalGrupo(input.grupoId);
       }),
+
+    // Obtener clientes con contratos activos
+    clientesConContratosActivos: protectedProcedure.query(async () => {
+      return await db.getClientesConContratosActivos();
+    }),
+
+    // Obtener grupos con contratos activos
+    gruposConContratosActivos: protectedProcedure.query(async () => {
+      return await db.getGruposConContratosActivos();
+    }),
   }),
 });
 
