@@ -563,3 +563,8 @@
 - [x] BUG: Error "XLSX.readFile is not a function" al cargar archivo de contratos
 
 - [x] BUG: Carga de archivo de contratos resultó en 0 registros exitosos
+
+- [ ] BUG: Error "Unexpected token '<', '<!doctype '... is not valid JSON" al cargar archivos en /upload
+
+- [x] BUG: Select.Item con valor vacío en Análisis de Contratos
+- [x] BUG: Elementos de lista sin key prop en Análisis de Contratos

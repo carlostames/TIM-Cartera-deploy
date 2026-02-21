@@ -412,8 +412,8 @@ export default function AnalisisContratos() {
                         <SelectValue placeholder="Selecciona un cliente" />
                       </SelectTrigger>
                       <SelectContent>
-                        {clientesConContratos?.map((cliente: any) => (
-                          <SelectItem key={cliente.id} value={cliente.id?.toString() || ''}>
+                        {clientesConContratos?.filter((cliente: any) => cliente.id).map((cliente: any) => (
+                          <SelectItem key={cliente.id} value={cliente.id.toString()}>
                             {cliente.nombre}
                           </SelectItem>
                         ))}
@@ -430,8 +430,8 @@ export default function AnalisisContratos() {
                         <SelectValue placeholder="Selecciona un grupo" />
                       </SelectTrigger>
                       <SelectContent>
-                        {gruposConContratos?.map((grupo: any) => (
-                          <SelectItem key={grupo.id} value={grupo.id?.toString() || ''}>
+                        {gruposConContratos?.filter((grupo: any) => grupo.id).map((grupo: any) => (
+                          <SelectItem key={grupo.id} value={grupo.id.toString()}>
                             {grupo.nombre}
                           </SelectItem>
                         ))}
@@ -455,7 +455,7 @@ export default function AnalisisContratos() {
               ) : deudaCliente ? (
                 <>
                   <div className="grid gap-4 md:grid-cols-3">
-                    <Card>
+                    <Card key="cartera-vencida">
                       <CardHeader className="pb-3">
                         <CardDescription>Cartera Vencida</CardDescription>
                         <CardTitle className="text-2xl text-orange-600">
@@ -466,7 +466,7 @@ export default function AnalisisContratos() {
                         </p>
                       </CardHeader>
                     </Card>
-                    <Card>
+                    <Card key="proyeccion-contratos">
                       <CardHeader className="pb-3">
                         <CardDescription>Proyección de Contratos</CardDescription>
                         <CardTitle className="text-2xl text-blue-600">
@@ -477,7 +477,7 @@ export default function AnalisisContratos() {
                         </p>
                       </CardHeader>
                     </Card>
-                    <Card>
+                    <Card key="total-adeudado">
                       <CardHeader className="pb-3">
                         <CardDescription>Total Adeudado</CardDescription>
                         <CardTitle className="text-2xl text-destructive">
@@ -557,13 +557,13 @@ export default function AnalisisContratos() {
               ) : deudaGrupo ? (
                 <>
                   <div className="grid gap-4 md:grid-cols-4">
-                    <Card>
+                    <Card key="clientes-count">
                       <CardHeader className="pb-3">
                         <CardDescription>Clientes</CardDescription>
                         <CardTitle className="text-2xl">{deudaGrupo.clientesCount}</CardTitle>
                       </CardHeader>
                     </Card>
-                    <Card>
+                    <Card key="cartera-vencida-grupo">
                       <CardHeader className="pb-3">
                         <CardDescription>Cartera Vencida</CardDescription>
                         <CardTitle className="text-2xl text-orange-600">
@@ -571,7 +571,7 @@ export default function AnalisisContratos() {
                         </CardTitle>
                       </CardHeader>
                     </Card>
-                    <Card>
+                    <Card key="proyeccion-grupo">
                       <CardHeader className="pb-3">
                         <CardDescription>Proyección</CardDescription>
                         <CardTitle className="text-2xl text-blue-600">
@@ -579,7 +579,7 @@ export default function AnalisisContratos() {
                         </CardTitle>
                       </CardHeader>
                     </Card>
-                    <Card>
+                    <Card key="total-adeudado-grupo">
                       <CardHeader className="pb-3">
                         <CardDescription>Total Adeudado</CardDescription>
                         <CardTitle className="text-2xl text-destructive">
