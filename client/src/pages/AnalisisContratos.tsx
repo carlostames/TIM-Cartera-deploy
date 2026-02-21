@@ -413,7 +413,7 @@ export default function AnalisisContratos() {
                       </SelectTrigger>
                       <SelectContent>
                         {clientesConContratos?.map((cliente: any) => (
-                          <SelectItem key={cliente.id} value={cliente.id.toString()}>
+                          <SelectItem key={cliente.id} value={cliente.id?.toString() || ''}>
                             {cliente.nombre}
                           </SelectItem>
                         ))}
@@ -431,7 +431,7 @@ export default function AnalisisContratos() {
                       </SelectTrigger>
                       <SelectContent>
                         {gruposConContratos?.map((grupo: any) => (
-                          <SelectItem key={grupo.id} value={grupo.id.toString()}>
+                          <SelectItem key={grupo.id} value={grupo.id?.toString() || ''}>
                             {grupo.nombre}
                           </SelectItem>
                         ))}

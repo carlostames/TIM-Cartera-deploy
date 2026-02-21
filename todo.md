@@ -544,3 +544,5 @@
 - [ ] Probar cálculos con casos reales
 
 - [x] Filtrar selectores de Resumen de Deuda para mostrar solo clientes/grupos con contratos activos
+
+- [x] BUG: Error "Cannot read properties of undefined (reading 'toString')" en Análisis de Contratos
