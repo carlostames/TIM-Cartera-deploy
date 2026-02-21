@@ -1,0 +1,26 @@
+{
+  "query": "SELECT folio, fecha, fechaVencimiento, saldoPendiente, estadoPago, diasAtraso \nFROM facturas \nWHERE nombreCliente LIKE '%OUTOKUMPU%' AND estadoPago = 'pendiente'\nORDER BY folio;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway03.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 344B2FJrSHdkSxo.0ab51ce41b50 --database bUSGvjzrZfvVXNhQ347wq4 --execute SELECT folio, fecha, fechaVencimiento, saldoPendiente, estadoPago, diasAtraso \nFROM facturas \nWHERE nombreCliente LIKE '%OUTOKUMPU%' AND estadoPago = 'pendiente'\nORDER BY folio;",
+  "rows": [
+    {
+      "folio": "AB11850",
+      "fecha": "2026-01-29 00:00:00",
+      "fechaVencimiento": "2026-02-13 00:00:00",
+      "saldoPendiente": "11332.04",
+      "estadoPago": "pendiente",
+      "diasAtraso": "8"
+    },
+    {
+      "folio": "AB11902",
+      "fecha": "2026-02-02 00:00:00",
+      "fechaVencimiento": "2026-02-17 00:00:00",
+      "saldoPendiente": "0.00",
+      "estadoPago": "pendiente",
+      "diasAtraso": "4"
+    }
+  ],
+  "messages": [],
+  "stdout": "folio\tfecha\tfechaVencimiento\tsaldoPendiente\testadoPago\tdiasAtraso\nAB11850\t2026-01-29 00:00:00\t2026-02-13 00:00:00\t11332.04\tpendiente\t8\nAB11902\t2026-02-02 00:00:00\t2026-02-17 00:00:00\t0.00\tpendiente\t4\n",
+  "stderr": "",
+  "execution_time_ms": 63
+}

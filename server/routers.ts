@@ -110,6 +110,8 @@ export const appRouter = router({
           const tasaInteres = tasaConfig ? parseFloat(tasaConfig.valor) : 1.5;
           
           // Guardar datos en la base de datos
+          let facturasFaltantes: any[] = [];
+          
           if (tipoArchivo === 'pendientes') {
             // Limpiar pendientes anteriores
             await db.clearAllPendientes();
@@ -129,53 +131,24 @@ export const appRouter = router({
               (result.data || []).map((p: any) => [p.folio, parseFloat(p.saldo || '0')])
             );
             
-            // Crear facturas para folios que no existen en la BD
+            // Identificar facturas que están en el archivo pero NO en la BD
             const foliosFaltantes = (result.data || []).filter((p: any) => !foliosExistentes.has(p.folio));
             
-            for (const pendiente of foliosFaltantes) {
-              const saldo = parseFloat(pendiente.saldo || '0');
-              
-              // Usar fechas del archivo si están disponibles, sino calcularlas
-              let fechaFactura: Date;
-              let fechaVencimiento: Date;
-              let diasAtraso: number;
-              
-              if ((pendiente as any).fecha && (pendiente as any).fechaVencimiento) {
-                // Usar fechas del archivo
-                fechaFactura = new Date((pendiente as any).fecha);
-                fechaVencimiento = new Date((pendiente as any).fechaVencimiento);
-                
-                // Recalcular diasAtraso basado en fechaVencimiento real
-                const hoy = new Date();
-                hoy.setHours(0, 0, 0, 0);
-                const vence = new Date(fechaVencimiento);
-                vence.setHours(0, 0, 0, 0);
-                diasAtraso = Math.max(0, Math.floor((hoy.getTime() - vence.getTime()) / (1000 * 60 * 60 * 24)));
-                // No modificar fechaVencimiento original
-              } else {
-                // Fallback: calcular fechas (método anterior)
-                diasAtraso = pendiente.diasVencido || 0;
-                fechaVencimiento = new Date();
-                fechaVencimiento.setDate(fechaVencimiento.getDate() - diasAtraso);
-                fechaFactura = new Date(fechaVencimiento);
-                fechaFactura.setDate(fechaFactura.getDate() - 30);
-              }
-              
-              await db.upsertFactura({
-                folio: pendiente.folio,
-                fecha: fechaFactura,
-                fechaVencimiento,
-                importeTotal: saldo.toString(),
-                saldoPendiente: saldo.toString(),
-                nombreCliente: pendiente.nombreCliente || 'CLIENTE DESCONOCIDO',
-                descripcion: 'Factura creada automáticamente desde archivo de pendientes',
-                estadoPago: 'pendiente',
-                diasAtraso,
-                interesesMoratorios: '0.00',
-                totalConIntereses: saldo.toString(),
-                sistema: 'tim_transp',
-              } as any);
+            // Guardar lista de facturas faltantes para reportar al usuario
+            facturasFaltantes = foliosFaltantes.map((p: any) => ({
+              folio: p.folio,
+              saldo: p.saldo,
+              fecha: p.fecha,
+              fechaVencimiento: p.fechaVencimiento
+            }));
+            
+            console.log(`[PENDIENTES] Facturas faltantes detectadas: ${facturasFaltantes.length}`);
+            if (facturasFaltantes.length > 0) {
+              console.log('[PENDIENTES] Folios faltantes:', facturasFaltantes.map(f => f.folio).join(', '));
             }
+            
+            // NO crear facturas nuevas - solo reportar las faltantes
+            // (Las facturas deben ser creadas primero desde archivos TT o TV)
             
             // Crear mapa de fechas del archivo para actualizar facturas existentes
             const fechasArchivo = new Map(
@@ -309,6 +282,7 @@ export const appRouter = router({
             registrosExitosos: result.registrosExitosos,
             registrosError: result.registrosError,
             errores: result.errores,
+            facturasFaltantes: tipoArchivo === 'pendientes' ? facturasFaltantes : undefined,
           };
         } catch (error) {
           await db.updateHistorialCarga(historialId, {

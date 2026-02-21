@@ -1,0 +1,595 @@
+{
+  "query": "SELECT folio, nombreCliente, fecha, fechaVencimiento, saldoPendiente, estadoPago, diasAtraso \nFROM facturas \nWHERE nombreCliente LIKE '%OUTOKUMPU%' \nORDER BY folio;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway03.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 344B2FJrSHdkSxo.0ab51ce41b50 --database bUSGvjzrZfvVXNhQ347wq4 --execute SELECT folio, nombreCliente, fecha, fechaVencimiento, saldoPendiente, estadoPago, diasAtraso \nFROM facturas \nWHERE nombreCliente LIKE '%OUTOKUMPU%' \nORDER BY folio;",
+  "rows": [
+    {
+      "folio": "AA1066",
+      "nombreCliente": "OUTOKUMPU MEXINOX",
+      "fecha": "2025-12-02 00:00:00",
+      "fechaVencimiento": "2026-01-01 00:00:00",
+      "saldoPendiente": "0.00",
+      "estadoPago": "pagado",
+      "diasAtraso": "39"
+    },
+    {
+      "folio": "AA1067",
+      "nombreCliente": "OUTOKUMPU MEXINOX",
+      "fecha": "2025-12-02 00:00:00",
+      "fechaVencimiento": "2026-01-01 00:00:00",
+      "saldoPendiente": "0.00",
+      "estadoPago": "pagado",
+      "diasAtraso": "39"
+    },
+    {
+      "folio": "AA1069",
+      "nombreCliente": "OUTOKUMPU MEXINOX",
+      "fecha": "2025-12-02 00:00:00",
+      "fechaVencimiento": "2026-01-01 00:00:00",
+      "saldoPendiente": "0.00",
+      "estadoPago": "pagado",
+      "diasAtraso": "39"
+    },
+    {
+      "folio": "AA1289",
+      "nombreCliente": "OUTOKUMPU MEXINOX",
+      "fecha": "2026-01-02 05:00:00",
+      "fechaVencimiento": "2026-01-30 05:00:00",
+      "saldoPendiente": "0.00",
+      "estadoPago": "pagado",
+      "diasAtraso": "21"
+    },
+    {
+      "folio": "AA1290",
+      "nombreCliente": "OUTOKUMPU MEXINOX",
+      "fecha": "2026-01-02 05:00:00",
+      "fechaVencimiento": "2026-01-30 05:00:00",
+      "saldoPendiente": "0.00",
+      "estadoPago": "pagado",
+      "diasAtraso": "21"
+    },
+    {
+      "folio": "AA1292",
+      "nombreCliente": "OUTOKUMPU MEXINOX",
+      "fecha": "2026-01-02 05:00:00",
+      "fechaVencimiento": "2026-01-31 05:00:00",
+      "saldoPendiente": "0.00",
+      "estadoPago": "pagado",
+      "diasAtraso": "20"
+    },
+    {
+      "folio": "AA1485",
+      "nombreCliente": "OUTOKUMPU MEXINOX",
+      "fecha": "2026-01-29 05:00:00",
+      "fechaVencimiento": "2026-02-13 05:00:00",
+      "saldoPendiente": "0.00",
+      "estadoPago": "pagado",
+      "diasAtraso": "7"
+    },
+    {
+      "folio": "AA1555",
+      "nombreCliente": "OUTOKUMPU MEXINOX",
+      "fecha": "2026-02-02 00:00:00",
+      "fechaVencimiento": "2026-03-04 00:00:00",
+      "saldoPendiente": "0.00",
+      "estadoPago": "pagado",
+      "diasAtraso": "0"
+    },
+    {
+      "folio": "AA1556",
+      "nombreCliente": "OUTOKUMPU MEXINOX",
+      "fecha": "2026-02-02 00:00:00",
+      "fechaVencimiento": "2026-03-04 00:00:00",
+      "saldoPendiente": "0.00",
+      "estadoPago": "pagado",
+      "diasAtraso": "0"
+    },
+    {
+      "folio": "AA1558",
+      "nombreCliente": "OUTOKUMPU MEXINOX",
+      "fecha": "2026-02-02 00:00:00",
+      "fechaVencimiento": "2026-03-04 00:00:00",
+      "saldoPendiente": "0.00",
+      "estadoPago": "pagado",
+      "diasAtraso": "0"
+    },
+    {
+      "folio": "AA607",
+      "nombreCliente": "OUTOKUMPU MEXINOX",
+      "fecha": "2025-09-19 00:00:00",
+      "fechaVencimiento": "2025-10-19 00:00:00",
+      "saldoPendiente": "0.00",
+      "estadoPago": "pagado",
+      "diasAtraso": "113"
+    },
+    {
+      "folio": "AA608",
+      "nombreCliente": "OUTOKUMPU MEXINOX",
+      "fecha": "2025-09-19 00:00:00",
+      "fechaVencimiento": "2025-10-19 00:00:00",
+      "saldoPendiente": "0.00",
+      "estadoPago": "pagado",
+      "diasAtraso": "113"
+    },
+    {
+      "folio": "AA609",
+      "nombreCliente": "OUTOKUMPU MEXINOX",
+      "fecha": "2025-09-19 00:00:00",
+      "fechaVencimiento": "2025-10-19 00:00:00",
+      "saldoPendiente": "0.00",
+      "estadoPago": "pagado",
+      "diasAtraso": "113"
+    },
+    {
+      "folio": "AA648",
+      "nombreCliente": "OUTOKUMPU MEXINOX",
+      "fecha": "2025-09-26 00:00:00",
+      "fechaVencimiento": "2025-10-26 00:00:00",
+      "saldoPendiente": "0.00",
+      "estadoPago": "pagado",
+      "diasAtraso": "106"
+    },
+    {
+      "folio": "AA649",
+      "nombreCliente": "OUTOKUMPU MEXINOX",
+      "fecha": "2025-09-26 00:00:00",
+      "fechaVencimiento": "2025-10-26 00:00:00",
+      "saldoPendiente": "0.00",
+      "estadoPago": "pagado",
+      "diasAtraso": "106"
+    },
+    {
+      "folio": "AA650",
+      "nombreCliente": "OUTOKUMPU MEXINOX",
+      "fecha": "2025-09-26 00:00:00",
+      "fechaVencimiento": "2025-10-26 00:00:00",
+      "saldoPendiente": "0.00",
+      "estadoPago": "pagado",
+      "diasAtraso": "106"
+    },
+    {
+      "folio": "AA651",
+      "nombreCliente": "OUTOKUMPU MEXINOX",
+      "fecha": "2025-09-26 00:00:00",
+      "fechaVencimiento": "2025-10-26 00:00:00",
+      "saldoPendiente": "0.00",
+      "estadoPago": "pagado",
+      "diasAtraso": "106"
+    },
+    {
+      "folio": "AA652",
+      "nombreCliente": "OUTOKUMPU MEXINOX",
+      "fecha": "2025-09-26 00:00:00",
+      "fechaVencimiento": "2025-10-26 00:00:00",
+      "saldoPendiente": "0.00",
+      "estadoPago": "pagado",
+      "diasAtraso": "106"
+    },
+    {
+      "folio": "AA653",
+      "nombreCliente": "OUTOKUMPU MEXINOX",
+      "fecha": "2025-09-26 00:00:00",
+      "fechaVencimiento": "2025-10-26 00:00:00",
+      "saldoPendiente": "0.00",
+      "estadoPago": "pagado",
+      "diasAtraso": "106"
+    },
+    {
+      "folio": "AA747",
+      "nombreCliente": "OUTOKUMPU MEXINOX",
+      "fecha": "2025-10-02 00:00:00",
+      "fechaVencimiento": "2025-11-01 00:00:00",
+      "saldoPendiente": "0.00",
+      "estadoPago": "pagado",
+      "diasAtraso": "100"
+    },
+    {
+      "folio": "AA748",
+      "nombreCliente": "OUTOKUMPU MEXINOX",
+      "fecha": "2025-10-02 00:00:00",
+      "fechaVencimiento": "2025-11-01 00:00:00",
+      "saldoPendiente": "0.00",
+      "estadoPago": "pagado",
+      "diasAtraso": "100"
+    },
+    {
+      "folio": "AA750",
+      "nombreCliente": "OUTOKUMPU MEXINOX",
+      "fecha": "2025-10-02 00:00:00",
+      "fechaVencimiento": "2025-11-01 00:00:00",
+      "saldoPendiente": "0.00",
+      "estadoPago": "pagado",
+      "diasAtraso": "100"
+    },
+    {
+      "folio": "AA879",
+      "nombreCliente": "OUTOKUMPU MEXINOX",
+      "fecha": "2025-11-02 00:00:00",
+      "fechaVencimiento": "2025-12-02 00:00:00",
+      "saldoPendiente": "0.00",
+      "estadoPago": "pagado",
+      "diasAtraso": "69"
+    },
+    {
+      "folio": "AA880",
+      "nombreCliente": "OUTOKUMPU MEXINOX",
+      "fecha": "2025-11-02 00:00:00",
+      "fechaVencimiento": "2025-12-02 00:00:00",
+      "saldoPendiente": "0.00",
+      "estadoPago": "pagado",
+      "diasAtraso": "69"
+    },
+    {
+      "folio": "AA882",
+      "nombreCliente": "OUTOKUMPU MEXINOX",
+      "fecha": "2025-11-02 00:00:00",
+      "fechaVencimiento": "2025-12-02 00:00:00",
+      "saldoPendiente": "0.00",
+      "estadoPago": "pagado",
+      "diasAtraso": "69"
+    },
+    {
+      "folio": "AB10064",
+      "nombreCliente": "OUTOKUMPU MEXINOX",
+      "fecha": "2025-09-02 00:00:00",
+      "fechaVencimiento": "2025-10-02 00:00:00",
+      "saldoPendiente": "0.00",
+      "estadoPago": "pagado",
+      "diasAtraso": "130"
+    },
+    {
+      "folio": "AB10065",
+      "nombreCliente": "OUTOKUMPU MEXINOX",
+      "fecha": "2025-09-02 00:00:00",
+      "fechaVencimiento": "2025-10-02 00:00:00",
+      "saldoPendiente": "0.00",
+      "estadoPago": "pagado",
+      "diasAtraso": "130"
+    },
+    {
+      "folio": "AB10442",
+      "nombreCliente": "OUTOKUMPU MEXINOX",
+      "fecha": "2025-10-02 00:00:00",
+      "fechaVencimiento": "2025-11-01 00:00:00",
+      "saldoPendiente": "0.00",
+      "estadoPago": "pagado",
+      "diasAtraso": "100"
+    },
+    {
+      "folio": "AB10443",
+      "nombreCliente": "OUTOKUMPU MEXINOX",
+      "fecha": "2025-10-02 00:00:00",
+      "fechaVencimiento": "2025-11-01 00:00:00",
+      "saldoPendiente": "0.00",
+      "estadoPago": "pagado",
+      "diasAtraso": "100"
+    },
+    {
+      "folio": "AB10785",
+      "nombreCliente": "OUTOKUMPU MEXINOX",
+      "fecha": "2025-11-02 00:00:00",
+      "fechaVencimiento": "2025-12-02 00:00:00",
+      "saldoPendiente": "0.00",
+      "estadoPago": "pagado",
+      "diasAtraso": "69"
+    },
+    {
+      "folio": "AB11104",
+      "nombreCliente": "OUTOKUMPU MEXINOX",
+      "fecha": "2025-12-02 00:00:00",
+      "fechaVencimiento": "2026-01-01 00:00:00",
+      "saldoPendiente": "0.00",
+      "estadoPago": "pagado",
+      "diasAtraso": "39"
+    },
+    {
+      "folio": "AB11377",
+      "nombreCliente": "OUTOKUMPU MEXINOX",
+      "fecha": "2025-12-27 00:00:00",
+      "fechaVencimiento": "2026-01-26 00:00:00",
+      "saldoPendiente": "0.00",
+      "estadoPago": "pagado",
+      "diasAtraso": "14"
+    },
+    {
+      "folio": "AB11434",
+      "nombreCliente": "OUTOKUMPU MEXINOX",
+      "fecha": "2026-01-02 00:00:00",
+      "fechaVencimiento": "2026-02-01 00:00:00",
+      "saldoPendiente": "0.00",
+      "estadoPago": "pagado",
+      "diasAtraso": "9"
+    },
+    {
+      "folio": "AB11738",
+      "nombreCliente": "OUTOKUMPU MEXINOX",
+      "fecha": "2026-01-20 05:00:00",
+      "fechaVencimiento": "2026-01-22 05:00:00",
+      "saldoPendiente": "0.00",
+      "estadoPago": "pagado",
+      "diasAtraso": "29"
+    },
+    {
+      "folio": "AB11741",
+      "nombreCliente": "OUTOKUMPU MEXINOX",
+      "fecha": "2026-01-20 05:00:00",
+      "fechaVencimiento": "2026-01-22 05:00:00",
+      "saldoPendiente": "0.00",
+      "estadoPago": "pagado",
+      "diasAtraso": "29"
+    },
+    {
+      "folio": "AB11744",
+      "nombreCliente": "OUTOKUMPU MEXINOX",
+      "fecha": "2026-01-20 05:00:00",
+      "fechaVencimiento": "2026-01-22 05:00:00",
+      "saldoPendiente": "0.00",
+      "estadoPago": "pagado",
+      "diasAtraso": "29"
+    },
+    {
+      "folio": "AB11746",
+      "nombreCliente": "OUTOKUMPU MEXINOX",
+      "fecha": "2026-01-20 05:00:00",
+      "fechaVencimiento": "2026-01-22 05:00:00",
+      "saldoPendiente": "0.00",
+      "estadoPago": "pagado",
+      "diasAtraso": "29"
+    },
+    {
+      "folio": "AB11749",
+      "nombreCliente": "OUTOKUMPU MEXINOX",
+      "fecha": "2026-01-20 05:00:00",
+      "fechaVencimiento": "2026-01-22 05:00:00",
+      "saldoPendiente": "0.00",
+      "estadoPago": "pagado",
+      "diasAtraso": "29"
+    },
+    {
+      "folio": "AB11848",
+      "nombreCliente": "OUTOKUMPU MEXINOX",
+      "fecha": "2026-01-29 05:00:00",
+      "fechaVencimiento": "2026-02-13 05:00:00",
+      "saldoPendiente": "0.00",
+      "estadoPago": "pagado",
+      "diasAtraso": "7"
+    },
+    {
+      "folio": "AB11849",
+      "nombreCliente": "OUTOKUMPU MEXINOX",
+      "fecha": "2026-01-29 05:00:00",
+      "fechaVencimiento": "2026-02-13 05:00:00",
+      "saldoPendiente": "0.00",
+      "estadoPago": "pagado",
+      "diasAtraso": "7"
+    },
+    {
+      "folio": "AB11850",
+      "nombreCliente": "OUTOKUMPU MEXINOX",
+      "fecha": "2026-01-29 00:00:00",
+      "fechaVencimiento": "2026-02-13 00:00:00",
+      "saldoPendiente": "11332.04",
+      "estadoPago": "pendiente",
+      "diasAtraso": "8"
+    },
+    {
+      "folio": "AB11902",
+      "nombreCliente": "OUTOKUMPU MEXINOX",
+      "fecha": "2026-02-02 00:00:00",
+      "fechaVencimiento": "2026-02-17 00:00:00",
+      "saldoPendiente": "0.00",
+      "estadoPago": "pendiente",
+      "diasAtraso": "4"
+    },
+    {
+      "folio": "AB6682",
+      "nombreCliente": "OUTOKUMPU MEXINOX",
+      "fecha": "2025-01-01 00:00:00",
+      "fechaVencimiento": "2025-01-31 00:00:00",
+      "saldoPendiente": "0.00",
+      "estadoPago": "pagado",
+      "diasAtraso": "374"
+    },
+    {
+      "folio": "AB6683",
+      "nombreCliente": "OUTOKUMPU MEXINOX",
+      "fecha": "2025-01-01 00:00:00",
+      "fechaVencimiento": "2025-01-31 00:00:00",
+      "saldoPendiente": "0.00",
+      "estadoPago": "pagado",
+      "diasAtraso": "374"
+    },
+    {
+      "folio": "AB7045",
+      "nombreCliente": "OUTOKUMPU MEXINOX",
+      "fecha": "2025-01-13 00:00:00",
+      "fechaVencimiento": "2025-02-12 00:00:00",
+      "saldoPendiente": "0.00",
+      "estadoPago": "pagado",
+      "diasAtraso": "362"
+    },
+    {
+      "folio": "AB7053",
+      "nombreCliente": "OUTOKUMPU MEXINOX",
+      "fecha": "2025-01-13 00:00:00",
+      "fechaVencimiento": "2025-02-12 00:00:00",
+      "saldoPendiente": "0.00",
+      "estadoPago": "pagado",
+      "diasAtraso": "362"
+    },
+    {
+      "folio": "AB7055",
+      "nombreCliente": "OUTOKUMPU MEXINOX",
+      "fecha": "2025-01-13 00:00:00",
+      "fechaVencimiento": "2025-02-12 00:00:00",
+      "saldoPendiente": "0.00",
+      "estadoPago": "pagado",
+      "diasAtraso": "362"
+    },
+    {
+      "folio": "AB7058",
+      "nombreCliente": "OUTOKUMPU MEXINOX",
+      "fecha": "2025-01-13 00:00:00",
+      "fechaVencimiento": "2025-02-12 00:00:00",
+      "saldoPendiente": "0.00",
+      "estadoPago": "pagado",
+      "diasAtraso": "362"
+    },
+    {
+      "folio": "AB7060",
+      "nombreCliente": "OUTOKUMPU MEXINOX",
+      "fecha": "2025-01-13 00:00:00",
+      "fechaVencimiento": "2025-02-12 00:00:00",
+      "saldoPendiente": "0.00",
+      "estadoPago": "pagado",
+      "diasAtraso": "362"
+    },
+    {
+      "folio": "AB7332",
+      "nombreCliente": "OUTOKUMPU MEXINOX",
+      "fecha": "2025-02-01 00:00:00",
+      "fechaVencimiento": "2025-03-03 00:00:00",
+      "saldoPendiente": "0.00",
+      "estadoPago": "pagado",
+      "diasAtraso": "343"
+    },
+    {
+      "folio": "AB7333",
+      "nombreCliente": "OUTOKUMPU MEXINOX",
+      "fecha": "2025-02-01 00:00:00",
+      "fechaVencimiento": "2025-03-03 00:00:00",
+      "saldoPendiente": "0.00",
+      "estadoPago": "pagado",
+      "diasAtraso": "343"
+    },
+    {
+      "folio": "AB7652",
+      "nombreCliente": "OUTOKUMPU MEXINOX",
+      "fecha": "2025-02-18 00:00:00",
+      "fechaVencimiento": "2025-03-20 00:00:00",
+      "saldoPendiente": "0.00",
+      "estadoPago": "pagado",
+      "diasAtraso": "326"
+    },
+    {
+      "folio": "AB7765",
+      "nombreCliente": "OUTOKUMPU MEXINOX",
+      "fecha": "2025-03-01 00:00:00",
+      "fechaVencimiento": "2025-03-31 00:00:00",
+      "saldoPendiente": "0.00",
+      "estadoPago": "pagado",
+      "diasAtraso": "315"
+    },
+    {
+      "folio": "AB7766",
+      "nombreCliente": "OUTOKUMPU MEXINOX",
+      "fecha": "2025-03-01 00:00:00",
+      "fechaVencimiento": "2025-03-31 00:00:00",
+      "saldoPendiente": "0.00",
+      "estadoPago": "pagado",
+      "diasAtraso": "315"
+    },
+    {
+      "folio": "AB8083",
+      "nombreCliente": "OUTOKUMPU MEXINOX",
+      "fecha": "2025-03-21 00:00:00",
+      "fechaVencimiento": "2025-04-20 00:00:00",
+      "saldoPendiente": "0.00",
+      "estadoPago": "pagado",
+      "diasAtraso": "295"
+    },
+    {
+      "folio": "AB8177",
+      "nombreCliente": "OUTOKUMPU MEXINOX",
+      "fecha": "2025-04-01 00:00:00",
+      "fechaVencimiento": "2025-05-01 00:00:00",
+      "saldoPendiente": "0.00",
+      "estadoPago": "pagado",
+      "diasAtraso": "284"
+    },
+    {
+      "folio": "AB8178",
+      "nombreCliente": "OUTOKUMPU MEXINOX",
+      "fecha": "2025-04-01 00:00:00",
+      "fechaVencimiento": "2025-05-01 00:00:00",
+      "saldoPendiente": "0.00",
+      "estadoPago": "pagado",
+      "diasAtraso": "284"
+    },
+    {
+      "folio": "AB8568",
+      "nombreCliente": "OUTOKUMPU MEXINOX",
+      "fecha": "2025-05-01 00:00:00",
+      "fechaVencimiento": "2025-05-31 00:00:00",
+      "saldoPendiente": "0.00",
+      "estadoPago": "pagado",
+      "diasAtraso": "254"
+    },
+    {
+      "folio": "AB8569",
+      "nombreCliente": "OUTOKUMPU MEXINOX",
+      "fecha": "2025-05-01 00:00:00",
+      "fechaVencimiento": "2025-05-31 00:00:00",
+      "saldoPendiente": "0.00",
+      "estadoPago": "pagado",
+      "diasAtraso": "254"
+    },
+    {
+      "folio": "AB8940",
+      "nombreCliente": "OUTOKUMPU MEXINOX",
+      "fecha": "2025-06-01 00:00:00",
+      "fechaVencimiento": "2025-07-01 00:00:00",
+      "saldoPendiente": "0.00",
+      "estadoPago": "pagado",
+      "diasAtraso": "223"
+    },
+    {
+      "folio": "AB8941",
+      "nombreCliente": "OUTOKUMPU MEXINOX",
+      "fecha": "2025-06-01 00:00:00",
+      "fechaVencimiento": "2025-07-01 00:00:00",
+      "saldoPendiente": "0.00",
+      "estadoPago": "pagado",
+      "diasAtraso": "223"
+    },
+    {
+      "folio": "AB9330",
+      "nombreCliente": "OUTOKUMPU MEXINOX",
+      "fecha": "2025-07-01 00:00:00",
+      "fechaVencimiento": "2025-07-31 00:00:00",
+      "saldoPendiente": "0.00",
+      "estadoPago": "pagado",
+      "diasAtraso": "193"
+    },
+    {
+      "folio": "AB9331",
+      "nombreCliente": "OUTOKUMPU MEXINOX",
+      "fecha": "2025-07-01 00:00:00",
+      "fechaVencimiento": "2025-07-31 00:00:00",
+      "saldoPendiente": "0.00",
+      "estadoPago": "pagado",
+      "diasAtraso": "193"
+    },
+    {
+      "folio": "AB9706",
+      "nombreCliente": "OUTOKUMPU MEXINOX",
+      "fecha": "2025-08-02 00:00:00",
+      "fechaVencimiento": "2025-09-01 00:00:00",
+      "saldoPendiente": "0.00",
+      "estadoPago": "pagado",
+      "diasAtraso": "161"
+    },
+    {
+      "folio": "AB9707",
+      "nombreCliente": "OUTOKUMPU MEXINOX",
+      "fecha": "2025-08-02 00:00:00",
+      "fechaVencimiento": "2025-09-01 00:00:00",
+      "saldoPendiente": "0.00",
+      "estadoPago": "pagado",
+      "diasAtraso": "161"
+    }
+  ],
+  "messages": [],
+  "stdout": "folio\tnombreCliente\tfecha\tfechaVencimiento\tsaldoPendiente\testadoPago\tdiasAtraso\nAA1066\tOUTOKUMPU MEXINOX\t2025-12-02 00:00:00\t2026-01-01 00:00:00\t0.00\tpagado\t39\nAA1067\tOUTOKUMPU MEXINOX\t2025-12-02 00:00:00\t2026-01-01 00:00:00\t0.00\tpagado\t39\nAA1069\tOUTOKUMPU MEXINOX\t2025-12-02 00:00:00\t2026-01-01 00:00:00\t0.00\tpagado\t39\nAA1289\tOUTOKUMPU MEXINOX\t2026-01-02 05:00:00\t2026-01-30 05:00:00\t0.00\tpagado\t21\nAA1290\tOUTOKUMPU MEXINOX\t2026-01-02 05:00:00\t2026-01-30 05:00:00\t0.00\tpagado\t21\nAA1292\tOUTOKUMPU MEXINOX\t2026-01-02 05:00:00\t2026-01-31 05:00:00\t0.00\tpagado\t20\nAA1485\tOUTOKUMPU MEXINOX\t2026-01-29 05:00:00\t2026-02-13 05:00:00\t0.00\tpagado\t7\nAA1555\tOUTOKUMPU MEXINOX\t2026-02-02 00:00:00\t2026-03-04 00:00:00\t0.00\tpagado\t0\nAA1556\tOUTOKUMPU MEXINOX\t2026-02-02 00:00:00\t2026-03-04 00:00:00\t0.00\tpagado\t0\nAA1558\tOUTOKUMPU MEXINOX\t2026-02-02 00:00:00\t2026-03-04 00:00:00\t0.00\tpagado\t0\nAA607\tOUTOKUMPU MEXINOX\t2025-09-19 00:00:00\t2025-10-19 00:00:00\t0.00\tpagado\t113\nAA608\tOUTOKUMPU MEXINOX\t2025-09-19 00:00:00\t2025-10-19 00:00:00\t0.00\tpagado\t113\nAA609\tOUTOKUMPU MEXINOX\t2025-09-19 00:00:00\t2025-10-19 00:00:00\t0.00\tpagado\t113\nAA648\tOUTOKUMPU MEXINOX\t2025-09-26 00:00:00\t2025-10-26 00:00:00\t0.00\tpagado\t106\nAA649\tOUTOKUMPU MEXINOX\t2025-09-26 00:00:00\t2025-10-26 00:00:00\t0.00\tpagado\t106\nAA650\tOUTOKUMPU MEXINOX\t2025-09-26 00:00:00\t2025-10-26 00:00:00\t0.00\tpagado\t106\nAA651\tOUTOKUMPU MEXINOX\t2025-09-26 00:00:00\t2025-10-26 00:00:00\t0.00\tpagado\t106\nAA652\tOUTOKUMPU MEXINOX\t2025-09-26 00:00:00\t2025-10-26 00:00:00\t0.00\tpagado\t106\nAA653\tOUTOKUMPU MEXINOX\t2025-09-26 00:00:00\t2025-10-26 00:00:00\t0.00\tpagado\t106\nAA747\tOUTOKUMPU MEXINOX\t2025-10-02 00:00:00\t2025-11-01 00:00:00\t0.00\tpagado\t100\nAA748\tOUTOKUMPU MEXINOX\t2025-10-02 00:00:00\t2025-11-01 00:00:00\t0.00\tpagado\t100\nAA750\tOUTOKUMPU MEXINOX\t2025-10-02 00:00:00\t2025-11-01 00:00:00\t0.00\tpagado\t100\nAA879\tOUTOKUMPU MEXINOX\t2025-11-02 00:00:00\t2025-12-02 00:00:00\t0.00\tpagado\t69\nAA880\tOUTOKUMPU MEXINOX\t2025-11-02 00:00:00\t2025-12-02 00:00:00\t0.00\tpagado\t69\nAA882\tOUTOKUMPU MEXINOX\t2025-11-02 00:00:00\t2025-12-02 00:00:00\t0.00\tpagado\t69\nAB10064\tOUTOKUMPU MEXINOX\t2025-09-02 00:00:00\t2025-10-02 00:00:00\t0.00\tpagado\t130\nAB10065\tOUTOKUMPU MEXINOX\t2025-09-02 00:00:00\t2025-10-02 00:00:00\t0.00\tpagado\t130\nAB10442\tOUTOKUMPU MEXINOX\t2025-10-02 00:00:00\t2025-11-01 00:00:00\t0.00\tpagado\t100\nAB10443\tOUTOKUMPU MEXINOX\t2025-10-02 00:00:00\t2025-11-01 00:00:00\t0.00\tpagado\t100\nAB10785\tOUTOKUMPU MEXINOX\t2025-11-02 00:00:00\t2025-12-02 00:00:00\t0.00\tpagado\t69\nAB11104\tOUTOKUMPU MEXINOX\t2025-12-02 00:00:00\t2026-01-01 00:00:00\t0.00\tpagado\t39\nAB11377\tOUTOKUMPU MEXINOX\t2025-12-27 00:00:00\t2026-01-26 00:00:00\t0.00\tpagado\t14\nAB11434\tOUTOKUMPU MEXINOX\t2026-01-02 00:00:00\t2026-02-01 00:00:00\t0.00\tpagado\t9\nAB11738\tOUTOKUMPU MEXINOX\t2026-01-20 05:00:00\t2026-01-22 05:00:00\t0.00\tpagado\t29\nAB11741\tOUTOKUMPU MEXINOX\t2026-01-20 05:00:00\t2026-01-22 05:00:00\t0.00\tpagado\t29\nAB11744\tOUTOKUMPU MEXINOX\t2026-01-20 05:00:00\t2026-01-22 05:00:00\t0.00\tpagado\t29\nAB11746\tOUTOKUMPU MEXINOX\t2026-01-20 05:00:00\t2026-01-22 05:00:00\t0.00\tpagado\t29\nAB11749\tOUTOKUMPU MEXINOX\t2026-01-20 05:00:00\t2026-01-22 05:00:00\t0.00\tpagado\t29\nAB11848\tOUTOKUMPU MEXINOX\t2026-01-29 05:00:00\t2026-02-13 05:00:00\t0.00\tpagado\t7\nAB11849\tOUTOKUMPU MEXINOX\t2026-01-29 05:00:00\t2026-02-13 05:00:00\t0.00\tpagado\t7\nAB11850\tOUTOKUMPU MEXINOX\t2026-01-29 00:00:00\t2026-02-13 00:00:00\t11332.04\tpendiente\t8\nAB11902\tOUTOKUMPU MEXINOX\t2026-02-02 00:00:00\t2026-02-17 00:00:00\t0.00\tpendiente\t4\nAB6682\tOUTOKUMPU MEXINOX\t2025-01-01 00:00:00\t2025-01-31 00:00:00\t0.00\tpagado\t374\nAB6683\tOUTOKUMPU MEXINOX\t2025-01-01 00:00:00\t2025-01-31 00:00:00\t0.00\tpagado\t374\nAB7045\tOUTOKUMPU MEXINOX\t2025-01-13 00:00:00\t2025-02-12 00:00:00\t0.00\tpagado\t362\nAB7053\tOUTOKUMPU MEXINOX\t2025-01-13 00:00:00\t2025-02-12 00:00:00\t0.00\tpagado\t362\nAB7055\tOUTOKUMPU MEXINOX\t2025-01-13 00:00:00\t2025-02-12 00:00:00\t0.00\tpagado\t362\nAB7058\tOUTOKUMPU MEXINOX\t2025-01-13 00:00:00\t2025-02-12 00:00:00\t0.00\tpagado\t362\nAB7060\tOUTOKUMPU MEXINOX\t2025-01-13 00:00:00\t2025-02-12 00:00:00\t0.00\tpagado\t362\nAB7332\tOUTOKUMPU MEXINOX\t2025-02-01 00:00:00\t2025-03-03 00:00:00\t0.00\tpagado\t343\nAB7333\tOUTOKUMPU MEXINOX\t2025-02-01 00:00:00\t2025-03-03 00:00:00\t0.00\tpagado\t343\nAB7652\tOUTOKUMPU MEXINOX\t2025-02-18 00:00:00\t2025-03-20 00:00:00\t0.00\tpagado\t326\nAB7765\tOUTOKUMPU MEXINOX\t2025-03-01 00:00:00\t2025-03-31 00:00:00\t0.00\tpagado\t315\nAB7766\tOUTOKUMPU MEXINOX\t2025-03-01 00:00:00\t2025-03-31 00:00:00\t0.00\tpagado\t315\nAB8083\tOUTOKUMPU MEXINOX\t2025-03-21 00:00:00\t2025-04-20 00:00:00\t0.00\tpagado\t295\nAB8177\tOUTOKUMPU MEXINOX\t2025-04-01 00:00:00\t2025-05-01 00:00:00\t0.00\tpagado\t284\nAB8178\tOUTOKUMPU MEXINOX\t2025-04-01 00:00:00\t2025-05-01 00:00:00\t0.00\tpagado\t284\nAB8568\tOUTOKUMPU MEXINOX\t2025-05-01 00:00:00\t2025-05-31 00:00:00\t0.00\tpagado\t254\nAB8569\tOUTOKUMPU MEXINOX\t2025-05-01 00:00:00\t2025-05-31 00:00:00\t0.00\tpagado\t254\nAB8940\tOUTOKUMPU MEXINOX\t2025-06-01 00:00:00\t2025-07-01 00:00:00\t0.00\tpagado\t223\nAB8941\tOUTOKUMPU MEXINOX\t2025-06-01 00:00:00\t2025-07-01 00:00:00\t0.00\tpagado\t223\nAB9330\tOUTOKUMPU MEXINOX\t2025-07-01 00:00:00\t2025-07-31 00:00:00\t0.00\tpagado\t193\nAB9331\tOUTOKUMPU MEXINOX\t2025-07-01 00:00:00\t2025-07-31 00:00:00\t0.00\tpagado\t193\nAB9706\tOUTOKUMPU MEXINOX\t2025-08-02 00:00:00\t2025-09-01 00:00:00\t0.00\tpagado\t161\nAB9707\tOUTOKUMPU MEXINOX\t2025-08-02 00:00:00\t2025-09-01 00:00:00\t0.00\tpagado\t161\n",
+  "stderr": "",
+  "execution_time_ms": 81
+}

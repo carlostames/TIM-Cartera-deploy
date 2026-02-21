@@ -1,0 +1,20 @@
+{
+  "query": "SELECT folio, nombreCliente, fecha, fechaVencimiento, saldoPendiente, importeTotal, estadoPago, diasAtraso \nFROM facturas \nWHERE folio = 'AB12136';",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway03.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 344B2FJrSHdkSxo.0ab51ce41b50 --database bUSGvjzrZfvVXNhQ347wq4 --execute SELECT folio, nombreCliente, fecha, fechaVencimiento, saldoPendiente, importeTotal, estadoPago, diasAtraso \nFROM facturas \nWHERE folio = 'AB12136';",
+  "rows": [
+    {
+      "folio": "AB12136",
+      "nombreCliente": "CLIENTE DESCONOCIDO",
+      "fecha": "2026-02-04 00:00:00",
+      "fechaVencimiento": "2026-02-16 00:00:00",
+      "saldoPendiente": "0.00",
+      "importeTotal": "11332.04",
+      "estadoPago": "pendiente",
+      "diasAtraso": "5"
+    }
+  ],
+  "messages": [],
+  "stdout": "folio\tnombreCliente\tfecha\tfechaVencimiento\tsaldoPendiente\timporteTotal\testadoPago\tdiasAtraso\nAB12136\tCLIENTE DESCONOCIDO\t2026-02-04 00:00:00\t2026-02-16 00:00:00\t0.00\t11332.04\tpendiente\t5\n",
+  "stderr": "",
+  "execution_time_ms": 77
+}

@@ -251,6 +251,20 @@ export default function Upload() {
                       )}
                     </>
                   )}
+                  {uploadResult.facturasFaltantes && uploadResult.facturasFaltantes.length > 0 && (
+                    <div className="mt-3">
+                      <p className="font-semibold mb-1 text-orange-600">Facturas no encontradas en la base de datos ({uploadResult.facturasFaltantes.length}):</p>
+                      <p className="text-sm mb-2">Estas facturas están en el archivo de pendientes pero NO existen en la base de datos. Debes cargarlas primero desde los archivos TT o TV.</p>
+                      <ul className="list-disc list-inside space-y-1 text-sm">
+                        {uploadResult.facturasFaltantes.slice(0, 10).map((factura: any, idx: number) => (
+                          <li key={idx}>{factura.folio} - Saldo: ${parseFloat(factura.saldo || 0).toLocaleString('es-MX', {minimumFractionDigits: 2})}</li>
+                        ))}
+                        {uploadResult.facturasFaltantes.length > 10 && (
+                          <li>... y {uploadResult.facturasFaltantes.length - 10} facturas más</li>
+                        )}
+                      </ul>
+                    </div>
+                  )}
                   {uploadResult.errores && uploadResult.errores.length > 0 && (
                     <div className="mt-3">
                       <p className="font-semibold mb-1">Errores encontrados:</p>

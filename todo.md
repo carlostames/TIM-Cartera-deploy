@@ -482,3 +482,22 @@
 - [x] Identificar consultas SQL que usan DATEDIFF(CURDATE(), fechaVencimiento)
 - [x] Cambiar para usar el campo diasAtraso almacenado en 3 funciones
 - [x] Verificar que todas las vistas muestren 29 días correctamente
+
+## ERROR CRÍTICO: Archivo de Saldos Pendientes no sobrescribe correctamente
+- [x] Revisar archivo Libro1.xlsx con datos de Outokumpu (3 facturas en archivo: AB11850, AB12136, AB11902)
+- [x] Verificar cuántas facturas de Outokumpu hay en base de datos (65 total, 2 pendientes)
+- [x] Comparar estados de cuenta vs archivo Excel (falta AB12136)
+- [x] Identificar por qué solo muestra 2 facturas en lugar de 3 (AB12136 tiene "CLIENTE DESCONOCIDO")
+- [x] Identificar causa raíz: archivo pendientes CREA facturas nuevas sin cliente
+- [x] Modificar código para que pendientes NO cree facturas nuevas
+- [x] Agregar reporte de facturas faltantes (no encontradas en BD)
+- [ ] Probar recarga y verificar mensaje de facturas faltantes
+
+## ERROR: Discrepancia en Total de Cartera Pendiente
+- [x] Verificar total de cartera pendiente mostrado en el sistema ($1,352K)
+- [x] Comparar con total del archivo de pendientes ($1,844,447.72 real)
+- [x] Identificar facturas faltantes: 5 facturas (AB12136, AB12140, AB12142, AA1674, AA1680)
+- [x] Causa: Solo se cargaron 5 facturas TT/TV, faltan 135 facturas del archivo de pendientes
+- [ ] Cargar archivos completos de TT y TV con todas las facturas
+- [ ] Recargar archivo de pendientes para actualizar saldos
+- [ ] Verificar que totales coincidan
