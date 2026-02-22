@@ -1026,7 +1026,10 @@ export async function getProyeccionMatricial(
   const todasLasPartidas = numerosContratos.length > 0 ? await db.select({
     numeroContrato: partidasFactura.numeroContrato,
     descripcion: partidasFactura.descripcion,
-    fecha: facturas.fecha
+    fecha: facturas.fecha,
+    facturaId: partidasFactura.facturaId,
+    importeTotal: facturas.importeTotal,
+    monto: partidasFactura.monto
   })
   .from(partidasFactura)
   .innerJoin(facturas, eq(partidasFactura.facturaId, facturas.id))
@@ -1095,6 +1098,54 @@ export async function getProyeccionMatricial(
         // Verificar si el mes está dentro del periodo de proyección
         if (primerDiaMes >= fechaInicioProyeccion && primerDiaMes <= fechaTermino) {
           datos[contrato.id][mesNumero] = rentaTotal;
+          rentasProyectadas++;
+        }
+      }
+    } else {
+      // Contratos sin fechas: usar información de facturas para proyectar
+      // Buscar el total de rentas y la última renta pagada desde las facturas
+      const partidasContrato = todasLasPartidas.filter(p => p.numeroContrato === contrato.numeroContrato);
+      
+      let totalRentas = 0;
+      let rentaActual = 0;
+      let montoRenta = 0;
+      
+      // Buscar el patrón "RENTA X DE Y" en las partidas
+      for (const partida of partidasContrato) {
+        const match = partida.descripcion?.match(/RENTA\s+(\d+)\s+DE\s+(\d+)/i);
+        if (match) {
+          const x = parseInt(match[1]);
+          const y = parseInt(match[2]);
+          
+          if (x > rentaActual) {
+            rentaActual = x;
+          }
+          if (y > totalRentas) {
+            totalRentas = y;
+          }
+        }
+      }
+      
+      // Obtener monto de renta desde el contrato o desde las facturas
+      if (contrato.montoMensual && Number(contrato.montoMensual) > 0) {
+        montoRenta = (Number(contrato.montoMensual) || 0) + 
+                     (Number(contrato.rentaAdministracion) || 0) + 
+                     (Number(contrato.rentaClubTim) || 0);
+      } else if (partidasContrato.length > 0) {
+        // Usar el monto de la última partida como referencia
+        const ultimaPartida = partidasContrato[0]; // Ya están ordenadas por fecha desc
+        montoRenta = Number(ultimaPartida.monto) || 0;
+      }
+      
+      // Si tenemos información suficiente, proyectar
+      if (totalRentas > 0 && rentaActual > 0 && montoRenta > 0) {
+        const rentasFaltantes = totalRentas - rentaActual;
+        
+        // Proyectar todas las rentas faltantes distribuyéndolas en los meses del año
+        let rentasProyectadas = 0;
+        
+        for (let mesNumero = 1; mesNumero <= 12 && rentasProyectadas < rentasFaltantes; mesNumero++) {
+          datos[contrato.id][mesNumero] = montoRenta;
           rentasProyectadas++;
         }
       }

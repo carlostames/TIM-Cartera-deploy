@@ -578,3 +578,5 @@
 - [x] Agregar modales clickeables a cards de Resumen Global con detalle de contratos por empresa
 
 - [x] Modificar Tabla de Proyección para basarse en contratos activos en lugar de facturas con patrón "X de Y"
+
+- [ ] BUG: Tabla de Proyección no muestra contratos de Tim Transp (TT)

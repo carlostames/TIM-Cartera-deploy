@@ -1,0 +1,110 @@
+{
+  "query": "SELECT id, numeroContrato, empresa, fechaInicio, fechaTermino, plazo, montoMensual, activo FROM contratos WHERE empresa = 'tim_transp' LIMIT 10;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway03.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 344B2FJrSHdkSxo.0ab51ce41b50 --database bUSGvjzrZfvVXNhQ347wq4 --execute SELECT id, numeroContrato, empresa, fechaInicio, fechaTermino, plazo, montoMensual, activo FROM contratos WHERE empresa = 'tim_transp' LIMIT 10;",
+  "rows": [
+    {
+      "id": "1",
+      "numeroContrato": "342",
+      "empresa": "tim_transp",
+      "fechaInicio": "2025-01-01",
+      "fechaTermino": "2026-12-01",
+      "plazo": "NULL",
+      "montoMensual": "6960.00",
+      "activo": "1"
+    },
+    {
+      "id": "2",
+      "numeroContrato": "195",
+      "empresa": "tim_transp",
+      "fechaInicio": "2025-01-01",
+      "fechaTermino": "2025-05-31",
+      "plazo": "NULL",
+      "montoMensual": "6960.00",
+      "activo": "1"
+    },
+    {
+      "id": "3",
+      "numeroContrato": "325",
+      "empresa": "tim_transp",
+      "fechaInicio": "2025-01-01",
+      "fechaTermino": "2025-10-31",
+      "plazo": "NULL",
+      "montoMensual": "6960.00",
+      "activo": "1"
+    },
+    {
+      "id": "4",
+      "numeroContrato": "266",
+      "empresa": "tim_transp",
+      "fechaInicio": "2025-01-01",
+      "fechaTermino": "2026-05-01",
+      "plazo": "NULL",
+      "montoMensual": "6960.00",
+      "activo": "1"
+    },
+    {
+      "id": "5",
+      "numeroContrato": "239",
+      "empresa": "tim_transp",
+      "fechaInicio": "2025-01-01",
+      "fechaTermino": "2026-01-31",
+      "plazo": "NULL",
+      "montoMensual": "6960.00",
+      "activo": "0"
+    },
+    {
+      "id": "6",
+      "numeroContrato": "332",
+      "empresa": "tim_transp",
+      "fechaInicio": "2025-01-01",
+      "fechaTermino": "2027-10-31",
+      "plazo": "NULL",
+      "montoMensual": "6960.00",
+      "activo": "1"
+    },
+    {
+      "id": "7",
+      "numeroContrato": "166",
+      "empresa": "tim_transp",
+      "fechaInicio": "2025-01-01",
+      "fechaTermino": "2025-01-31",
+      "plazo": "NULL",
+      "montoMensual": "6171.20",
+      "activo": "0"
+    },
+    {
+      "id": "8",
+      "numeroContrato": "169",
+      "empresa": "tim_transp",
+      "fechaInicio": "2025-01-01",
+      "fechaTermino": "2025-01-31",
+      "plazo": "NULL",
+      "montoMensual": "5556.40",
+      "activo": "0"
+    },
+    {
+      "id": "9",
+      "numeroContrato": "175",
+      "empresa": "tim_transp",
+      "fechaInicio": "2025-01-01",
+      "fechaTermino": "2025-03-31",
+      "plazo": "NULL",
+      "montoMensual": "5359.20",
+      "activo": "1"
+    },
+    {
+      "id": "10",
+      "numeroContrato": "326",
+      "empresa": "tim_transp",
+      "fechaInicio": "2025-01-01",
+      "fechaTermino": "2027-10-31",
+      "plazo": "NULL",
+      "montoMensual": "6960.00",
+      "activo": "1"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tnumeroContrato\tempresa\tfechaInicio\tfechaTermino\tplazo\tmontoMensual\tactivo\n1\t342\ttim_transp\t2025-01-01\t2026-12-01\tNULL\t6960.00\t1\n2\t195\ttim_transp\t2025-01-01\t2025-05-31\tNULL\t6960.00\t1\n3\t325\ttim_transp\t2025-01-01\t2025-10-31\tNULL\t6960.00\t1\n4\t266\ttim_transp\t2025-01-01\t2026-05-01\tNULL\t6960.00\t1\n5\t239\ttim_transp\t2025-01-01\t2026-01-31\tNULL\t6960.00\t0\n6\t332\ttim_transp\t2025-01-01\t2027-10-31\tNULL\t6960.00\t1\n7\t166\ttim_transp\t2025-01-01\t2025-01-31\tNULL\t6171.20\t0\n8\t169\ttim_transp\t2025-01-01\t2025-01-31\tNULL\t5556.40\t0\n9\t175\ttim_transp\t2025-01-01\t2025-03-31\tNULL\t5359.20\t1\n10\t326\ttim_transp\t2025-01-01\t2027-10-31\tNULL\t6960.00\t1\n",
+  "stderr": "",
+  "execution_time_ms": 388
+}
