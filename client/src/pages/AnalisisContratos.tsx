@@ -490,6 +490,43 @@ export default function AnalisisContratos() {
                     </Card>
                   </div>
 
+                  {/* Desglose por Empresa */}
+                  <div className="grid gap-4 md:grid-cols-3">
+                    <Card key="tim-transp">
+                      <CardHeader className="pb-3">
+                        <CardDescription>Tim Transp (TT)</CardDescription>
+                        <CardTitle className="text-2xl text-blue-600">
+                          {formatearMoneda(deudaCliente.proyeccionTT || 0, formatoUsuario)}
+                        </CardTitle>
+                        <p className="text-xs text-muted-foreground">
+                          Último contrato termina: {deudaCliente.fechaTerminoTT || 'N/A'}
+                        </p>
+                      </CardHeader>
+                    </Card>
+                    <Card key="tim-value">
+                      <CardHeader className="pb-3">
+                        <CardDescription>Tim Value (TV)</CardDescription>
+                        <CardTitle className="text-2xl text-green-600">
+                          {formatearMoneda(deudaCliente.proyeccionTV || 0, formatoUsuario)}
+                        </CardTitle>
+                        <p className="text-xs text-muted-foreground">
+                          Último contrato termina: {deudaCliente.fechaTerminoTV || 'N/A'}
+                        </p>
+                      </CardHeader>
+                    </Card>
+                    <Card key="tt-tv-total">
+                      <CardHeader className="pb-3">
+                        <CardDescription>TT + TV</CardDescription>
+                        <CardTitle className="text-2xl text-purple-600">
+                          {formatearMoneda((deudaCliente.proyeccionTT || 0) + (deudaCliente.proyeccionTV || 0), formatoUsuario)}
+                        </CardTitle>
+                        <p className="text-xs text-muted-foreground">
+                          Último contrato termina: {deudaCliente.fechaTerminoTotal || 'N/A'}
+                        </p>
+                      </CardHeader>
+                    </Card>
+                  </div>
+
                   {deudaCliente.detalleProyeccion.length > 0 && (
                     <Card>
                       <CardHeader>

@@ -1595,6 +1595,10 @@ export async function getDeudaTotalCliente(clienteId: number) {
   }> = [];
 
   let totalProyeccion = 0;
+  let proyeccionTT = 0;
+  let proyeccionTV = 0;
+  let fechaTerminoTT: Date | null = null;
+  let fechaTerminoTV: Date | null = null;
 
   for (const contrato of contratosActivos) {
     // Calcular pagos restantes: totalRentas - rentaActual
@@ -1607,6 +1611,19 @@ export async function getDeudaTotalCliente(clienteId: number) {
     if (contrato.montoMensual && Number(contrato.montoMensual) > 0) {
       const proyeccion = pagosFaltantes * Number(contrato.montoMensual);
       totalProyeccion += proyeccion;
+      
+      // Acumular por empresa
+      if (contrato.empresa === 'tim_transp') {
+        proyeccionTT += proyeccion;
+        if (!fechaTerminoTT || (contrato.fechaTermino && contrato.fechaTermino > fechaTerminoTT)) {
+          fechaTerminoTT = contrato.fechaTermino;
+        }
+      } else if (contrato.empresa === 'tim_value') {
+        proyeccionTV += proyeccion;
+        if (!fechaTerminoTV || (contrato.fechaTermino && contrato.fechaTermino > fechaTerminoTV)) {
+          fechaTerminoTV = contrato.fechaTermino;
+        }
+      }
       proyeccionContratos.push({
         numeroContrato: contrato.numeroContrato,
         linea: contrato.numeroContrato,
@@ -1652,7 +1669,12 @@ export async function getDeudaTotalCliente(clienteId: number) {
     proyeccionContratos: totalProyeccion,
     totalAdeudado: totalCarteraVencida + totalProyeccion,
     detalleProyeccion: proyeccionContratos,
-    facturasPendientes: facturasVencidas.length
+    facturasPendientes: facturasVencidas.length,
+    proyeccionTT,
+    proyeccionTV,
+    fechaTerminoTT: fechaTerminoTT?.toISOString().split('T')[0] || null,
+    fechaTerminoTV: fechaTerminoTV?.toISOString().split('T')[0] || null,
+    fechaTerminoTotal: (fechaTerminoTT && fechaTerminoTV ? (fechaTerminoTT > fechaTerminoTV ? fechaTerminoTT : fechaTerminoTV) : (fechaTerminoTT || fechaTerminoTV))?.toISOString().split('T')[0] || null
   };
 }
 
