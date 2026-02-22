@@ -6,6 +6,7 @@ import { Input } from '../components/ui/input';
 import { Button } from '../components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../components/ui/table';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '../components/ui/dialog';
 import { Search, FileText, TrendingUp, DollarSign } from 'lucide-react';
 import { formatearMoneda, FormatoMoneda } from '../../../shared/formatoMoneda';
 
@@ -699,39 +700,158 @@ export default function AnalisisContratos() {
             </Card>
           ) : totalesGlobales ? (
             <div className="grid gap-4 md:grid-cols-3">
-              <Card key="global-tim-transp">
-                <CardHeader className="pb-3">
-                  <CardDescription>Tim Transp (TT)</CardDescription>
-                  <CardTitle className="text-3xl text-blue-600">
-                    {formatearMoneda(totalesGlobales.proyeccionTT || 0, formatoUsuario)}
-                  </CardTitle>
-                  <p className="text-sm text-muted-foreground mt-2">
-                    Último contrato termina: {totalesGlobales.fechaTerminoTT || 'N/A'}
-                  </p>
-                </CardHeader>
-              </Card>
-              <Card key="global-tim-value">
-                <CardHeader className="pb-3">
-                  <CardDescription>Tim Value (TV)</CardDescription>
-                  <CardTitle className="text-3xl text-green-600">
-                    {formatearMoneda(totalesGlobales.proyeccionTV || 0, formatoUsuario)}
-                  </CardTitle>
-                  <p className="text-sm text-muted-foreground mt-2">
-                    Último contrato termina: {totalesGlobales.fechaTerminoTV || 'N/A'}
-                  </p>
-                </CardHeader>
-              </Card>
-              <Card key="global-tt-tv-total">
-                <CardHeader className="pb-3">
-                  <CardDescription>TT + TV (Total General)</CardDescription>
-                  <CardTitle className="text-3xl text-purple-600">
-                    {formatearMoneda(totalesGlobales.proyeccionTotal || 0, formatoUsuario)}
-                  </CardTitle>
-                  <p className="text-sm text-muted-foreground mt-2">
-                    Último contrato termina: {totalesGlobales.fechaTerminoTotal || 'N/A'}
-                  </p>
-                </CardHeader>
-              </Card>
+              <Dialog>
+                <DialogTrigger asChild>
+                  <Card key="global-tim-transp" className="cursor-pointer hover:shadow-lg transition-shadow">
+                    <CardHeader className="pb-3">
+                      <CardDescription>Tim Transp (TT)</CardDescription>
+                      <CardTitle className="text-3xl text-blue-600">
+                        {formatearMoneda(totalesGlobales.proyeccionTT || 0, formatoUsuario)}
+                      </CardTitle>
+                      <p className="text-sm text-muted-foreground mt-2">
+                        Último contrato termina: {totalesGlobales.fechaTerminoTT || 'N/A'}
+                      </p>
+                      <p className="text-xs text-muted-foreground mt-1">
+                        Click para ver detalle
+                      </p>
+                    </CardHeader>
+                  </Card>
+                </DialogTrigger>
+                <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
+                  <DialogHeader>
+                    <DialogTitle>Detalle de Contratos - Tim Transp (TT)</DialogTitle>
+                    <DialogDescription>
+                      Lista completa de contratos activos de Tim Transp con su proyección
+                    </DialogDescription>
+                  </DialogHeader>
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Número de Contrato</TableHead>
+                        <TableHead>Cliente</TableHead>
+                        <TableHead className="text-right">Pagos Faltantes</TableHead>
+                        <TableHead className="text-right">Proyección</TableHead>
+                        <TableHead>Fecha Término</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {totalesGlobales.detalleContratosTT?.map((contrato: any, idx: number) => (
+                        <TableRow key={idx}>
+                          <TableCell className="font-medium">{contrato.numeroContrato}</TableCell>
+                          <TableCell>{contrato.cliente}</TableCell>
+                          <TableCell className="text-right">{contrato.pagosFaltantes}</TableCell>
+                          <TableCell className="text-right text-blue-600 font-semibold">
+                            {formatearMoneda(contrato.proyeccion, formatoUsuario)}
+                          </TableCell>
+                          <TableCell>{contrato.fechaTermino || 'N/A'}</TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </DialogContent>
+              </Dialog>
+
+              <Dialog>
+                <DialogTrigger asChild>
+                  <Card key="global-tim-value" className="cursor-pointer hover:shadow-lg transition-shadow">
+                    <CardHeader className="pb-3">
+                      <CardDescription>Tim Value (TV)</CardDescription>
+                      <CardTitle className="text-3xl text-green-600">
+                        {formatearMoneda(totalesGlobales.proyeccionTV || 0, formatoUsuario)}
+                      </CardTitle>
+                      <p className="text-sm text-muted-foreground mt-2">
+                        Último contrato termina: {totalesGlobales.fechaTerminoTV || 'N/A'}
+                      </p>
+                      <p className="text-xs text-muted-foreground mt-1">
+                        Click para ver detalle
+                      </p>
+                    </CardHeader>
+                  </Card>
+                </DialogTrigger>
+                <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
+                  <DialogHeader>
+                    <DialogTitle>Detalle de Contratos - Tim Value (TV)</DialogTitle>
+                    <DialogDescription>
+                      Lista completa de contratos activos de Tim Value con su proyección
+                    </DialogDescription>
+                  </DialogHeader>
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Número de Contrato</TableHead>
+                        <TableHead>Cliente</TableHead>
+                        <TableHead className="text-right">Pagos Faltantes</TableHead>
+                        <TableHead className="text-right">Proyección</TableHead>
+                        <TableHead>Fecha Término</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {totalesGlobales.detalleContratosTV?.map((contrato: any, idx: number) => (
+                        <TableRow key={idx}>
+                          <TableCell className="font-medium">{contrato.numeroContrato}</TableCell>
+                          <TableCell>{contrato.cliente}</TableCell>
+                          <TableCell className="text-right">{contrato.pagosFaltantes}</TableCell>
+                          <TableCell className="text-right text-green-600 font-semibold">
+                            {formatearMoneda(contrato.proyeccion, formatoUsuario)}
+                          </TableCell>
+                          <TableCell>{contrato.fechaTermino || 'N/A'}</TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </DialogContent>
+              </Dialog>
+
+              <Dialog>
+                <DialogTrigger asChild>
+                  <Card key="global-tt-tv-total" className="cursor-pointer hover:shadow-lg transition-shadow">
+                    <CardHeader className="pb-3">
+                      <CardDescription>TT + TV (Total General)</CardDescription>
+                      <CardTitle className="text-3xl text-purple-600">
+                        {formatearMoneda(totalesGlobales.proyeccionTotal || 0, formatoUsuario)}
+                      </CardTitle>
+                      <p className="text-sm text-muted-foreground mt-2">
+                        Último contrato termina: {totalesGlobales.fechaTerminoTotal || 'N/A'}
+                      </p>
+                      <p className="text-xs text-muted-foreground mt-1">
+                        Click para ver detalle
+                      </p>
+                    </CardHeader>
+                  </Card>
+                </DialogTrigger>
+                <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
+                  <DialogHeader>
+                    <DialogTitle>Detalle de Contratos - TT + TV (Todos)</DialogTitle>
+                    <DialogDescription>
+                      Lista completa de todos los contratos activos con su proyección
+                    </DialogDescription>
+                  </DialogHeader>
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Número de Contrato</TableHead>
+                        <TableHead>Cliente</TableHead>
+                        <TableHead className="text-right">Pagos Faltantes</TableHead>
+                        <TableHead className="text-right">Proyección</TableHead>
+                        <TableHead>Fecha Término</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {totalesGlobales.detalleContratosTodos?.map((contrato: any, idx: number) => (
+                        <TableRow key={idx}>
+                          <TableCell className="font-medium">{contrato.numeroContrato}</TableCell>
+                          <TableCell>{contrato.cliente}</TableCell>
+                          <TableCell className="text-right">{contrato.pagosFaltantes}</TableCell>
+                          <TableCell className="text-right text-purple-600 font-semibold">
+                            {formatearMoneda(contrato.proyeccion, formatoUsuario)}
+                          </TableCell>
+                          <TableCell>{contrato.fechaTermino || 'N/A'}</TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </DialogContent>
+              </Dialog>
             </div>
           ) : (
             <Card>

@@ -574,3 +574,5 @@
 - [x] BUG: Cliente "Sacar del centro mexico" solo muestra 4 contratos en lugar de 31 contratos activos
 
 - [x] Crear tab "Resumen General por Empresa" con totales globales de TT, TV y TT+TV de todos los contratos
+
+- [x] Agregar modales clickeables a cards de Resumen Global con detalle de contratos por empresa

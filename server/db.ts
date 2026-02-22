@@ -1795,21 +1795,37 @@ export async function getGruposConContratosActivos() {
 
 /**
  * Obtiene los totales globales de proyección por empresa (TT, TV, TT+TV)
- * Suma todos los contratos activos de todos los clientes
+ * Suma todos los contratos activos de todos los clientes e incluye detalle de cada contrato
  */
 export async function getTotalesGlobalesPorEmpresa() {
   const db = await getDb();
   if (!db) return null;
 
-  // Obtener TODOS los contratos activos
-  const contratosActivos = await db
-    .select()
-    .from(contratos);
+  // Obtener TODOS los contratos activos con información del cliente
+  const result: any = await db.execute(sql`
+    SELECT 
+      c.id,
+      c.numeroContrato,
+      c.empresa,
+      c.totalRentas,
+      c.rentaActual,
+      c.montoMensual,
+      c.rentaAdministracion,
+      c.rentaClubTim,
+      c.fechaTermino,
+      cl.nombre as nombreCliente
+    FROM contratos c
+    LEFT JOIN clientes cl ON c.clienteId = cl.id
+  `);
+
+  const contratosActivos = Array.isArray(result) ? (result[0] || []) : (result.rows || []);
 
   let proyeccionTT = 0;
   let proyeccionTV = 0;
   let fechaTerminoTT: Date | null = null;
   let fechaTerminoTV: Date | null = null;
+  const detalleContratosTT: any[] = [];
+  const detalleContratosTV: any[] = [];
 
   for (const contrato of contratosActivos) {
     // Calcular pagos restantes: totalRentas - rentaActual
@@ -1818,20 +1834,25 @@ export async function getTotalesGlobalesPorEmpresa() {
     // Si no hay pagos faltantes, saltar este contrato
     if (pagosFaltantes <= 0) continue;
 
+    let proyeccionContrato = 0;
+
     // Calcular proyección de Arrendamiento
     if (contrato.montoMensual && Number(contrato.montoMensual) > 0) {
       const proyeccion = pagosFaltantes * Number(contrato.montoMensual);
+      proyeccionContrato += proyeccion;
       
       // Acumular por empresa
       if (contrato.empresa === 'tim_transp') {
         proyeccionTT += proyeccion;
-        if (!fechaTerminoTT || (contrato.fechaTermino && contrato.fechaTermino > fechaTerminoTT)) {
-          fechaTerminoTT = contrato.fechaTermino;
+        const fechaTermino = contrato.fechaTermino ? new Date(contrato.fechaTermino) : null;
+        if (!fechaTerminoTT || (fechaTermino && fechaTermino > fechaTerminoTT)) {
+          fechaTerminoTT = fechaTermino;
         }
       } else if (contrato.empresa === 'tim_value') {
         proyeccionTV += proyeccion;
-        if (!fechaTerminoTV || (contrato.fechaTermino && contrato.fechaTermino > fechaTerminoTV)) {
-          fechaTerminoTV = contrato.fechaTermino;
+        const fechaTermino = contrato.fechaTermino ? new Date(contrato.fechaTermino) : null;
+        if (!fechaTerminoTV || (fechaTermino && fechaTermino > fechaTerminoTV)) {
+          fechaTerminoTV = fechaTermino;
         }
       }
     }
@@ -1839,6 +1860,7 @@ export async function getTotalesGlobalesPorEmpresa() {
     // Calcular proyección de Administración
     if (contrato.rentaAdministracion && Number(contrato.rentaAdministracion) > 0) {
       const proyeccion = pagosFaltantes * Number(contrato.rentaAdministracion);
+      proyeccionContrato += proyeccion;
       
       if (contrato.empresa === 'tim_transp') {
         proyeccionTT += proyeccion;
@@ -1850,11 +1872,30 @@ export async function getTotalesGlobalesPorEmpresa() {
     // Calcular proyección de Club Tim
     if (contrato.rentaClubTim && Number(contrato.rentaClubTim) > 0) {
       const proyeccion = pagosFaltantes * Number(contrato.rentaClubTim);
+      proyeccionContrato += proyeccion;
       
       if (contrato.empresa === 'tim_transp') {
         proyeccionTT += proyeccion;
       } else if (contrato.empresa === 'tim_value') {
         proyeccionTV += proyeccion;
+      }
+    }
+
+    // Agregar detalle del contrato al array correspondiente
+    if (proyeccionContrato > 0) {
+      const fechaTermino = contrato.fechaTermino ? new Date(contrato.fechaTermino) : null;
+      const detalleContrato = {
+        numeroContrato: contrato.numeroContrato,
+        cliente: contrato.nombreCliente || 'Desconocido',
+        proyeccion: proyeccionContrato,
+        fechaTermino: fechaTermino?.toISOString().split('T')[0] || null,
+        pagosFaltantes
+      };
+
+      if (contrato.empresa === 'tim_transp') {
+        detalleContratosTT.push(detalleContrato);
+      } else if (contrato.empresa === 'tim_value') {
+        detalleContratosTV.push(detalleContrato);
       }
     }
   }
@@ -1865,7 +1906,10 @@ export async function getTotalesGlobalesPorEmpresa() {
     proyeccionTotal: proyeccionTT + proyeccionTV,
     fechaTerminoTT: fechaTerminoTT?.toISOString().split('T')[0] || null,
     fechaTerminoTV: fechaTerminoTV?.toISOString().split('T')[0] || null,
-    fechaTerminoTotal: (fechaTerminoTT && fechaTerminoTV ? (fechaTerminoTT > fechaTerminoTV ? fechaTerminoTT : fechaTerminoTV) : (fechaTerminoTT || fechaTerminoTV))?.toISOString().split('T')[0] || null
+    fechaTerminoTotal: (fechaTerminoTT && fechaTerminoTV ? (fechaTerminoTT > fechaTerminoTV ? fechaTerminoTT : fechaTerminoTV) : (fechaTerminoTT || fechaTerminoTV))?.toISOString().split('T')[0] || null,
+    detalleContratosTT,
+    detalleContratosTV,
+    detalleContratosTodos: [...detalleContratosTT, ...detalleContratosTV]
   };
 }
 
