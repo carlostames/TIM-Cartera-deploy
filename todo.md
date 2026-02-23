@@ -580,3 +580,33 @@
 - [x] Modificar Tabla de Proyección para basarse en contratos activos en lugar de facturas con patrón "X de Y"
 
 - [ ] BUG: Tabla de Proyección no muestra contratos de Tim Transp (TT)
+
+## Módulo de Baja de Contratos Activos
+- [ ] Actualizar schema con campos activo, motivoBaja, fechaBaja en tabla contratos
+- [ ] Crear tabla auditoriaBajasContratos para trazabilidad
+- [ ] Ejecutar migración de base de datos
+- [ ] Crear procedimiento backend para validar contrato (existe, activo, pertenece al cliente)
+- [ ] Crear procedimiento backend para dar de baja contrato
+- [ ] Implementar registro de auditoría en tabla auditoriaBajasContratos
+- [ ] Crear nueva pestaña "Dar de Baja Contrato" en Análisis de Contratos
+- [ ] Implementar selector de cliente reutilizando lógica existente
+- [ ] Agregar campo de número de contrato con validación
+- [ ] Crear modal de confirmación con detalles del contrato
+- [ ] Implementar lógica de baja (marcar inactivo, eliminar proyecciones)
+- [ ] Restringir visibilidad solo a usuarios con rol admin
+- [ ] Probar flujo completo de baja de contrato
+- [ ] Crear tests para validación y baja de contratos
+
+## Funcionalidad de Dar de Baja Contrato (Admin)
+- [x] Actualizar esquema de base de datos con campos de baja (motivoBaja, fechaBaja, usuarioBajaId)
+- [x] Crear tabla de auditoría de bajas (auditoriaBajasContratos)
+- [x] Implementar función validarContratoParaBaja en backend
+- [x] Implementar función darDeBajaContrato en backend
+- [x] Crear router tRPC bajasContratos con procedimientos validarContrato y darDeBaja
+- [x] Exportar router bajasContratos en appRouter
+- [x] Crear tab "Dar de Baja Contrato" en página de Análisis de Contratos (solo admin)
+- [x] Implementar UI de selección de cliente y número de contrato
+- [x] Implementar modal de confirmación con detalles del contrato
+- [x] Probar flujo completo de validación y baja de contrato
+- [x] Verificar que contratos inactivos se excluyan de proyecciones
+- [ ] Agregar tests unitarios para funcionalidad de baja de contratos

@@ -1,0 +1,17 @@
+{
+  "query": "SELECT numeroContrato, clienteId, activo, motivoBaja, fechaBaja FROM contratos WHERE numeroContrato = '342' LIMIT 1;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway03.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 344B2FJrSHdkSxo.0ab51ce41b50 --database bUSGvjzrZfvVXNhQ347wq4 --execute SELECT numeroContrato, clienteId, activo, motivoBaja, fechaBaja FROM contratos WHERE numeroContrato = '342' LIMIT 1;",
+  "rows": [
+    {
+      "numeroContrato": "342",
+      "clienteId": "30058",
+      "activo": "0",
+      "motivoBaja": "Equipo vendido - baja manual por administrador",
+      "fechaBaja": "2026-02-23 18:56:24"
+    }
+  ],
+  "messages": [],
+  "stdout": "numeroContrato\tclienteId\tactivo\tmotivoBaja\tfechaBaja\n342\t30058\t0\tEquipo vendido - baja manual por administrador\t2026-02-23 18:56:24\n",
+  "stderr": "",
+  "execution_time_ms": 491
+}

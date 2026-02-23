@@ -1150,6 +1150,66 @@ export const appRouter = router({
       return await db.getTotalesGlobalesPorEmpresa();
     }),
   }),
+
+  // ============ Baja de Contratos ============
+  bajasContratos: router({
+    // Validar contrato para baja (solo admin)
+    validarContrato: protectedProcedure
+      .input(z.object({
+        numeroContrato: z.string(),
+        clienteId: z.number(),
+      }))
+      .mutation(async ({ input, ctx }) => {
+        // Verificar que el usuario sea administrador
+        if (ctx.user.role !== 'admin') {
+          throw new TRPCError({
+            code: 'FORBIDDEN',
+            message: 'Solo los administradores pueden dar de baja contratos',
+          });
+        }
+
+        return await db.validarContratoParaBaja(input.numeroContrato, input.clienteId);
+      }),
+
+    // Dar de baja contrato (solo admin)
+    darDeBaja: protectedProcedure
+      .input(z.object({
+        numeroContrato: z.string(),
+        clienteId: z.number(),
+      }))
+      .mutation(async ({ input, ctx }) => {
+        // Verificar que el usuario sea administrador
+        if (ctx.user.role !== 'admin') {
+          throw new TRPCError({
+            code: 'FORBIDDEN',
+            message: 'Solo los administradores pueden dar de baja contratos',
+          });
+        }
+
+        return await db.darDeBajaContrato(
+          input.numeroContrato,
+          input.clienteId,
+          ctx.user.id,
+          ctx.user.name || 'Usuario',
+          ctx.user.email
+        );
+      }),
+
+    // Obtener historial de bajas (solo admin)
+    historial: protectedProcedure
+      .input(z.object({ limit: z.number().optional() }))
+      .query(async ({ input, ctx }) => {
+        // Verificar que el usuario sea administrador
+        if (ctx.user.role !== 'admin') {
+          throw new TRPCError({
+            code: 'FORBIDDEN',
+            message: 'Solo los administradores pueden ver el historial de bajas',
+          });
+        }
+
+        return await db.getHistorialBajasContratos(input.limit);
+      }),
+  }),
 });
 
 export type AppRouter = typeof appRouter;

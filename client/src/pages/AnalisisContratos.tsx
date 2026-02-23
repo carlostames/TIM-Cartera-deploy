@@ -115,7 +115,7 @@ export default function AnalisisContratos() {
       </div>
 
       <Tabs defaultValue="contrato" className="space-y-6">
-        <TabsList className="grid w-full max-w-3xl grid-cols-4">
+        <TabsList className="grid w-full max-w-4xl grid-cols-5">
           <TabsTrigger value="contrato">
             <FileText className="h-4 w-4 mr-2" />
             Por Número de Contrato
@@ -132,6 +132,12 @@ export default function AnalisisContratos() {
             <DollarSign className="h-4 w-4 mr-2" />
             Resumen Global
           </TabsTrigger>
+          {me?.role === 'admin' && (
+            <TabsTrigger value="baja">
+              <FileText className="h-4 w-4 mr-2" />
+              Dar de Baja Contrato
+            </TabsTrigger>
+          )}
         </TabsList>
 
         <TabsContent value="contrato" className="space-y-6">
@@ -861,7 +867,167 @@ export default function AnalisisContratos() {
             </Card>
           )}
         </TabsContent>
+
+        {/* Tab: Dar de Baja Contrato (solo admin) */}
+        {me?.role === 'admin' && (
+          <TabsContent value="baja" className="space-y-6">
+            <BajaContratoForm />
+          </TabsContent>
+        )}
       </Tabs>
     </div>
+  );
+}
+
+// Componente para dar de baja contratos
+function BajaContratoForm() {
+  const { data: me } = trpc.auth.me.useQuery();
+  const formatoUsuario: FormatoMoneda = (me?.formatoMoneda as FormatoMoneda) || 'completo';
+  const [clienteId, setClienteId] = useState<number | null>(null);
+  const [numeroContrato, setNumeroContrato] = useState('');
+  const [showConfirmDialog, setShowConfirmDialog] = useState(false);
+  const [validacionData, setValidacionData] = useState<any>(null);
+
+  const { data: clientes } = trpc.analisis.clientesConContratosActivos.useQuery();
+  const validarMutation = trpc.bajasContratos.validarContrato.useMutation();
+  const darDeBajaMutation = trpc.bajasContratos.darDeBaja.useMutation();
+  const utils = trpc.useUtils();
+
+  const handleValidar = async () => {
+    if (!clienteId || !numeroContrato.trim()) {
+      alert('Por favor selecciona un cliente e ingresa el número de contrato');
+      return;
+    }
+
+    try {
+      const result = await validarMutation.mutateAsync({
+        numeroContrato: numeroContrato.trim().toUpperCase(),
+        clienteId,
+      });
+
+      if (result.valido) {
+        setValidacionData(result);
+        setShowConfirmDialog(true);
+      } else {
+        alert(result.mensaje);
+      }
+    } catch (error: any) {
+      alert(error.message || 'Error al validar el contrato');
+    }
+  };
+
+  const handleConfirmarBaja = async () => {
+    try {
+      const result = await darDeBajaMutation.mutateAsync({
+        numeroContrato: numeroContrato.trim().toUpperCase(),
+        clienteId: clienteId!,
+      });
+
+      alert(result.mensaje);
+      setShowConfirmDialog(false);
+      setNumeroContrato('');
+      setClienteId(null);
+      setValidacionData(null);
+
+      // Invalidar queries para refrescar datos
+      utils.analisis.clientesConContratosActivos.invalidate();
+      utils.analisis.totalesGlobalesPorEmpresa.invalidate();
+    } catch (error: any) {
+      alert(error.message || 'Error al dar de baja el contrato');
+    }
+  };
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>Dar de Baja Contrato</CardTitle>
+        <CardDescription>
+          Esta acción marca el contrato como inactivo y elimina sus proyecciones de pago pendientes.
+          Solo disponible para administradores.
+        </CardDescription>
+      </CardHeader>
+      <CardContent className="space-y-6">
+        <div className="space-y-4 max-w-2xl">
+          <div>
+            <label className="block text-sm font-medium mb-2">Cliente</label>
+            <Select
+              value={clienteId?.toString() || ''}
+              onValueChange={(value) => setClienteId(parseInt(value))}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Selecciona un cliente" />
+              </SelectTrigger>
+              <SelectContent>
+                {clientes?.filter((cliente: any) => cliente.id).map((cliente: any) => (
+                  <SelectItem key={cliente.id} value={cliente.id.toString()}>
+                    {cliente.nombre}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium mb-2">Número de Contrato</label>
+            <Input
+              type="text"
+              placeholder="Ingresa el número de contrato"
+              value={numeroContrato}
+              onChange={(e) => setNumeroContrato(e.target.value.toUpperCase())}
+              onKeyDown={(e) => e.key === 'Enter' && handleValidar()}
+            />
+          </div>
+
+          <Button
+            onClick={handleValidar}
+            disabled={!clienteId || !numeroContrato.trim() || validarMutation.isPending}
+            className="w-full"
+          >
+            {validarMutation.isPending ? 'Validando...' : 'Validar y Dar de Baja'}
+          </Button>
+        </div>
+
+        {/* Modal de confirmación */}
+        <Dialog open={showConfirmDialog} onOpenChange={setShowConfirmDialog}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Confirmar Baja de Contrato</DialogTitle>
+              <DialogDescription>
+                ¿Confirmas dar de baja este contrato? Esta acción eliminará las proyecciones de pago pendientes asociadas.
+              </DialogDescription>
+            </DialogHeader>
+
+            {validacionData && (
+              <div className="space-y-4">
+                <div className="bg-muted p-4 rounded-lg space-y-2">
+                  <p><strong>Cliente:</strong> {validacionData.contrato.nombreCliente}</p>
+                  <p><strong>Número de Contrato:</strong> {validacionData.contrato.numeroContrato}</p>
+                  <p><strong>Empresa:</strong> {validacionData.contrato.empresa === 'tim_transp' ? 'Tim Transp' : 'Tim Value'}</p>
+                  <p><strong>Rentas Faltantes:</strong> {validacionData.rentasFaltantes}</p>
+                  <p><strong>Monto Proyección Pendiente:</strong> {formatearMoneda(validacionData.montoProyeccion, formatoUsuario)}</p>
+                </div>
+
+                <p className="text-sm text-muted-foreground">
+                  <strong>Motivo de baja:</strong> Equipo vendido - baja manual por administrador
+                </p>
+
+                <div className="flex gap-2 justify-end">
+                  <Button variant="outline" onClick={() => setShowConfirmDialog(false)}>
+                    Cancelar
+                  </Button>
+                  <Button
+                    variant="destructive"
+                    onClick={handleConfirmarBaja}
+                    disabled={darDeBajaMutation.isPending}
+                  >
+                    {darDeBajaMutation.isPending ? 'Procesando...' : 'Confirmar Baja'}
+                  </Button>
+                </div>
+              </div>
+            )}
+          </DialogContent>
+        </Dialog>
+      </CardContent>
+    </Card>
   );
 }

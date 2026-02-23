@@ -1,0 +1,18 @@
+{
+  "query": "SELECT c.numeroContrato, c.clienteId, cl.nombre as nombreCliente, c.empresa, c.plazo, c.montoMensual\nFROM contratos c \nJOIN clientes cl ON c.clienteId = cl.id \nWHERE cl.nombre LIKE '%AA DE SAN LUIS%' AND c.activo = 1;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway03.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 344B2FJrSHdkSxo.0ab51ce41b50 --database bUSGvjzrZfvVXNhQ347wq4 --execute SELECT c.numeroContrato, c.clienteId, cl.nombre as nombreCliente, c.empresa, c.plazo, c.montoMensual\nFROM contratos c \nJOIN clientes cl ON c.clienteId = cl.id \nWHERE cl.nombre LIKE '%AA DE SAN LUIS%' AND c.activo = 1;",
+  "rows": [
+    {
+      "numeroContrato": "345",
+      "clienteId": "30010",
+      "nombreCliente": "AA DE SAN LUIS",
+      "empresa": "tim_transp",
+      "plazo": "NULL",
+      "montoMensual": "6960.00"
+    }
+  ],
+  "messages": [],
+  "stdout": "numeroContrato\tclienteId\tnombreCliente\tempresa\tplazo\tmontoMensual\n345\t30010\tAA DE SAN LUIS\ttim_transp\tNULL\t6960.00\n",
+  "stderr": "",
+  "execution_time_ms": 359
+}

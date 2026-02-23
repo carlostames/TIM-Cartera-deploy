@@ -13,7 +13,8 @@ import {
   contratos, Contrato, InsertContrato,
   proyeccionMensual, ProyeccionMensual, InsertProyeccionMensual,
   partidasFactura, PartidaFactura, InsertPartidaFactura,
-  facturasFaltantes, FacturaFaltante, InsertFacturaFaltante
+  facturasFaltantes, FacturaFaltante, InsertFacturaFaltante,
+  auditoriaBajasContratos, AuditoriaBajaContrato, InsertAuditoriaBajaContrato
 } from "../drizzle/schema";
 import { ENV } from './_core/env';
 
@@ -2080,4 +2081,120 @@ export async function upsertContratoFromFile(contrato: {
   });
 
   return true;
+}
+
+// ============ Baja de Contratos ============
+
+/**
+ * Valida que un contrato existe, está activo y pertenece al cliente indicado
+ */
+export async function validarContratoParaBaja(numeroContrato: string, clienteId: number) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  const contrato = await db
+    .select()
+    .from(contratos)
+    .where(eq(contratos.numeroContrato, numeroContrato))
+    .limit(1);
+
+  if (contrato.length === 0) {
+    return { valido: false, mensaje: "El contrato no existe" };
+  }
+
+  const contratoData = contrato[0];
+
+  if (!contratoData.activo) {
+    return { valido: false, mensaje: "El contrato ya está dado de baja" };
+  }
+
+  if (contratoData.clienteId !== clienteId) {
+    return { valido: false, mensaje: "El contrato no pertenece al cliente seleccionado" };
+  }
+
+  // Calcular proyección pendiente
+  const totalRentas = contratoData.totalRentas || 0;
+  const rentaActual = contratoData.rentaActual || 0;
+  const rentasFaltantes = totalRentas - rentaActual;
+  const montoMensual = parseFloat(contratoData.montoMensual?.toString() || "0");
+  const montoProyeccion = rentasFaltantes * montoMensual;
+
+  return {
+    valido: true,
+    contrato: contratoData,
+    rentasFaltantes,
+    montoProyeccion
+  };
+}
+
+/**
+ * Da de baja un contrato y registra la auditoría
+ */
+export async function darDeBajaContrato(
+  numeroContrato: string,
+  clienteId: number,
+  usuarioId: number,
+  nombreUsuario: string,
+  emailUsuario: string | null
+) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  // Validar primero
+  const validacion = await validarContratoParaBaja(numeroContrato, clienteId);
+  if (!validacion.valido) {
+    throw new Error(validacion.mensaje);
+  }
+
+  const contratoData = validacion.contrato!;
+  const motivoBaja = "Equipo vendido - baja manual por administrador";
+
+  // Actualizar contrato
+  await db
+    .update(contratos)
+    .set({
+      activo: false,
+      motivoBaja,
+      fechaBaja: new Date(),
+      usuarioBajaId: usuarioId,
+    })
+    .where(eq(contratos.numeroContrato, numeroContrato));
+
+  // Registrar auditoría
+  await db.insert(auditoriaBajasContratos).values({
+    contratoId: contratoData.id,
+    numeroContrato: contratoData.numeroContrato,
+    clienteId: contratoData.clienteId,
+    nombreCliente: contratoData.nombreCliente,
+    empresa: contratoData.empresa,
+    motivoBaja,
+    usuarioId,
+    nombreUsuario,
+    emailUsuario,
+    montoProyeccionEliminado: validacion.montoProyeccion?.toString() || "0",
+    rentasFaltantes: validacion.rentasFaltantes,
+  });
+
+  return {
+    success: true,
+    mensaje: "Contrato dado de baja exitosamente",
+    contratoId: contratoData.id,
+    numeroContrato: contratoData.numeroContrato,
+  };
+}
+
+/**
+ * Obtiene el historial de bajas de contratos
+ */
+export async function getHistorialBajasContratos(limit: number = 50) {
+  const db = await getDb();
+  if (!db) return [];
+
+  const result = await db
+    .select()
+    .from(auditoriaBajasContratos)
+    .orderBy(desc(auditoriaBajasContratos.fechaBaja))
+    .limit(limit);
+
+  return result;
 }

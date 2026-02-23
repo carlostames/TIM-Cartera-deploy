@@ -1,0 +1,70 @@
+{
+  "query": "SELECT numeroContrato, clienteId, empresa, activo FROM contratos WHERE activo = 1 LIMIT 10;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway03.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 344B2FJrSHdkSxo.0ab51ce41b50 --database bUSGvjzrZfvVXNhQ347wq4 --execute SELECT numeroContrato, clienteId, empresa, activo FROM contratos WHERE activo = 1 LIMIT 10;",
+  "rows": [
+    {
+      "numeroContrato": "342",
+      "clienteId": "30058",
+      "empresa": "tim_transp",
+      "activo": "1"
+    },
+    {
+      "numeroContrato": "195",
+      "clienteId": "30063",
+      "empresa": "tim_transp",
+      "activo": "1"
+    },
+    {
+      "numeroContrato": "325",
+      "clienteId": "30064",
+      "empresa": "tim_transp",
+      "activo": "1"
+    },
+    {
+      "numeroContrato": "266",
+      "clienteId": "30064",
+      "empresa": "tim_transp",
+      "activo": "1"
+    },
+    {
+      "numeroContrato": "332",
+      "clienteId": "30064",
+      "empresa": "tim_transp",
+      "activo": "1"
+    },
+    {
+      "numeroContrato": "175",
+      "clienteId": "30066",
+      "empresa": "tim_transp",
+      "activo": "1"
+    },
+    {
+      "numeroContrato": "326",
+      "clienteId": "30066",
+      "empresa": "tim_transp",
+      "activo": "1"
+    },
+    {
+      "numeroContrato": "174",
+      "clienteId": "30066",
+      "empresa": "tim_transp",
+      "activo": "1"
+    },
+    {
+      "numeroContrato": "199",
+      "clienteId": "30067",
+      "empresa": "tim_transp",
+      "activo": "1"
+    },
+    {
+      "numeroContrato": "224",
+      "clienteId": "30067",
+      "empresa": "tim_transp",
+      "activo": "1"
+    }
+  ],
+  "messages": [],
+  "stdout": "numeroContrato\tclienteId\tempresa\tactivo\n342\t30058\ttim_transp\t1\n195\t30063\ttim_transp\t1\n325\t30064\ttim_transp\t1\n266\t30064\ttim_transp\t1\n332\t30064\ttim_transp\t1\n175\t30066\ttim_transp\t1\n326\t30066\ttim_transp\t1\n174\t30066\ttim_transp\t1\n199\t30067\ttim_transp\t1\n224\t30067\ttim_transp\t1\n",
+  "stderr": "",
+  "execution_time_ms": 361
+}

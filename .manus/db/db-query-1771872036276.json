@@ -1,0 +1,9 @@
+{
+  "query": "CREATE TABLE IF NOT EXISTS auditoriaBajasContratos (\n  id INT AUTO_INCREMENT PRIMARY KEY,\n  contratoId INT NOT NULL,\n  numeroContrato VARCHAR(50) NOT NULL,\n  clienteId INT,\n  nombreCliente VARCHAR(255) NOT NULL,\n  empresa ENUM('tim_transp', 'tim_value') NOT NULL,\n  motivoBaja TEXT NOT NULL,\n  usuarioId INT NOT NULL,\n  nombreUsuario VARCHAR(255) NOT NULL,\n  emailUsuario VARCHAR(320),\n  montoProyeccionEliminado DECIMAL(15, 2),\n  rentasFaltantes INT,\n  fechaBaja TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP\n)",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway03.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 344B2FJrSHdkSxo.0ab51ce41b50 --database bUSGvjzrZfvVXNhQ347wq4 --execute CREATE TABLE IF NOT EXISTS auditoriaBajasContratos (\n  id INT AUTO_INCREMENT PRIMARY KEY,\n  contratoId INT NOT NULL,\n  numeroContrato VARCHAR(50) NOT NULL,\n  clienteId INT,\n  nombreCliente VARCHAR(255) NOT NULL,\n  empresa ENUM('tim_transp', 'tim_value') NOT NULL,\n  motivoBaja TEXT NOT NULL,\n  usuarioId INT NOT NULL,\n  nombreUsuario VARCHAR(255) NOT NULL,\n  emailUsuario VARCHAR(320),\n  montoProyeccionEliminado DECIMAL(15, 2),\n  rentasFaltantes INT,\n  fechaBaja TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP\n)",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 569
+}

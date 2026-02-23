@@ -201,6 +201,9 @@ export const contratos = mysqlTable("contratos", {
   fechaProximaRenta: date("fechaProximaRenta"),
   fechaTermino: date("fechaTermino"),
   activo: boolean("activo").default(true).notNull(),
+  motivoBaja: text("motivoBaja"),
+  fechaBaja: timestamp("fechaBaja"),
+  usuarioBajaId: int("usuarioBajaId").references(() => users.id),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
 });
@@ -267,3 +270,25 @@ export const facturasFaltantes = mysqlTable("facturasFaltantes", {
 
 export type FacturaFaltante = typeof facturasFaltantes.$inferSelect;
 export type InsertFacturaFaltante = typeof facturasFaltantes.$inferInsert;
+
+/**
+ * Auditoría de Bajas de Contratos - Trazabilidad de contratos dados de baja
+ */
+export const auditoriaBajasContratos = mysqlTable("auditoriaBajasContratos", {
+  id: int("id").autoincrement().primaryKey(),
+  contratoId: int("contratoId").references(() => contratos.id).notNull(),
+  numeroContrato: varchar("numeroContrato", { length: 50 }).notNull(),
+  clienteId: int("clienteId").references(() => clientes.id),
+  nombreCliente: varchar("nombreCliente", { length: 255 }).notNull(),
+  empresa: mysqlEnum("empresa", ["tim_transp", "tim_value"]).notNull(),
+  motivoBaja: text("motivoBaja").notNull(),
+  usuarioId: int("usuarioId").references(() => users.id).notNull(),
+  nombreUsuario: varchar("nombreUsuario", { length: 255 }).notNull(),
+  emailUsuario: varchar("emailUsuario", { length: 320 }),
+  montoProyeccionEliminado: decimal("montoProyeccionEliminado", { precision: 15, scale: 2 }),
+  rentasFaltantes: int("rentasFaltantes"),
+  fechaBaja: timestamp("fechaBaja").defaultNow().notNull(),
+});
+
+export type AuditoriaBajaContrato = typeof auditoriaBajasContratos.$inferSelect;
+export type InsertAuditoriaBajaContrato = typeof auditoriaBajasContratos.$inferInsert;
