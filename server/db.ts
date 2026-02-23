@@ -1687,7 +1687,12 @@ export async function getDeudaTotalCliente(clienteId: number) {
   const contratosActivos = await db
     .select()
     .from(contratos)
-    .where(eq(contratos.clienteId, clienteId));
+    .where(
+      and(
+        eq(contratos.clienteId, clienteId),
+        eq(contratos.activo, true)
+      )
+    );
 
   const proyeccionContratos: Array<{
     numeroContrato: string;
@@ -1858,6 +1863,7 @@ export async function getClientesConContratosActivos() {
     OR EXISTS (
       SELECT 1 FROM contratos ct
       WHERE ct.clienteId = c.id
+        AND ct.activo = 1
     )
     ORDER BY c.nombre ASC
   `);
@@ -1887,6 +1893,7 @@ export async function getGruposConContratosActivos() {
     OR EXISTS (
       SELECT 1 FROM contratos ct
       WHERE ct.clienteId = c.id
+        AND ct.activo = 1
     )
     ORDER BY g.nombre ASC
   `);
@@ -1920,6 +1927,7 @@ export async function getTotalesGlobalesPorEmpresa() {
       cl.nombre as nombreCliente
     FROM contratos c
     LEFT JOIN clientes cl ON c.clienteId = cl.id
+    WHERE c.activo = 1
   `);
 
   const contratosActivos = Array.isArray(result) ? (result[0] || []) : (result.rows || []);

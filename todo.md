@@ -610,3 +610,14 @@
 - [x] Probar flujo completo de validación y baja de contrato
 - [x] Verificar que contratos inactivos se excluyan de proyecciones
 - [ ] Agregar tests unitarios para funcionalidad de baja de contratos
+
+## Bug: Contratos Inactivos Aparecen en Resumen de Deuda
+- [x] Verificar estado del contrato 171 en la base de datos
+- [x] Revisar función getDeudaTotalCliente() para verificar filtro de contratos activos
+- [x] Revisar función getDeudaTotalGrupo() para verificar filtro de contratos activos
+- [x] Corregir queries para excluir contratos con activo = false
+- [x] Corregir getClientesConContratosActivos() para filtrar contratos activos
+- [x] Corregir getGruposConContratosActivos() para filtrar contratos activos
+- [x] Corregir getTotalesGlobalesPorEmpresa() para filtrar contratos activos
+- [x] Probar que contratos inactivos no aparezcan en Resumen de Deuda
+- [x] Verificar que tampoco aparezcan en Resumen Global
