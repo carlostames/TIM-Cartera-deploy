@@ -666,3 +666,18 @@
 - [ ] Verificar permisos de usuario (admin vs consulta)
 - [ ] Probar reportes
 - [ ] Guardar checkpoint final
+
+## Formulario de Captura de Contratos Manuales
+
+### Componentes y Funcionalidad
+- [x] Crear componente NuevoContratoDialog con Dialog de shadcn/ui
+- [x] Implementar campos básicos: número contrato, cliente, vendedor, empresa, tipo, fecha, plazo
+- [x] Agregar selección de cliente con búsqueda
+- [x] Agregar selección de vendedor con búsqueda
+- [x] Implementar sección de line items dinámica (agregar/eliminar equipos)
+- [x] Mostrar campos específicos según tipo de arrendamiento
+- [x] Implementar cálculos automáticos en tiempo real (IVA, totales)
+- [x] Agregar validación de formulario
+- [x] Conectar con mutation tRPC para crear contrato
+- [x] Mostrar feedback de éxito/error
+- [x] Actualizar lista de contratos después de crear

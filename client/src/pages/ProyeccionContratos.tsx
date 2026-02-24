@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Plus, FileText, Calendar, Building2 } from "lucide-react";
 import { useAuth } from "@/_core/hooks/useAuth";
 import { toast } from "sonner";
+import { NuevoContratoDialog } from "@/components/NuevoContratoDialog";
 
 export default function ProyeccionContratos() {
   const { user } = useAuth();
@@ -37,10 +38,12 @@ export default function ProyeccionContratos() {
           </p>
         </div>
         {isAdmin && (
-          <Button onClick={() => toast.info("Formulario de creación próximamente")}>
-            <Plus className="mr-2 h-4 w-4" />
-            Nuevo Contrato
-          </Button>
+          <NuevoContratoDialog>
+            <Button>
+              <Plus className="mr-2 h-4 w-4" />
+              Nuevo Contrato
+            </Button>
+          </NuevoContratoDialog>
         )}
       </div>
 
