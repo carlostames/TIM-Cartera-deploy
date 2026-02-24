@@ -700,3 +700,18 @@
 - [ ] Agregar resumen financiero (totales)
 - [ ] Conectar navegación desde lista de contratos
 - [ ] Agregar ruta en App.tsx
+
+## Agrupación por Grupo de Clientes en Proyección de Contratos
+
+### Backend
+- [x] Crear procedure `listByGrupo` en router proyeccionContratos
+- [x] Implementar consulta que agrupe contratos por grupo de clientes
+- [x] Calcular totales por grupo (número de contratos, proyección total)
+- [x] Incluir información del grupo y lista de contratos
+
+### Frontend
+- [x] Agregar filtro de agrupación en ProyeccionContratos.tsx (Individual / Por Grupo)
+- [x] Crear vista agrupada con cards de grupos
+- [x] Mostrar totales por grupo
+- [x] Implementar navegación desde grupos a contratos individuales
+- [x] Probar funcionalidad completa

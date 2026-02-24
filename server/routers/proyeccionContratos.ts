@@ -357,6 +357,75 @@ export const proyeccionContratosRouter = router({
     }),
 
   /**
+   * Listar contratos agrupados por grupo de clientes
+   */
+  listByGrupo: protectedProcedure
+    .input(z.object({
+      estatus: z.enum(["activo", "cancelado", "todos"]).optional().default("activo"),
+      empresa: z.enum(["tim_transp", "tim_value", "todas"]).optional().default("todas"),
+    }))
+    .query(async ({ input }) => {
+      const db = await getDb();
+      if (!db) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Database not available" });
+
+      // Obtener contratos con información de cliente y grupo
+      const query = db
+        .select({
+          contratoId: contratosProyeccion.id,
+          numeroContrato: contratosProyeccion.numeroContrato,
+          clienteId: contratosProyeccion.clienteId,
+          clienteNombre: clientes.nombre,
+          grupoId: clientes.grupoId,
+          grupoNombre: sql<string>`COALESCE(grupos.nombre, ${clientes.nombre})`,
+          empresa: contratosProyeccion.empresa,
+          tipoContrato: contratosProyeccion.tipoContrato,
+          fechaInicio: contratosProyeccion.fechaInicio,
+          plazo: contratosProyeccion.plazo,
+          estatus: contratosProyeccion.estatus,
+        })
+        .from(contratosProyeccion)
+        .leftJoin(clientes, eq(contratosProyeccion.clienteId, clientes.id))
+        .leftJoin(sql`grupos`, sql`${clientes.grupoId} = grupos.id`)
+        .$dynamic();
+
+      // Aplicar filtros
+      const conditions = [];
+      if (input.estatus !== "todos") {
+        conditions.push(eq(contratosProyeccion.estatus, input.estatus));
+      }
+      if (input.empresa !== "todas") {
+        conditions.push(eq(contratosProyeccion.empresa, input.empresa));
+      }
+
+      const contratos = conditions.length > 0
+        ? await query.where(and(...conditions))
+        : await query;
+
+      // Agrupar contratos por grupo
+      const grupos = new Map<string, any>();
+      
+      for (const contrato of contratos) {
+        const grupoKey = contrato.grupoId?.toString() || `cliente_${contrato.clienteId}`;
+        const grupoNombre = contrato.grupoNombre || contrato.clienteNombre;
+
+        if (!grupos.has(grupoKey)) {
+          grupos.set(grupoKey, {
+            grupoId: contrato.grupoId,
+            grupoNombre,
+            totalContratos: 0,
+            contratos: [],
+          });
+        }
+
+        const grupo = grupos.get(grupoKey);
+        grupo.totalContratos++;
+        grupo.contratos.push(contrato);
+      }
+
+      return Array.from(grupos.values());
+    }),
+
+  /**
    * Obtener detalle completo de un contrato
    */
   getDetalle: protectedProcedure
