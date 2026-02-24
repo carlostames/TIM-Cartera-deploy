@@ -355,4 +355,81 @@ export const proyeccionContratosRouter = router({
       });
       return { success: true, vendedorId: Number(vendedor.insertId) };
     }),
+
+  /**
+   * Obtener detalle completo de un contrato
+   */
+  getDetalle: protectedProcedure
+    .input(z.object({ contratoId: z.number() }))
+    .query(async ({ input }) => {
+      const db = await getDb();
+      if (!db) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Database not available" });
+
+      // Obtener contrato con información de cliente y vendedor
+      const [contrato] = await db
+        .select({
+          id: contratosProyeccion.id,
+          numeroContrato: contratosProyeccion.numeroContrato,
+          clienteId: contratosProyeccion.clienteId,
+          clienteNombre: clientes.nombre,
+          vendedorId: contratosProyeccion.vendedorId,
+          vendedorNombre: vendedores.nombre,
+          empresa: contratosProyeccion.empresa,
+          tipoContrato: contratosProyeccion.tipoContrato,
+          fechaInicio: contratosProyeccion.fechaInicio,
+          plazo: contratosProyeccion.plazo,
+          estatus: contratosProyeccion.estatus,
+          notas: contratosProyeccion.notas,
+          createdAt: contratosProyeccion.createdAt,
+        })
+        .from(contratosProyeccion)
+        .leftJoin(clientes, eq(contratosProyeccion.clienteId, clientes.id))
+        .leftJoin(vendedores, eq(contratosProyeccion.vendedorId, vendedores.id))
+        .where(eq(contratosProyeccion.id, input.contratoId));
+
+      if (!contrato) {
+        throw new TRPCError({ code: "NOT_FOUND", message: "Contrato no encontrado" });
+      }
+
+      // Obtener line items
+      const lineItems = await db
+        .select()
+        .from(lineItemsContrato)
+        .where(eq(lineItemsContrato.contratoId, input.contratoId))
+        .orderBy(lineItemsContrato.consecutivo);
+
+      // Obtener proyección mensual
+      const proyeccion = await db
+        .select()
+        .from(proyeccionMensualManual)
+        .where(eq(proyeccionMensualManual.contratoId, input.contratoId))
+        .orderBy(proyeccionMensualManual.numeroRenta);
+
+      // Calcular estado de cada mes según fecha actual
+      const hoy = new Date();
+      hoy.setHours(0, 0, 0, 0);
+
+      const proyeccionConEstado = proyeccion.map((p) => {
+        const fechaMes = new Date(p.mes);
+        let estado = p.estatus;
+
+        // Si no está pagado, determinar si está vencido
+        if (estado === "pendiente") {
+          if (fechaMes < hoy) {
+            estado = "vencido";
+          }
+        }
+
+        return {
+          ...p,
+          estado,
+        };
+      });
+
+      return {
+        contrato,
+        lineItems,
+        proyeccion: proyeccionConEstado,
+      };
+    }),
 });

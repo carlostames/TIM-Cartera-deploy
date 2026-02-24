@@ -7,10 +7,12 @@ import { Plus, FileText, Calendar, Building2 } from "lucide-react";
 import { useAuth } from "@/_core/hooks/useAuth";
 import { toast } from "sonner";
 import { NuevoContratoDialog } from "@/components/NuevoContratoDialog";
+import { useLocation } from "wouter";
 
 export default function ProyeccionContratos() {
   const { user } = useAuth();
   const isAdmin = user?.role === "admin";
+  const [, setLocation] = useLocation();
 
   const { data: contratos, isLoading } = trpc.proyeccionContratos.list.useQuery({
     estatus: "activo",
@@ -141,7 +143,7 @@ export default function ProyeccionContratos() {
                   <Button
                     variant="outline"
                     size="sm"
-                    onClick={() => toast.info("Vista de detalle próximamente")}
+                    onClick={() => setLocation(`/proyeccion-contratos/${contrato.id}`)}
                   >
                     Ver Detalle
                   </Button>

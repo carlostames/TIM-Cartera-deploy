@@ -681,3 +681,22 @@
 - [x] Conectar con mutation tRPC para crear contrato
 - [x] Mostrar feedback de éxito/error
 - [x] Actualizar lista de contratos después de crear
+
+## Página de Detalle de Contrato
+
+### Backend
+- [ ] Crear procedure `getContratoDetalle` en proyeccionContratos router
+- [ ] Incluir información del contrato, cliente, vendedor
+- [ ] Incluir todos los line items del contrato
+- [ ] Incluir proyección mensual completa
+- [ ] Calcular estado de cada mes (pendiente/vencido) según fecha actual
+
+### Frontend
+- [ ] Crear página DetalleContrato.tsx
+- [ ] Mostrar información básica del contrato en card
+- [ ] Mostrar lista de equipos/line items con sus montos
+- [ ] Crear tabla de proyección mensual con columnas: Mes, Fecha, Renta, Estado
+- [ ] Aplicar estilos condicionales según estado (pendiente/vencido)
+- [ ] Agregar resumen financiero (totales)
+- [ ] Conectar navegación desde lista de contratos
+- [ ] Agregar ruta en App.tsx

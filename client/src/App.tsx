@@ -19,6 +19,7 @@ import EstadosCuenta from "./pages/EstadosCuenta";
 import AnalisisCobranza from "./pages/AnalisisCobranza";
 import AnalisisContratos from "./pages/AnalisisContratos";
 import ProyeccionContratos from "./pages/ProyeccionContratos";
+import DetalleContrato from "./pages/DetalleContrato";
 
 function Router() {
   return (
@@ -33,6 +34,7 @@ function Router() {
         <Route path="/analisis-cobranza" component={AnalisisCobranza} />
         <Route path="/analisis-contratos" component={AnalisisContratos} />
         <Route path="/proyeccion-contratos" component={ProyeccionContratos} />
+        <Route path="/proyeccion-contratos/:id" component={DetalleContrato} />
         <Route path="/reportes" component={Reportes} />
         <Route path="/gestion-clientes" component={GestionClientes} />
         <Route path="/configuracion" component={Configuracion} />
