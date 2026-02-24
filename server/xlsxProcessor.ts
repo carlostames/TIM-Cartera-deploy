@@ -94,13 +94,41 @@ export function processTimTranspFile(buffer: Buffer): ProcessResult {
     }
     
     const headers = (data[headerRow] as any[]).map(h => String(h || '').toLowerCase().trim());
-    const fechaIdx = headers.findIndex(h => h.includes('fecha') && !h.includes('venc'));
-    const venceIdx = headers.findIndex(h => h.includes('vence') || h.includes('vencimiento'));
-    const folioIdx = headers.findIndex(h => h.includes('folio'));
-    const clienteIdx = headers.findIndex(h => h.includes('cliente') || h.includes('nombre'));
-    const importeIdx = headers.findIndex(h => h.includes('importe') || h.includes('total') || h.includes('saldo'));
-    const descripcionIdx = headers.findIndex(h => h.includes('descripci'));
-    const estatusIdx = headers.findIndex(h => h.includes('estatus'));
+    
+    // Detectar columnas por contenido si no se encuentran por nombre
+    let fechaIdx = headers.findIndex(h => h.includes('fecha') && !h.includes('venc'));
+    let venceIdx = headers.findIndex(h => h.includes('vence') || h.includes('vencimiento'));
+    let folioIdx = headers.findIndex(h => h.includes('folio'));
+    let clienteIdx = headers.findIndex(h => h.includes('cliente') || h.includes('nombre') || h.includes('razón'));
+    let importeIdx = headers.findIndex(h => h.includes('importe') || h.includes('total') || h.includes('saldo'));
+    let descripcionIdx = headers.findIndex(h => h.includes('descripci') || h.includes('concepto'));
+    let estatusIdx = headers.findIndex(h => h.includes('estatus') || h.includes('status'));
+    
+    // Si no encontramos las columnas por nombre, intentar detectarlas por contenido de la primera fila de datos
+    if (folioIdx === -1 || clienteIdx === -1 || importeIdx === -1) {
+      const firstDataRow = data[headerRow + 1] as any[];
+      if (firstDataRow) {
+        for (let i = 0; i < firstDataRow.length; i++) {
+          const value = firstDataRow[i];
+          // Detectar folio (empieza con AB o AA)
+          if (folioIdx === -1 && typeof value === 'string' && (value.startsWith('AB') || value.startsWith('AA'))) {
+            folioIdx = i;
+          }
+          // Detectar cliente (string largo que no es folio)
+          if (clienteIdx === -1 && typeof value === 'string' && value.length > 10 && !value.startsWith('AB') && !value.startsWith('AA')) {
+            clienteIdx = i;
+          }
+          // Detectar importe (número mayor a 100)
+          if (importeIdx === -1 && typeof value === 'number' && value > 100) {
+            importeIdx = i;
+          }
+          // Detectar fecha (Date object)
+          if (fechaIdx === -1 && value instanceof Date) {
+            fechaIdx = i;
+          }
+        }
+      }
+    }
     
     // Procesar filas de datos
     for (let i = headerRow + 1; i < data.length; i++) {
@@ -108,7 +136,8 @@ export function processTimTranspFile(buffer: Buffer): ProcessResult {
       if (!row || row.length === 0) continue;
       
       const folio = row[folioIdx] ? String(row[folioIdx]).trim() : '';
-      if (!folio || !folio.startsWith('AB')) continue;
+      // Aceptar folios AB (Tim Transp) y AA (Tim Value) para mayor flexibilidad
+      if (!folio || (!folio.startsWith('AB') && !folio.startsWith('AA'))) continue;
       
       try {
         const fecha = parseExcelDate(row[fechaIdx]);
@@ -207,13 +236,41 @@ export function processTimValueFile(buffer: Buffer): ProcessResult {
     }
     
     const headers = (data[headerRow] as any[]).map(h => String(h || '').toLowerCase().trim());
-    const fechaIdx = headers.findIndex(h => h.includes('fecha') && !h.includes('venc'));
-    const venceIdx = headers.findIndex(h => h.includes('vence') || h.includes('vencimiento'));
-    const folioIdx = headers.findIndex(h => h.includes('folio'));
-    const clienteIdx = headers.findIndex(h => h.includes('cliente') || h.includes('nombre'));
-    const importeIdx = headers.findIndex(h => h.includes('importe') || h.includes('total') || h.includes('saldo'));
-    const descripcionIdx = headers.findIndex(h => h.includes('descripci'));
-    const estatusIdx = headers.findIndex(h => h.includes('estatus'));
+    
+    // Detectar columnas por contenido si no se encuentran por nombre
+    let fechaIdx = headers.findIndex(h => h.includes('fecha') && !h.includes('venc'));
+    let venceIdx = headers.findIndex(h => h.includes('vence') || h.includes('vencimiento'));
+    let folioIdx = headers.findIndex(h => h.includes('folio'));
+    let clienteIdx = headers.findIndex(h => h.includes('cliente') || h.includes('nombre') || h.includes('razón'));
+    let importeIdx = headers.findIndex(h => h.includes('importe') || h.includes('total') || h.includes('saldo'));
+    let descripcionIdx = headers.findIndex(h => h.includes('descripci') || h.includes('concepto'));
+    let estatusIdx = headers.findIndex(h => h.includes('estatus') || h.includes('status'));
+    
+    // Si no encontramos las columnas por nombre, intentar detectarlas por contenido de la primera fila de datos
+    if (folioIdx === -1 || clienteIdx === -1 || importeIdx === -1) {
+      const firstDataRow = data[headerRow + 1] as any[];
+      if (firstDataRow) {
+        for (let i = 0; i < firstDataRow.length; i++) {
+          const value = firstDataRow[i];
+          // Detectar folio (empieza con AB o AA)
+          if (folioIdx === -1 && typeof value === 'string' && (value.startsWith('AB') || value.startsWith('AA'))) {
+            folioIdx = i;
+          }
+          // Detectar cliente (string largo que no es folio)
+          if (clienteIdx === -1 && typeof value === 'string' && value.length > 10 && !value.startsWith('AB') && !value.startsWith('AA')) {
+            clienteIdx = i;
+          }
+          // Detectar importe (número mayor a 100)
+          if (importeIdx === -1 && typeof value === 'number' && value > 100) {
+            importeIdx = i;
+          }
+          // Detectar fecha (Date object)
+          if (fechaIdx === -1 && value instanceof Date) {
+            fechaIdx = i;
+          }
+        }
+      }
+    }
     
     // Procesar filas de datos
     for (let i = headerRow + 1; i < data.length; i++) {

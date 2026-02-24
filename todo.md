@@ -739,3 +739,13 @@
 - [ ] Verificar que se genera proyección mensual
 - [ ] Navegar a detalle y verificar visualización
 - [ ] Probar vista por grupo de clientes
+
+## Bug: Carga de archivos procesa pero dice "0 exitosos"
+- [x] Diagnosticar el problema de carga de archivos
+- [x] Revisar parser de Tim Transp para identificar por qué no reconoce registros
+- [x] Verificar nombres de columnas esperadas vs archivo real
+- [x] Revisar formato de datos (fechas, números, etc.)
+- [x] Corregir el problema identificado en el parser (detección automática de columnas)
+- [x] Probar la carga de archivos con archivo real
+- [ ] Investigar por qué los 12 registros procesados no se guardan (0 exitosos)
+- [ ] Verificar que el procesamiento funcione correctamente
