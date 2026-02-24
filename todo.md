@@ -715,3 +715,27 @@
 - [x] Mostrar totales por grupo
 - [x] Implementar navegación desde grupos a contratos individuales
 - [x] Probar funcionalidad completa
+
+## Corrección de Schema y Prueba Completa de Creación de Contratos
+
+### Verificación y Corrección de Schema
+- [ ] Verificar estructura de tabla `contratosProyeccion`
+- [ ] Verificar estructura de tabla `lineItemsContrato`
+- [ ] Verificar estructura de tabla `proyeccionMensualManual`
+- [ ] Verificar estructura de tabla `vendedores`
+- [ ] Corregir columnas faltantes o con tipo incorrecto
+- [ ] Ejecutar migraciones necesarias
+
+### Corrección del Formulario
+- [ ] Revisar validación de fecha en NuevoContratoDialog
+- [ ] Revisar validación de campos requeridos
+- [ ] Corregir manejo de errores en mutation
+- [ ] Agregar feedback visual de validación
+
+### Prueba Completa
+- [ ] Crear contrato de prueba desde formulario
+- [ ] Verificar que se crea en base de datos correctamente
+- [ ] Verificar que se crean line items
+- [ ] Verificar que se genera proyección mensual
+- [ ] Navegar a detalle y verificar visualización
+- [ ] Probar vista por grupo de clientes
