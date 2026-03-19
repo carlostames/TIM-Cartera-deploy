@@ -181,9 +181,9 @@ export const proyeccionContratosRouter = router({
         plazo: input.plazo,
         notas: input.notas,
         creadoPorId: ctx.user.id,
-      }]);
+      }]).returning({ id: contratosProyeccion.id });
 
-      const contratoId = Number(contrato.insertId);
+      const contratoId = contrato.id;
 
       // Crear line items y proyección
       for (let i = 0; i < input.lineItems.length; i++) {
@@ -246,9 +246,9 @@ export const proyeccionContratosRouter = router({
           totalValorResidualSinIva: calculado.totalValorResidualSinIva.toString(),
           ivaValorResidual: calculado.ivaValorResidual.toString(),
           totalValorResidualConIva: calculado.totalValorResidualConIva.toString(),
-        }]);
+        }]).returning({ id: lineItemsContrato.id });
 
-        const lineItemId = Number(lineItem.insertId);
+        const lineItemId = lineItem.id;
 
         // Generar proyección mensual
         const proyeccion = generarProyeccionMensual(
@@ -352,8 +352,8 @@ export const proyeccionContratosRouter = router({
         email: input.email,
         telefono: input.telefono,
         comisionPorcentaje: input.comisionPorcentaje?.toString(),
-      });
-      return { success: true, vendedorId: Number(vendedor.insertId) };
+      }).returning({ id: vendedores.id });
+      return { success: true, vendedorId: vendedor.id };
     }),
 
   /**

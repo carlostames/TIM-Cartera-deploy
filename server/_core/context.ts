@@ -1,7 +1,6 @@
 import type { CreateExpressContextOptions } from "@trpc/server/adapters/express";
 import type { User } from "../../drizzle/schema";
-import { sdk } from "./sdk";
-import { validateUserAccess } from "../domainValidator";
+import { authenticateRequest } from "./auth";
 
 export type TrpcContext = {
   req: CreateExpressContextOptions["req"];
@@ -15,19 +14,10 @@ export async function createContext(
   let user: User | null = null;
 
   try {
-    const authenticatedUser = await sdk.authenticateRequest(opts.req);
+    const authenticatedUser = await authenticateRequest(opts.req);
     
-    // Validar que el usuario tenga un dominio de correo permitido
     if (authenticatedUser) {
-      const accessValidation = validateUserAccess(authenticatedUser);
-      
-      if (accessValidation.allowed) {
-        user = authenticatedUser;
-      } else {
-        // Usuario autenticado pero sin dominio permitido
-        console.warn(`[Access Denied] User ${authenticatedUser.email} - ${accessValidation.reason}`);
-        user = null;
-      }
+      user = authenticatedUser as User;
     }
   } catch (error) {
     // Authentication is optional for public procedures.

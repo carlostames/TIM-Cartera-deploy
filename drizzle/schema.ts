@@ -1,20 +1,33 @@
-import { boolean, date, int, json, mysqlEnum, mysqlTable, text, timestamp, varchar, decimal } from "drizzle-orm/mysql-core";
+import { boolean, date, integer, jsonb, pgEnum, pgTable, serial, text, timestamp, varchar, numeric } from "drizzle-orm/pg-core";
+
+// ============ Enums ============
+export const roleEnum = pgEnum("role", ["admin", "operador", "consulta"]);
+export const formatoMonedaEnum = pgEnum("formato_moneda", ["completo", "miles", "millones"]);
+export const sistemaEnum = pgEnum("sistema", ["tim_transp", "tim_value"]);
+export const estatusEnum = pgEnum("estatus", ["normal", "cancelada"]);
+export const estadoPagoEnum = pgEnum("estado_pago", ["pendiente", "pagado"]);
+export const tipoArchivoEnum = pgEnum("tipo_archivo", ["tim_transp", "tim_value", "pendientes", "contratos"]);
+export const estatusCargaEnum = pgEnum("estatus_carga", ["procesando", "completado", "error"]);
+export const tipoConfigEnum = pgEnum("tipo_config", ["string", "number", "boolean", "json"]);
+export const estatusSincEnum = pgEnum("estatus_sinc", ["activo", "error", "deshabilitado"]);
+export const tipoContratoEnum = pgEnum("tipo_contrato", ["arrendamiento_puro", "arrendamiento_financiero", "credito_simple"]);
+export const estatusContratoEnum = pgEnum("estatus_contrato", ["activo", "cancelado"]);
+export const estatusProyeccionEnum = pgEnum("estatus_proyeccion", ["pendiente", "vencido", "pagado"]);
 
 /**
  * Core user table backing auth flow.
  */
-export const users = mysqlTable("users", {
-  id: int("id").autoincrement().primaryKey(),
-  openId: varchar("openId", { length: 64 }).notNull().unique(),
+export const users = pgTable("users", {
+  id: serial("id").primaryKey(),
+  email: varchar("email", { length: 320 }).notNull().unique(),
   name: text("name"),
-  email: varchar("email", { length: 320 }),
   loginMethod: varchar("loginMethod", { length: 64 }),
-  role: mysqlEnum("role", ["admin", "operador", "consulta"]).default("consulta").notNull(),
-  permisos: json("permisos").$type<string[]>(),
-  formatoMoneda: mysqlEnum("formatoMoneda", ["completo", "miles", "millones"]).default("completo").notNull(),
+  role: roleEnum("role").default("consulta").notNull(),
+  permisos: jsonb("permisos").$type<string[]>(),
+  formatoMoneda: formatoMonedaEnum("formatoMoneda").default("completo").notNull(),
   activo: boolean("activo").default(true).notNull(),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
-  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().notNull(),
   lastSignedIn: timestamp("lastSignedIn").defaultNow().notNull(),
 });
 
@@ -22,16 +35,31 @@ export type User = typeof users.$inferSelect;
 export type InsertUser = typeof users.$inferInsert;
 
 /**
+ * Magic Links - For passwordless email authentication
+ */
+export const magicLinks = pgTable("magicLinks", {
+  id: serial("id").primaryKey(),
+  email: varchar("email", { length: 320 }).notNull(),
+  token: varchar("token", { length: 64 }).notNull().unique(),
+  expiresAt: timestamp("expiresAt").notNull(),
+  usedAt: timestamp("usedAt"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+export type MagicLink = typeof magicLinks.$inferSelect;
+export type InsertMagicLink = typeof magicLinks.$inferInsert;
+
+/**
  * Grupos de Clientes - Para agrupar múltiples razones sociales
  */
-export const gruposClientes = mysqlTable("gruposClientes", {
-  id: int("id").autoincrement().primaryKey(),
+export const gruposClientes = pgTable("gruposClientes", {
+  id: serial("id").primaryKey(),
   nombre: varchar("nombre", { length: 255 }).notNull().unique(),
   descripcion: text("descripcion"),
   responsable: varchar("responsable", { length: 100 }),
   activo: boolean("activo").default(true).notNull(),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
-  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().notNull(),
 });
 
 export type GrupoCliente = typeof gruposClientes.$inferSelect;
@@ -40,12 +68,12 @@ export type InsertGrupoCliente = typeof gruposClientes.$inferInsert;
 /**
  * Clientes - Master data de clientes
  */
-export const clientes = mysqlTable("clientes", {
-  id: int("id").autoincrement().primaryKey(),
+export const clientes = pgTable("clientes", {
+  id: serial("id").primaryKey(),
   nombre: varchar("nombre", { length: 255 }).notNull().unique(),
   rfc: varchar("rfc", { length: 13 }),
   alias: varchar("alias", { length: 100 }),
-  grupoId: int("grupoId").references(() => gruposClientes.id),
+  grupoId: integer("grupoId").references(() => gruposClientes.id),
   responsableCobranza: varchar("responsableCobranza", { length: 100 }),
   correoCobranza: varchar("correoCobranza", { length: 320 }),
   telefono: varchar("telefono", { length: 50 }),
@@ -53,7 +81,7 @@ export const clientes = mysqlTable("clientes", {
   notas: text("notas"),
   activo: boolean("activo").default(true).notNull(),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
-  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().notNull(),
 });
 
 export type Cliente = typeof clientes.$inferSelect;
@@ -62,25 +90,25 @@ export type InsertCliente = typeof clientes.$inferInsert;
 /**
  * Facturas - Consolidado de ambos sistemas de facturación
  */
-export const facturas = mysqlTable("facturas", {
-  id: int("id").autoincrement().primaryKey(),
+export const facturas = pgTable("facturas", {
+  id: serial("id").primaryKey(),
   folio: varchar("folio", { length: 50 }).notNull().unique(),
-  sistema: mysqlEnum("sistema", ["tim_transp", "tim_value"]).notNull(),
-  clienteId: int("clienteId").references(() => clientes.id),
+  sistema: sistemaEnum("sistema").notNull(),
+  clienteId: integer("clienteId").references(() => clientes.id),
   nombreCliente: varchar("nombreCliente", { length: 255 }).notNull(),
   fecha: timestamp("fecha").notNull(),
   fechaVencimiento: timestamp("fechaVencimiento"),
-  importeTotal: decimal("importeTotal", { precision: 15, scale: 2 }).notNull(),
-  saldoPendiente: decimal("saldoPendiente", { precision: 15, scale: 2 }).default("0.00").notNull(),
+  importeTotal: numeric("importeTotal", { precision: 15, scale: 2 }).notNull(),
+  saldoPendiente: numeric("saldoPendiente", { precision: 15, scale: 2 }).default("0.00").notNull(),
   descripcion: text("descripcion"),
   numeroContrato: varchar("numeroContrato", { length: 50 }),
-  estatus: mysqlEnum("estatus", ["normal", "cancelada"]).default("normal").notNull(),
-  estadoPago: mysqlEnum("estadoPago", ["pendiente", "pagado"]).default("pendiente").notNull(),
-  diasAtraso: int("diasAtraso").default(0),
-  interesesMoratorios: decimal("interesesMoratorios", { precision: 15, scale: 2 }).default("0.00"),
-  totalConIntereses: decimal("totalConIntereses", { precision: 15, scale: 2 }),
+  estatus: estatusEnum("estatus").default("normal").notNull(),
+  estadoPago: estadoPagoEnum("estadoPago").default("pendiente").notNull(),
+  diasAtraso: integer("diasAtraso").default(0),
+  interesesMoratorios: numeric("interesesMoratorios", { precision: 15, scale: 2 }).default("0.00"),
+  totalConIntereses: numeric("totalConIntereses", { precision: 15, scale: 2 }),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
-  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().notNull(),
 });
 
 export type Factura = typeof facturas.$inferSelect;
@@ -89,20 +117,20 @@ export type InsertFactura = typeof facturas.$inferInsert;
 /**
  * Pendientes de Pago - Registro de folios pendientes
  */
-export const pendientesPago = mysqlTable("pendientesPago", {
-  id: int("id").autoincrement().primaryKey(),
-  facturaId: int("facturaId").references(() => facturas.id),
+export const pendientesPago = pgTable("pendientesPago", {
+  id: serial("id").primaryKey(),
+  facturaId: integer("facturaId").references(() => facturas.id),
   folio: varchar("folio", { length: 50 }).notNull(),
-  clienteId: int("clienteId").references(() => clientes.id),
+  clienteId: integer("clienteId").references(() => clientes.id),
   nombreCliente: varchar("nombreCliente", { length: 255 }).notNull(),
   alias: varchar("alias", { length: 100 }),
   descripcion: text("descripcion"),
-  diasVencido: int("diasVencido").default(0),
-  saldo: decimal("saldo", { precision: 15, scale: 2 }).notNull(),
-  interesesMoratorios: decimal("interesesMoratorios", { precision: 15, scale: 2 }).default("0.00"),
-  totalConMoratorios: decimal("totalConMoratorios", { precision: 15, scale: 2 }),
+  diasVencido: integer("diasVencido").default(0),
+  saldo: numeric("saldo", { precision: 15, scale: 2 }).notNull(),
+  interesesMoratorios: numeric("interesesMoratorios", { precision: 15, scale: 2 }).default("0.00"),
+  totalConMoratorios: numeric("totalConMoratorios", { precision: 15, scale: 2 }),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
-  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().notNull(),
 });
 
 export type PendientePago = typeof pendientesPago.$inferSelect;
@@ -111,16 +139,16 @@ export type InsertPendientePago = typeof pendientesPago.$inferInsert;
 /**
  * Historial de Cargas - Registro de archivos procesados
  */
-export const historialCargas = mysqlTable("historialCargas", {
-  id: int("id").autoincrement().primaryKey(),
-  tipoArchivo: mysqlEnum("tipoArchivo", ["tim_transp", "tim_value", "pendientes", "contratos"]).notNull(),
+export const historialCargas = pgTable("historialCargas", {
+  id: serial("id").primaryKey(),
+  tipoArchivo: tipoArchivoEnum("tipoArchivo").notNull(),
   nombreArchivo: varchar("nombreArchivo", { length: 255 }).notNull(),
-  registrosProcesados: int("registrosProcesados").default(0),
-  registrosExitosos: int("registrosExitosos").default(0),
-  registrosError: int("registrosError").default(0),
-  estatus: mysqlEnum("estatus", ["procesando", "completado", "error"]).default("procesando").notNull(),
-  errores: json("errores").$type<string[]>(),
-  usuarioId: int("usuarioId").references(() => users.id),
+  registrosProcesados: integer("registrosProcesados").default(0),
+  registrosExitosos: integer("registrosExitosos").default(0),
+  registrosError: integer("registrosError").default(0),
+  estatus: estatusCargaEnum("estatus").default("procesando").notNull(),
+  errores: jsonb("errores").$type<string[]>(),
+  usuarioId: integer("usuarioId").references(() => users.id),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   completedAt: timestamp("completedAt"),
 });
@@ -131,14 +159,14 @@ export type InsertHistorialCarga = typeof historialCargas.$inferInsert;
 /**
  * Configuración del Sistema
  */
-export const configuracion = mysqlTable("configuracion", {
-  id: int("id").autoincrement().primaryKey(),
+export const configuracion = pgTable("configuracion", {
+  id: serial("id").primaryKey(),
   clave: varchar("clave", { length: 100 }).notNull().unique(),
   valor: text("valor").notNull(),
-  tipo: mysqlEnum("tipo", ["string", "number", "boolean", "json"]).default("string").notNull(),
+  tipo: tipoConfigEnum("tipo").default("string").notNull(),
   descripcion: text("descripcion"),
-  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
-  updatedBy: int("updatedBy").references(() => users.id),
+  updatedAt: timestamp("updatedAt").defaultNow().notNull(),
+  updatedBy: integer("updatedBy").references(() => users.id),
 });
 
 export type Configuracion = typeof configuracion.$inferSelect;
@@ -147,13 +175,13 @@ export type InsertConfiguracion = typeof configuracion.$inferInsert;
 /**
  * Logs de Auditoría
  */
-export const auditLogs = mysqlTable("auditLogs", {
-  id: int("id").autoincrement().primaryKey(),
-  usuarioId: int("usuarioId").references(() => users.id),
+export const auditLogs = pgTable("auditLogs", {
+  id: serial("id").primaryKey(),
+  usuarioId: integer("usuarioId").references(() => users.id),
   accion: varchar("accion", { length: 100 }).notNull(),
   entidad: varchar("entidad", { length: 100 }),
-  entidadId: int("entidadId"),
-  detalles: json("detalles").$type<Record<string, unknown>>(),
+  entidadId: integer("entidadId"),
+  detalles: jsonb("detalles").$type<Record<string, unknown>>(),
   ipAddress: varchar("ipAddress", { length: 45 }),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
 });
@@ -164,16 +192,16 @@ export type InsertAuditLog = typeof auditLogs.$inferInsert;
 /**
  * Integración Google Sheets
  */
-export const googleSheetsConfig = mysqlTable("googleSheetsConfig", {
-  id: int("id").autoincrement().primaryKey(),
+export const googleSheetsConfig = pgTable("googleSheetsConfig", {
+  id: serial("id").primaryKey(),
   spreadsheetId: varchar("spreadsheetId", { length: 255 }).notNull(),
   spreadsheetUrl: text("spreadsheetUrl"),
   credenciales: text("credenciales"), // JSON encriptado
   ultimaSincronizacion: timestamp("ultimaSincronizacion"),
-  estatusSincronizacion: mysqlEnum("estatusSincronizacion", ["activo", "error", "deshabilitado"]).default("activo"),
+  estatusSincronizacion: estatusSincEnum("estatusSincronizacion").default("activo"),
   mensajeError: text("mensajeError"),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
-  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().notNull(),
 });
 
 export type GoogleSheetsConfig = typeof googleSheetsConfig.$inferSelect;
@@ -182,30 +210,30 @@ export type InsertGoogleSheetsConfig = typeof googleSheetsConfig.$inferInsert;
 /**
  * Contratos de Arrendamiento - Para proyección de facturación
  */
-export const contratos = mysqlTable("contratos", {
-  id: int("id").autoincrement().primaryKey(),
+export const contratos = pgTable("contratos", {
+  id: serial("id").primaryKey(),
   numeroContrato: varchar("numeroContrato", { length: 50 }).notNull().unique(), // EXP
-  clienteId: int("clienteId").references(() => clientes.id),
+  clienteId: integer("clienteId").references(() => clientes.id),
   nombreCliente: varchar("nombreCliente", { length: 255 }).notNull(),
-  empresa: mysqlEnum("empresa", ["tim_transp", "tim_value"]).notNull(),
+  empresa: sistemaEnum("empresa").notNull(),
   tipoServicio: varchar("tipoServicio", { length: 100 }).notNull(), // ARRENDAMIENTO
   descripcionActivo: text("descripcionActivo"), // CHEVROLET - AVEO - 2022
   numeroSerie: varchar("numeroSerie", { length: 50 }), // NS
-  totalRentas: int("totalRentas").notNull(),
-  rentaActual: int("rentaActual").notNull(),
-  montoMensual: decimal("montoMensual", { precision: 15, scale: 2 }).notNull(),
-  rentaAdministracion: decimal("rentaAdministracion", { precision: 15, scale: 2 }),
-  rentaClubTim: decimal("rentaClubTim", { precision: 15, scale: 2 }),
-  plazo: int("plazo"), // Duración total en meses
+  totalRentas: integer("totalRentas").notNull(),
+  rentaActual: integer("rentaActual").notNull(),
+  montoMensual: numeric("montoMensual", { precision: 15, scale: 2 }).notNull(),
+  rentaAdministracion: numeric("rentaAdministracion", { precision: 15, scale: 2 }),
+  rentaClubTim: numeric("rentaClubTim", { precision: 15, scale: 2 }),
+  plazo: integer("plazo"), // Duración total en meses
   fechaInicio: date("fechaInicio"),
   fechaProximaRenta: date("fechaProximaRenta"),
   fechaTermino: date("fechaTermino"),
   activo: boolean("activo").default(true).notNull(),
   motivoBaja: text("motivoBaja"),
   fechaBaja: timestamp("fechaBaja"),
-  usuarioBajaId: int("usuarioBajaId").references(() => users.id),
+  usuarioBajaId: integer("usuarioBajaId").references(() => users.id),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
-  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().notNull(),
 });
 
 export type Contrato = typeof contratos.$inferSelect;
@@ -214,15 +242,15 @@ export type InsertContrato = typeof contratos.$inferInsert;
 /**
  * Proyección Mensual - Ingresos proyectados por contrato
  */
-export const proyeccionMensual = mysqlTable("proyeccionMensual", {
-  id: int("id").autoincrement().primaryKey(),
-  contratoId: int("contratoId").references(() => contratos.id).notNull(),
+export const proyeccionMensual = pgTable("proyeccionMensual", {
+  id: serial("id").primaryKey(),
+  contratoId: integer("contratoId").references(() => contratos.id).notNull(),
   mes: date("mes").notNull(), // Primer día del mes proyectado
-  montoProyectado: decimal("montoProyectado", { precision: 15, scale: 2 }).notNull(),
-  rentaNumero: int("rentaNumero").notNull(), // Número de renta proyectada
+  montoProyectado: numeric("montoProyectado", { precision: 15, scale: 2 }).notNull(),
+  rentaNumero: integer("rentaNumero").notNull(), // Número de renta proyectada
   esUltimaRenta: boolean("esUltimaRenta").default(false).notNull(),
-  montoReal: decimal("montoReal", { precision: 15, scale: 2 }), // Se llena cuando se factura
-  facturaId: int("facturaId").references(() => facturas.id),
+  montoReal: numeric("montoReal", { precision: 15, scale: 2 }), // Se llena cuando se factura
+  facturaId: integer("facturaId").references(() => facturas.id),
   generadoEn: timestamp("generadoEn").defaultNow().notNull(),
 });
 
@@ -232,19 +260,19 @@ export type InsertProyeccionMensual = typeof proyeccionMensual.$inferInsert;
 /**
  * Partidas de Factura - Detalle de cada línea de factura
  */
-export const partidasFactura = mysqlTable("partidasFactura", {
-  id: int("id").autoincrement().primaryKey(),
-  facturaId: int("facturaId").references(() => facturas.id).notNull(),
-  contratoId: int("contratoId").references(() => contratos.id),
+export const partidasFactura = pgTable("partidasFactura", {
+  id: serial("id").primaryKey(),
+  facturaId: integer("facturaId").references(() => facturas.id).notNull(),
+  contratoId: integer("contratoId").references(() => contratos.id),
   descripcion: text("descripcion").notNull(),
-  monto: decimal("monto", { precision: 15, scale: 2 }).notNull(),
+  monto: numeric("monto", { precision: 15, scale: 2 }).notNull(),
   // Campos extraídos del parser
   tipoServicio: varchar("tipoServicio", { length: 100 }),
   numeroContrato: varchar("numeroContrato", { length: 50 }), // EXP
   numeroSerie: varchar("numeroSerie", { length: 50 }), // NS
   descripcionActivo: text("descripcionActivo"),
-  rentaActual: int("rentaActual"),
-  totalRentas: int("totalRentas"),
+  rentaActual: integer("rentaActual"),
+  totalRentas: integer("totalRentas"),
   periodoInicio: date("periodoInicio"),
   periodoFin: date("periodoFin"),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
@@ -256,10 +284,10 @@ export type InsertPartidaFactura = typeof partidasFactura.$inferInsert;
 /**
  * Facturas Faltantes - Registro de facturas detectadas en archivo de pendientes pero no encontradas en BD
  */
-export const facturasFaltantes = mysqlTable("facturasFaltantes", {
-  id: int("id").autoincrement().primaryKey(),
+export const facturasFaltantes = pgTable("facturasFaltantes", {
+  id: serial("id").primaryKey(),
   folio: varchar("folio", { length: 50 }).notNull(),
-  saldo: decimal("saldo", { precision: 15, scale: 2 }).notNull(),
+  saldo: numeric("saldo", { precision: 15, scale: 2 }).notNull(),
   fecha: date("fecha"),
   fechaVencimiento: date("fechaVencimiento"),
   archivoOrigen: varchar("archivoOrigen", { length: 255 }), // Nombre del archivo donde se detectó
@@ -274,19 +302,19 @@ export type InsertFacturaFaltante = typeof facturasFaltantes.$inferInsert;
 /**
  * Auditoría de Bajas de Contratos - Trazabilidad de contratos dados de baja
  */
-export const auditoriaBajasContratos = mysqlTable("auditoriaBajasContratos", {
-  id: int("id").autoincrement().primaryKey(),
-  contratoId: int("contratoId").references(() => contratos.id).notNull(),
+export const auditoriaBajasContratos = pgTable("auditoriaBajasContratos", {
+  id: serial("id").primaryKey(),
+  contratoId: integer("contratoId").references(() => contratos.id).notNull(),
   numeroContrato: varchar("numeroContrato", { length: 50 }).notNull(),
-  clienteId: int("clienteId").references(() => clientes.id),
+  clienteId: integer("clienteId").references(() => clientes.id),
   nombreCliente: varchar("nombreCliente", { length: 255 }).notNull(),
-  empresa: mysqlEnum("empresa", ["tim_transp", "tim_value"]).notNull(),
+  empresa: sistemaEnum("empresa_baja").notNull(),
   motivoBaja: text("motivoBaja").notNull(),
-  usuarioId: int("usuarioId").references(() => users.id).notNull(),
+  usuarioId: integer("usuarioId").references(() => users.id).notNull(),
   nombreUsuario: varchar("nombreUsuario", { length: 255 }).notNull(),
   emailUsuario: varchar("emailUsuario", { length: 320 }),
-  montoProyeccionEliminado: decimal("montoProyeccionEliminado", { precision: 15, scale: 2 }),
-  rentasFaltantes: int("rentasFaltantes"),
+  montoProyeccionEliminado: numeric("montoProyeccionEliminado", { precision: 15, scale: 2 }),
+  rentasFaltantes: integer("rentasFaltantes"),
   fechaBaja: timestamp("fechaBaja").defaultNow().notNull(),
 });
 
@@ -297,22 +325,20 @@ export type InsertAuditoriaBajaContrato = typeof auditoriaBajasContratos.$inferI
  * ============================================================================
  * MÓDULO: PROYECCIÓN MANUAL DE CONTRATOS
  * ============================================================================
- * Sistema completo de gestión de contratos de arrendamiento con proyección
- * financiera manual. Incluye tres tipos: Puro, Financiero y Crédito Simple.
  */
 
 /**
  * Vendedores - Catálogo de vendedores para cálculo de comisiones
  */
-export const vendedores = mysqlTable("vendedores", {
-  id: int("id").autoincrement().primaryKey(),
+export const vendedores = pgTable("vendedores", {
+  id: serial("id").primaryKey(),
   nombre: varchar("nombre", { length: 255 }).notNull(),
   email: varchar("email", { length: 320 }),
   telefono: varchar("telefono", { length: 50 }),
-  comisionPorcentaje: decimal("comisionPorcentaje", { precision: 5, scale: 2 }), // % de comisión
+  comisionPorcentaje: numeric("comisionPorcentaje", { precision: 5, scale: 2 }), // % de comisión
   activo: boolean("activo").default(true).notNull(),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
-  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().notNull(),
 });
 
 export type Vendedor = typeof vendedores.$inferSelect;
@@ -321,23 +347,23 @@ export type InsertVendedor = typeof vendedores.$inferInsert;
 /**
  * Contratos de Proyección Manual - Cabecera de contratos
  */
-export const contratosProyeccion = mysqlTable("contratosProyeccion", {
-  id: int("id").autoincrement().primaryKey(),
+export const contratosProyeccion = pgTable("contratosProyeccion", {
+  id: serial("id").primaryKey(),
   numeroContrato: varchar("numeroContrato", { length: 50 }).notNull().unique(),
-  clienteId: int("clienteId").references(() => clientes.id).notNull(),
-  vendedorId: int("vendedorId").references(() => vendedores.id),
-  empresa: mysqlEnum("empresa", ["tim_transp", "tim_value"]).notNull(),
-  tipoContrato: mysqlEnum("tipoContrato", ["arrendamiento_puro", "arrendamiento_financiero", "credito_simple"]).notNull(),
+  clienteId: integer("clienteId").references(() => clientes.id).notNull(),
+  vendedorId: integer("vendedorId").references(() => vendedores.id),
+  empresa: sistemaEnum("empresa_proy").notNull(),
+  tipoContrato: tipoContratoEnum("tipoContrato").notNull(),
   fechaInicio: date("fechaInicio").notNull(),
-  plazo: int("plazo").notNull(), // 12, 24, 36, 48, 60 meses
-  estatus: mysqlEnum("estatus", ["activo", "cancelado"]).default("activo").notNull(),
+  plazo: integer("plazo").notNull(), // 12, 24, 36, 48, 60 meses
+  estatus: estatusContratoEnum("estatus_contrato").default("activo").notNull(),
   fechaCancelacion: timestamp("fechaCancelacion"),
   motivoCancelacion: text("motivoCancelacion"),
-  usuarioCancelacionId: int("usuarioCancelacionId").references(() => users.id),
+  usuarioCancelacionId: integer("usuarioCancelacionId").references(() => users.id),
   notas: text("notas"),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
-  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
-  creadoPorId: int("creadoPorId").references(() => users.id).notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().notNull(),
+  creadoPorId: integer("creadoPorId").references(() => users.id).notNull(),
 });
 
 export type ContratoProyeccion = typeof contratosProyeccion.$inferSelect;
@@ -346,45 +372,45 @@ export type InsertContratoProyeccion = typeof contratosProyeccion.$inferInsert;
 /**
  * Line Items de Contrato - Equipos/conceptos por contrato
  */
-export const lineItemsContrato = mysqlTable("lineItemsContrato", {
-  id: int("id").autoincrement().primaryKey(),
-  contratoId: int("contratoId").references(() => contratosProyeccion.id).notNull(),
-  consecutivo: int("consecutivo").notNull(), // 1, 2, 3...
+export const lineItemsContrato = pgTable("lineItemsContrato", {
+  id: serial("id").primaryKey(),
+  contratoId: integer("contratoId").references(() => contratosProyeccion.id).notNull(),
+  consecutivo: integer("consecutivo").notNull(), // 1, 2, 3...
   nombreEquipo: varchar("nombreEquipo", { length: 255 }).notNull(),
   
   // Campos comunes a todos los tipos
-  precioEquipoSinIva: decimal("precioEquipoSinIva", { precision: 15, scale: 2 }),
-  pagoInicialSinIva: decimal("pagoInicialSinIva", { precision: 15, scale: 2 }).default("0.00"),
-  comisionesSinIva: decimal("comisionesSinIva", { precision: 15, scale: 2 }).default("0.00"),
-  valorResidualSinIva: decimal("valorResidualSinIva", { precision: 15, scale: 2 }).default("0.00"),
+  precioEquipoSinIva: numeric("precioEquipoSinIva", { precision: 15, scale: 2 }),
+  pagoInicialSinIva: numeric("pagoInicialSinIva", { precision: 15, scale: 2 }).default("0.00"),
+  comisionesSinIva: numeric("comisionesSinIva", { precision: 15, scale: 2 }).default("0.00"),
+  valorResidualSinIva: numeric("valorResidualSinIva", { precision: 15, scale: 2 }).default("0.00"),
   
   // Campos específicos de Arrendamiento Puro
-  mensualidadBaseSinIva: decimal("mensualidadBaseSinIva", { precision: 15, scale: 2 }),
-  serviciosAdicionalesSinIva: decimal("serviciosAdicionalesSinIva", { precision: 15, scale: 2 }).default("0.00"),
+  mensualidadBaseSinIva: numeric("mensualidadBaseSinIva", { precision: 15, scale: 2 }),
+  serviciosAdicionalesSinIva: numeric("serviciosAdicionalesSinIva", { precision: 15, scale: 2 }).default("0.00"),
   
   // Campos específicos de Arrendamiento Financiero y Crédito Simple
-  tasaInteresAnual: decimal("tasaInteresAnual", { precision: 5, scale: 2 }), // Porcentaje
-  montoFinanciar: decimal("montoFinanciar", { precision: 15, scale: 2 }), // Calculado
+  tasaInteresAnual: numeric("tasaInteresAnual", { precision: 5, scale: 2 }), // Porcentaje
+  montoFinanciar: numeric("montoFinanciar", { precision: 15, scale: 2 }), // Calculado
   
   // Campos calculados y guardados
-  rentaMensualSinIva: decimal("rentaMensualSinIva", { precision: 15, scale: 2 }).notNull(),
-  ivaMensual: decimal("ivaMensual", { precision: 15, scale: 2 }).notNull(),
-  rentaMensualConIva: decimal("rentaMensualConIva", { precision: 15, scale: 2 }).notNull(),
+  rentaMensualSinIva: numeric("rentaMensualSinIva", { precision: 15, scale: 2 }).notNull(),
+  ivaMensual: numeric("ivaMensual", { precision: 15, scale: 2 }).notNull(),
+  rentaMensualConIva: numeric("rentaMensualConIva", { precision: 15, scale: 2 }).notNull(),
   
-  totalPagoInicialSinIva: decimal("totalPagoInicialSinIva", { precision: 15, scale: 2 }),
-  ivaPagoInicial: decimal("ivaPagoInicial", { precision: 15, scale: 2 }),
-  totalPagoInicialConIva: decimal("totalPagoInicialConIva", { precision: 15, scale: 2 }),
+  totalPagoInicialSinIva: numeric("totalPagoInicialSinIva", { precision: 15, scale: 2 }),
+  ivaPagoInicial: numeric("ivaPagoInicial", { precision: 15, scale: 2 }),
+  totalPagoInicialConIva: numeric("totalPagoInicialConIva", { precision: 15, scale: 2 }),
   
-  totalComisionesSinIva: decimal("totalComisionesSinIva", { precision: 15, scale: 2 }),
-  ivaComisiones: decimal("ivaComisiones", { precision: 15, scale: 2 }),
-  totalComisionesConIva: decimal("totalComisionesConIva", { precision: 15, scale: 2 }),
+  totalComisionesSinIva: numeric("totalComisionesSinIva", { precision: 15, scale: 2 }),
+  ivaComisiones: numeric("ivaComisiones", { precision: 15, scale: 2 }),
+  totalComisionesConIva: numeric("totalComisionesConIva", { precision: 15, scale: 2 }),
   
-  totalValorResidualSinIva: decimal("totalValorResidualSinIva", { precision: 15, scale: 2 }),
-  ivaValorResidual: decimal("ivaValorResidual", { precision: 15, scale: 2 }),
-  totalValorResidualConIva: decimal("totalValorResidualConIva", { precision: 15, scale: 2 }),
+  totalValorResidualSinIva: numeric("totalValorResidualSinIva", { precision: 15, scale: 2 }),
+  ivaValorResidual: numeric("ivaValorResidual", { precision: 15, scale: 2 }),
+  totalValorResidualConIva: numeric("totalValorResidualConIva", { precision: 15, scale: 2 }),
   
   createdAt: timestamp("createdAt").defaultNow().notNull(),
-  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().notNull(),
 });
 
 export type LineItemContrato = typeof lineItemsContrato.$inferSelect;
@@ -393,24 +419,24 @@ export type InsertLineItemContrato = typeof lineItemsContrato.$inferInsert;
 /**
  * Proyección Mensual Manual - Pagos proyectados por contrato
  */
-export const proyeccionMensualManual = mysqlTable("proyeccionMensualManual", {
-  id: int("id").autoincrement().primaryKey(),
-  contratoId: int("contratoId").references(() => contratosProyeccion.id).notNull(),
-  lineItemId: int("lineItemId").references(() => lineItemsContrato.id).notNull(),
+export const proyeccionMensualManual = pgTable("proyeccionMensualManual", {
+  id: serial("id").primaryKey(),
+  contratoId: integer("contratoId").references(() => contratosProyeccion.id).notNull(),
+  lineItemId: integer("lineItemId").references(() => lineItemsContrato.id).notNull(),
   mes: date("mes").notNull(), // Primer día del mes proyectado
-  numeroRenta: int("numeroRenta").notNull(), // 1, 2, 3... hasta plazo
+  numeroRenta: integer("numeroRenta").notNull(), // 1, 2, 3... hasta plazo
   
   // Montos proyectados
-  montoPagoInicial: decimal("montoPagoInicial", { precision: 15, scale: 2 }).default("0.00"),
-  montoComisiones: decimal("montoComisiones", { precision: 15, scale: 2 }).default("0.00"),
-  montoRentaMensual: decimal("montoRentaMensual", { precision: 15, scale: 2 }).default("0.00"),
-  montoValorResidual: decimal("montoValorResidual", { precision: 15, scale: 2 }).default("0.00"),
-  montoTotal: decimal("montoTotal", { precision: 15, scale: 2 }).notNull(),
+  montoPagoInicial: numeric("montoPagoInicial", { precision: 15, scale: 2 }).default("0.00"),
+  montoComisiones: numeric("montoComisiones", { precision: 15, scale: 2 }).default("0.00"),
+  montoRentaMensual: numeric("montoRentaMensual", { precision: 15, scale: 2 }).default("0.00"),
+  montoValorResidual: numeric("montoValorResidual", { precision: 15, scale: 2 }).default("0.00"),
+  montoTotal: numeric("montoTotal", { precision: 15, scale: 2 }).notNull(),
   
   // Estado del pago
-  estatus: mysqlEnum("estatus", ["pendiente", "vencido", "pagado"]).default("pendiente").notNull(),
+  estatus: estatusProyeccionEnum("estatus_proy").default("pendiente").notNull(),
   fechaPago: date("fechaPago"),
-  montoPagado: decimal("montoPagado", { precision: 15, scale: 2 }),
+  montoPagado: numeric("montoPagado", { precision: 15, scale: 2 }),
   
   generadoEn: timestamp("generadoEn").defaultNow().notNull(),
 });

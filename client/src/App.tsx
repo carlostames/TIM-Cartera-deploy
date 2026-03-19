@@ -20,6 +20,7 @@ import AnalisisCobranza from "./pages/AnalisisCobranza";
 import AnalisisContratos from "./pages/AnalisisContratos";
 import ProyeccionContratos from "./pages/ProyeccionContratos";
 import DetalleContrato from "./pages/DetalleContrato";
+import Login from "./pages/Login";
 
 function Router() {
   return (
@@ -53,7 +54,10 @@ function App() {
       <ThemeProvider defaultTheme="light">
         <TooltipProvider>
           <Toaster />
-          <Router />
+          <Switch>
+            <Route path="/login" component={Login} />
+            <Route><Router /></Route>
+          </Switch>
         </TooltipProvider>
       </ThemeProvider>
     </ErrorBoundary>

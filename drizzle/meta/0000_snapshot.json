@@ -1,110 +1,2236 @@
 {
-  "version": "5",
-  "dialect": "mysql",
-  "id": "41c13f58-b56d-4a82-8482-452619ef58bc",
+  "id": "023b106f-9610-4d0a-8525-fde33bea30a0",
   "prevId": "00000000-0000-0000-0000-000000000000",
+  "version": "7",
+  "dialect": "postgresql",
   "tables": {
-    "users": {
-      "name": "users",
+    "public.auditLogs": {
+      "name": "auditLogs",
+      "schema": "",
       "columns": {
         "id": {
           "name": "id",
-          "type": "int",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": true
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
         },
-        "openId": {
-          "name": "openId",
-          "type": "varchar(64)",
+        "usuarioId": {
+          "name": "usuarioId",
+          "type": "integer",
           "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
+          "notNull": false
         },
-        "name": {
-          "name": "name",
-          "type": "text",
+        "accion": {
+          "name": "accion",
+          "type": "varchar(100)",
           "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
+          "notNull": true
         },
-        "email": {
-          "name": "email",
-          "type": "varchar(320)",
+        "entidad": {
+          "name": "entidad",
+          "type": "varchar(100)",
           "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
+          "notNull": false
         },
-        "loginMethod": {
-          "name": "loginMethod",
-          "type": "varchar(64)",
+        "entidadId": {
+          "name": "entidadId",
+          "type": "integer",
           "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
+          "notNull": false
         },
-        "role": {
-          "name": "role",
-          "type": "enum('user','admin')",
+        "detalles": {
+          "name": "detalles",
+          "type": "jsonb",
           "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false,
-          "default": "'user'"
+          "notNull": false
+        },
+        "ipAddress": {
+          "name": "ipAddress",
+          "type": "varchar(45)",
+          "primaryKey": false,
+          "notNull": false
         },
         "createdAt": {
           "name": "createdAt",
           "type": "timestamp",
           "primaryKey": false,
           "notNull": true,
-          "autoincrement": false,
-          "default": "(now())"
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "auditLogs_usuarioId_users_id_fk": {
+          "name": "auditLogs_usuarioId_users_id_fk",
+          "tableFrom": "auditLogs",
+          "tableTo": "users",
+          "columnsFrom": [
+            "usuarioId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.auditoriaBajasContratos": {
+      "name": "auditoriaBajasContratos",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "contratoId": {
+          "name": "contratoId",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "numeroContrato": {
+          "name": "numeroContrato",
+          "type": "varchar(50)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "clienteId": {
+          "name": "clienteId",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "nombreCliente": {
+          "name": "nombreCliente",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "empresa_baja": {
+          "name": "empresa_baja",
+          "type": "sistema",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "motivoBaja": {
+          "name": "motivoBaja",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "usuarioId": {
+          "name": "usuarioId",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "nombreUsuario": {
+          "name": "nombreUsuario",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "emailUsuario": {
+          "name": "emailUsuario",
+          "type": "varchar(320)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "montoProyeccionEliminado": {
+          "name": "montoProyeccionEliminado",
+          "type": "numeric(15, 2)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "rentasFaltantes": {
+          "name": "rentasFaltantes",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "fechaBaja": {
+          "name": "fechaBaja",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "auditoriaBajasContratos_contratoId_contratos_id_fk": {
+          "name": "auditoriaBajasContratos_contratoId_contratos_id_fk",
+          "tableFrom": "auditoriaBajasContratos",
+          "tableTo": "contratos",
+          "columnsFrom": [
+            "contratoId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "auditoriaBajasContratos_clienteId_clientes_id_fk": {
+          "name": "auditoriaBajasContratos_clienteId_clientes_id_fk",
+          "tableFrom": "auditoriaBajasContratos",
+          "tableTo": "clientes",
+          "columnsFrom": [
+            "clienteId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "auditoriaBajasContratos_usuarioId_users_id_fk": {
+          "name": "auditoriaBajasContratos_usuarioId_users_id_fk",
+          "tableFrom": "auditoriaBajasContratos",
+          "tableTo": "users",
+          "columnsFrom": [
+            "usuarioId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.clientes": {
+      "name": "clientes",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "nombre": {
+          "name": "nombre",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "rfc": {
+          "name": "rfc",
+          "type": "varchar(13)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "alias": {
+          "name": "alias",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "grupoId": {
+          "name": "grupoId",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "responsableCobranza": {
+          "name": "responsableCobranza",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "correoCobranza": {
+          "name": "correoCobranza",
+          "type": "varchar(320)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "telefono": {
+          "name": "telefono",
+          "type": "varchar(50)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "direccion": {
+          "name": "direccion",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "notas": {
+          "name": "notas",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "activo": {
+          "name": "activo",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": true
+        },
+        "createdAt": {
+          "name": "createdAt",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
         },
         "updatedAt": {
           "name": "updatedAt",
           "type": "timestamp",
           "primaryKey": false,
           "notNull": true,
-          "autoincrement": false,
-          "onUpdate": true,
-          "default": "(now())"
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "clientes_grupoId_gruposClientes_id_fk": {
+          "name": "clientes_grupoId_gruposClientes_id_fk",
+          "tableFrom": "clientes",
+          "tableTo": "gruposClientes",
+          "columnsFrom": [
+            "grupoId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "clientes_nombre_unique": {
+          "name": "clientes_nombre_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "nombre"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.configuracion": {
+      "name": "configuracion",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "clave": {
+          "name": "clave",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "valor": {
+          "name": "valor",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "tipo": {
+          "name": "tipo",
+          "type": "tipo_config",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'string'"
+        },
+        "descripcion": {
+          "name": "descripcion",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "updatedAt": {
+          "name": "updatedAt",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updatedBy": {
+          "name": "updatedBy",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "configuracion_updatedBy_users_id_fk": {
+          "name": "configuracion_updatedBy_users_id_fk",
+          "tableFrom": "configuracion",
+          "tableTo": "users",
+          "columnsFrom": [
+            "updatedBy"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "configuracion_clave_unique": {
+          "name": "configuracion_clave_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "clave"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.contratos": {
+      "name": "contratos",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "numeroContrato": {
+          "name": "numeroContrato",
+          "type": "varchar(50)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "clienteId": {
+          "name": "clienteId",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "nombreCliente": {
+          "name": "nombreCliente",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "empresa": {
+          "name": "empresa",
+          "type": "sistema",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "tipoServicio": {
+          "name": "tipoServicio",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "descripcionActivo": {
+          "name": "descripcionActivo",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "numeroSerie": {
+          "name": "numeroSerie",
+          "type": "varchar(50)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "totalRentas": {
+          "name": "totalRentas",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "rentaActual": {
+          "name": "rentaActual",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "montoMensual": {
+          "name": "montoMensual",
+          "type": "numeric(15, 2)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "rentaAdministracion": {
+          "name": "rentaAdministracion",
+          "type": "numeric(15, 2)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "rentaClubTim": {
+          "name": "rentaClubTim",
+          "type": "numeric(15, 2)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "plazo": {
+          "name": "plazo",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "fechaInicio": {
+          "name": "fechaInicio",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "fechaProximaRenta": {
+          "name": "fechaProximaRenta",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "fechaTermino": {
+          "name": "fechaTermino",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "activo": {
+          "name": "activo",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": true
+        },
+        "motivoBaja": {
+          "name": "motivoBaja",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "fechaBaja": {
+          "name": "fechaBaja",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "usuarioBajaId": {
+          "name": "usuarioBajaId",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "createdAt": {
+          "name": "createdAt",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updatedAt": {
+          "name": "updatedAt",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "contratos_clienteId_clientes_id_fk": {
+          "name": "contratos_clienteId_clientes_id_fk",
+          "tableFrom": "contratos",
+          "tableTo": "clientes",
+          "columnsFrom": [
+            "clienteId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "contratos_usuarioBajaId_users_id_fk": {
+          "name": "contratos_usuarioBajaId_users_id_fk",
+          "tableFrom": "contratos",
+          "tableTo": "users",
+          "columnsFrom": [
+            "usuarioBajaId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "contratos_numeroContrato_unique": {
+          "name": "contratos_numeroContrato_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "numeroContrato"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.contratosProyeccion": {
+      "name": "contratosProyeccion",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "numeroContrato": {
+          "name": "numeroContrato",
+          "type": "varchar(50)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "clienteId": {
+          "name": "clienteId",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "vendedorId": {
+          "name": "vendedorId",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "empresa_proy": {
+          "name": "empresa_proy",
+          "type": "sistema",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "tipoContrato": {
+          "name": "tipoContrato",
+          "type": "tipo_contrato",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "fechaInicio": {
+          "name": "fechaInicio",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "plazo": {
+          "name": "plazo",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "estatus_contrato": {
+          "name": "estatus_contrato",
+          "type": "estatus_contrato",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'activo'"
+        },
+        "fechaCancelacion": {
+          "name": "fechaCancelacion",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "motivoCancelacion": {
+          "name": "motivoCancelacion",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "usuarioCancelacionId": {
+          "name": "usuarioCancelacionId",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "notas": {
+          "name": "notas",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "createdAt": {
+          "name": "createdAt",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updatedAt": {
+          "name": "updatedAt",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "creadoPorId": {
+          "name": "creadoPorId",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "contratosProyeccion_clienteId_clientes_id_fk": {
+          "name": "contratosProyeccion_clienteId_clientes_id_fk",
+          "tableFrom": "contratosProyeccion",
+          "tableTo": "clientes",
+          "columnsFrom": [
+            "clienteId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "contratosProyeccion_vendedorId_vendedores_id_fk": {
+          "name": "contratosProyeccion_vendedorId_vendedores_id_fk",
+          "tableFrom": "contratosProyeccion",
+          "tableTo": "vendedores",
+          "columnsFrom": [
+            "vendedorId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "contratosProyeccion_usuarioCancelacionId_users_id_fk": {
+          "name": "contratosProyeccion_usuarioCancelacionId_users_id_fk",
+          "tableFrom": "contratosProyeccion",
+          "tableTo": "users",
+          "columnsFrom": [
+            "usuarioCancelacionId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "contratosProyeccion_creadoPorId_users_id_fk": {
+          "name": "contratosProyeccion_creadoPorId_users_id_fk",
+          "tableFrom": "contratosProyeccion",
+          "tableTo": "users",
+          "columnsFrom": [
+            "creadoPorId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "contratosProyeccion_numeroContrato_unique": {
+          "name": "contratosProyeccion_numeroContrato_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "numeroContrato"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.facturas": {
+      "name": "facturas",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "folio": {
+          "name": "folio",
+          "type": "varchar(50)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "sistema": {
+          "name": "sistema",
+          "type": "sistema",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "clienteId": {
+          "name": "clienteId",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "nombreCliente": {
+          "name": "nombreCliente",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "fecha": {
+          "name": "fecha",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "fechaVencimiento": {
+          "name": "fechaVencimiento",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "importeTotal": {
+          "name": "importeTotal",
+          "type": "numeric(15, 2)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "saldoPendiente": {
+          "name": "saldoPendiente",
+          "type": "numeric(15, 2)",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'0.00'"
+        },
+        "descripcion": {
+          "name": "descripcion",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "numeroContrato": {
+          "name": "numeroContrato",
+          "type": "varchar(50)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "estatus": {
+          "name": "estatus",
+          "type": "estatus",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'normal'"
+        },
+        "estadoPago": {
+          "name": "estadoPago",
+          "type": "estado_pago",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'pendiente'"
+        },
+        "diasAtraso": {
+          "name": "diasAtraso",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "default": 0
+        },
+        "interesesMoratorios": {
+          "name": "interesesMoratorios",
+          "type": "numeric(15, 2)",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "'0.00'"
+        },
+        "totalConIntereses": {
+          "name": "totalConIntereses",
+          "type": "numeric(15, 2)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "createdAt": {
+          "name": "createdAt",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updatedAt": {
+          "name": "updatedAt",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "facturas_clienteId_clientes_id_fk": {
+          "name": "facturas_clienteId_clientes_id_fk",
+          "tableFrom": "facturas",
+          "tableTo": "clientes",
+          "columnsFrom": [
+            "clienteId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "facturas_folio_unique": {
+          "name": "facturas_folio_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "folio"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.facturasFaltantes": {
+      "name": "facturasFaltantes",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "folio": {
+          "name": "folio",
+          "type": "varchar(50)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "saldo": {
+          "name": "saldo",
+          "type": "numeric(15, 2)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "fecha": {
+          "name": "fecha",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "fechaVencimiento": {
+          "name": "fechaVencimiento",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "archivoOrigen": {
+          "name": "archivoOrigen",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "detectadoEn": {
+          "name": "detectadoEn",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "resuelta": {
+          "name": "resuelta",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "resueltaEn": {
+          "name": "resueltaEn",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.googleSheetsConfig": {
+      "name": "googleSheetsConfig",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "spreadsheetId": {
+          "name": "spreadsheetId",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "spreadsheetUrl": {
+          "name": "spreadsheetUrl",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "credenciales": {
+          "name": "credenciales",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "ultimaSincronizacion": {
+          "name": "ultimaSincronizacion",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "estatusSincronizacion": {
+          "name": "estatusSincronizacion",
+          "type": "estatus_sinc",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "'activo'"
+        },
+        "mensajeError": {
+          "name": "mensajeError",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "createdAt": {
+          "name": "createdAt",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updatedAt": {
+          "name": "updatedAt",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.gruposClientes": {
+      "name": "gruposClientes",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "nombre": {
+          "name": "nombre",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "descripcion": {
+          "name": "descripcion",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "responsable": {
+          "name": "responsable",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "activo": {
+          "name": "activo",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": true
+        },
+        "createdAt": {
+          "name": "createdAt",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updatedAt": {
+          "name": "updatedAt",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "gruposClientes_nombre_unique": {
+          "name": "gruposClientes_nombre_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "nombre"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.historialCargas": {
+      "name": "historialCargas",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "tipoArchivo": {
+          "name": "tipoArchivo",
+          "type": "tipo_archivo",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "nombreArchivo": {
+          "name": "nombreArchivo",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "registrosProcesados": {
+          "name": "registrosProcesados",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "default": 0
+        },
+        "registrosExitosos": {
+          "name": "registrosExitosos",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "default": 0
+        },
+        "registrosError": {
+          "name": "registrosError",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "default": 0
+        },
+        "estatus": {
+          "name": "estatus",
+          "type": "estatus_carga",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'procesando'"
+        },
+        "errores": {
+          "name": "errores",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "usuarioId": {
+          "name": "usuarioId",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "createdAt": {
+          "name": "createdAt",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "completedAt": {
+          "name": "completedAt",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "historialCargas_usuarioId_users_id_fk": {
+          "name": "historialCargas_usuarioId_users_id_fk",
+          "tableFrom": "historialCargas",
+          "tableTo": "users",
+          "columnsFrom": [
+            "usuarioId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.lineItemsContrato": {
+      "name": "lineItemsContrato",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "contratoId": {
+          "name": "contratoId",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "consecutivo": {
+          "name": "consecutivo",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "nombreEquipo": {
+          "name": "nombreEquipo",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "precioEquipoSinIva": {
+          "name": "precioEquipoSinIva",
+          "type": "numeric(15, 2)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "pagoInicialSinIva": {
+          "name": "pagoInicialSinIva",
+          "type": "numeric(15, 2)",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "'0.00'"
+        },
+        "comisionesSinIva": {
+          "name": "comisionesSinIva",
+          "type": "numeric(15, 2)",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "'0.00'"
+        },
+        "valorResidualSinIva": {
+          "name": "valorResidualSinIva",
+          "type": "numeric(15, 2)",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "'0.00'"
+        },
+        "mensualidadBaseSinIva": {
+          "name": "mensualidadBaseSinIva",
+          "type": "numeric(15, 2)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "serviciosAdicionalesSinIva": {
+          "name": "serviciosAdicionalesSinIva",
+          "type": "numeric(15, 2)",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "'0.00'"
+        },
+        "tasaInteresAnual": {
+          "name": "tasaInteresAnual",
+          "type": "numeric(5, 2)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "montoFinanciar": {
+          "name": "montoFinanciar",
+          "type": "numeric(15, 2)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "rentaMensualSinIva": {
+          "name": "rentaMensualSinIva",
+          "type": "numeric(15, 2)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "ivaMensual": {
+          "name": "ivaMensual",
+          "type": "numeric(15, 2)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "rentaMensualConIva": {
+          "name": "rentaMensualConIva",
+          "type": "numeric(15, 2)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "totalPagoInicialSinIva": {
+          "name": "totalPagoInicialSinIva",
+          "type": "numeric(15, 2)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "ivaPagoInicial": {
+          "name": "ivaPagoInicial",
+          "type": "numeric(15, 2)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "totalPagoInicialConIva": {
+          "name": "totalPagoInicialConIva",
+          "type": "numeric(15, 2)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "totalComisionesSinIva": {
+          "name": "totalComisionesSinIva",
+          "type": "numeric(15, 2)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "ivaComisiones": {
+          "name": "ivaComisiones",
+          "type": "numeric(15, 2)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "totalComisionesConIva": {
+          "name": "totalComisionesConIva",
+          "type": "numeric(15, 2)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "totalValorResidualSinIva": {
+          "name": "totalValorResidualSinIva",
+          "type": "numeric(15, 2)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "ivaValorResidual": {
+          "name": "ivaValorResidual",
+          "type": "numeric(15, 2)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "totalValorResidualConIva": {
+          "name": "totalValorResidualConIva",
+          "type": "numeric(15, 2)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "createdAt": {
+          "name": "createdAt",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updatedAt": {
+          "name": "updatedAt",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "lineItemsContrato_contratoId_contratosProyeccion_id_fk": {
+          "name": "lineItemsContrato_contratoId_contratosProyeccion_id_fk",
+          "tableFrom": "lineItemsContrato",
+          "tableTo": "contratosProyeccion",
+          "columnsFrom": [
+            "contratoId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.magicLinks": {
+      "name": "magicLinks",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "email": {
+          "name": "email",
+          "type": "varchar(320)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "token": {
+          "name": "token",
+          "type": "varchar(64)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "expiresAt": {
+          "name": "expiresAt",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "usedAt": {
+          "name": "usedAt",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "createdAt": {
+          "name": "createdAt",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "magicLinks_token_unique": {
+          "name": "magicLinks_token_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "token"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.partidasFactura": {
+      "name": "partidasFactura",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "facturaId": {
+          "name": "facturaId",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "contratoId": {
+          "name": "contratoId",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "descripcion": {
+          "name": "descripcion",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "monto": {
+          "name": "monto",
+          "type": "numeric(15, 2)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "tipoServicio": {
+          "name": "tipoServicio",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "numeroContrato": {
+          "name": "numeroContrato",
+          "type": "varchar(50)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "numeroSerie": {
+          "name": "numeroSerie",
+          "type": "varchar(50)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "descripcionActivo": {
+          "name": "descripcionActivo",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "rentaActual": {
+          "name": "rentaActual",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "totalRentas": {
+          "name": "totalRentas",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "periodoInicio": {
+          "name": "periodoInicio",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "periodoFin": {
+          "name": "periodoFin",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "createdAt": {
+          "name": "createdAt",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "partidasFactura_facturaId_facturas_id_fk": {
+          "name": "partidasFactura_facturaId_facturas_id_fk",
+          "tableFrom": "partidasFactura",
+          "tableTo": "facturas",
+          "columnsFrom": [
+            "facturaId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "partidasFactura_contratoId_contratos_id_fk": {
+          "name": "partidasFactura_contratoId_contratos_id_fk",
+          "tableFrom": "partidasFactura",
+          "tableTo": "contratos",
+          "columnsFrom": [
+            "contratoId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.pendientesPago": {
+      "name": "pendientesPago",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "facturaId": {
+          "name": "facturaId",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "folio": {
+          "name": "folio",
+          "type": "varchar(50)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "clienteId": {
+          "name": "clienteId",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "nombreCliente": {
+          "name": "nombreCliente",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "alias": {
+          "name": "alias",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "descripcion": {
+          "name": "descripcion",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "diasVencido": {
+          "name": "diasVencido",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "default": 0
+        },
+        "saldo": {
+          "name": "saldo",
+          "type": "numeric(15, 2)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "interesesMoratorios": {
+          "name": "interesesMoratorios",
+          "type": "numeric(15, 2)",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "'0.00'"
+        },
+        "totalConMoratorios": {
+          "name": "totalConMoratorios",
+          "type": "numeric(15, 2)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "createdAt": {
+          "name": "createdAt",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updatedAt": {
+          "name": "updatedAt",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "pendientesPago_facturaId_facturas_id_fk": {
+          "name": "pendientesPago_facturaId_facturas_id_fk",
+          "tableFrom": "pendientesPago",
+          "tableTo": "facturas",
+          "columnsFrom": [
+            "facturaId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "pendientesPago_clienteId_clientes_id_fk": {
+          "name": "pendientesPago_clienteId_clientes_id_fk",
+          "tableFrom": "pendientesPago",
+          "tableTo": "clientes",
+          "columnsFrom": [
+            "clienteId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.proyeccionMensual": {
+      "name": "proyeccionMensual",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "contratoId": {
+          "name": "contratoId",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "mes": {
+          "name": "mes",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "montoProyectado": {
+          "name": "montoProyectado",
+          "type": "numeric(15, 2)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "rentaNumero": {
+          "name": "rentaNumero",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "esUltimaRenta": {
+          "name": "esUltimaRenta",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "montoReal": {
+          "name": "montoReal",
+          "type": "numeric(15, 2)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "facturaId": {
+          "name": "facturaId",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "generadoEn": {
+          "name": "generadoEn",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "proyeccionMensual_contratoId_contratos_id_fk": {
+          "name": "proyeccionMensual_contratoId_contratos_id_fk",
+          "tableFrom": "proyeccionMensual",
+          "tableTo": "contratos",
+          "columnsFrom": [
+            "contratoId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "proyeccionMensual_facturaId_facturas_id_fk": {
+          "name": "proyeccionMensual_facturaId_facturas_id_fk",
+          "tableFrom": "proyeccionMensual",
+          "tableTo": "facturas",
+          "columnsFrom": [
+            "facturaId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.proyeccionMensualManual": {
+      "name": "proyeccionMensualManual",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "contratoId": {
+          "name": "contratoId",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "lineItemId": {
+          "name": "lineItemId",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "mes": {
+          "name": "mes",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "numeroRenta": {
+          "name": "numeroRenta",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "montoPagoInicial": {
+          "name": "montoPagoInicial",
+          "type": "numeric(15, 2)",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "'0.00'"
+        },
+        "montoComisiones": {
+          "name": "montoComisiones",
+          "type": "numeric(15, 2)",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "'0.00'"
+        },
+        "montoRentaMensual": {
+          "name": "montoRentaMensual",
+          "type": "numeric(15, 2)",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "'0.00'"
+        },
+        "montoValorResidual": {
+          "name": "montoValorResidual",
+          "type": "numeric(15, 2)",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "'0.00'"
+        },
+        "montoTotal": {
+          "name": "montoTotal",
+          "type": "numeric(15, 2)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "estatus_proy": {
+          "name": "estatus_proy",
+          "type": "estatus_proyeccion",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'pendiente'"
+        },
+        "fechaPago": {
+          "name": "fechaPago",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "montoPagado": {
+          "name": "montoPagado",
+          "type": "numeric(15, 2)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "generadoEn": {
+          "name": "generadoEn",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "proyeccionMensualManual_contratoId_contratosProyeccion_id_fk": {
+          "name": "proyeccionMensualManual_contratoId_contratosProyeccion_id_fk",
+          "tableFrom": "proyeccionMensualManual",
+          "tableTo": "contratosProyeccion",
+          "columnsFrom": [
+            "contratoId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "proyeccionMensualManual_lineItemId_lineItemsContrato_id_fk": {
+          "name": "proyeccionMensualManual_lineItemId_lineItemsContrato_id_fk",
+          "tableFrom": "proyeccionMensualManual",
+          "tableTo": "lineItemsContrato",
+          "columnsFrom": [
+            "lineItemId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.users": {
+      "name": "users",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "email": {
+          "name": "email",
+          "type": "varchar(320)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "loginMethod": {
+          "name": "loginMethod",
+          "type": "varchar(64)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "role": {
+          "name": "role",
+          "type": "role",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'consulta'"
+        },
+        "permisos": {
+          "name": "permisos",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "formatoMoneda": {
+          "name": "formatoMoneda",
+          "type": "formato_moneda",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'completo'"
+        },
+        "activo": {
+          "name": "activo",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": true
+        },
+        "createdAt": {
+          "name": "createdAt",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updatedAt": {
+          "name": "updatedAt",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
         },
         "lastSignedIn": {
           "name": "lastSignedIn",
           "type": "timestamp",
           "primaryKey": false,
           "notNull": true,
-          "autoincrement": false,
-          "default": "(now())"
+          "default": "now()"
         }
       },
       "indexes": {},
       "foreignKeys": {},
-      "compositePrimaryKeys": {
-        "users_id": {
-          "name": "users_id",
-          "columns": [
-            "id"
-          ]
-        }
-      },
+      "compositePrimaryKeys": {},
       "uniqueConstraints": {
-        "users_openId_unique": {
-          "name": "users_openId_unique",
+        "users_email_unique": {
+          "name": "users_email_unique",
+          "nullsNotDistinct": false,
           "columns": [
-            "openId"
+            "email"
           ]
         }
       },
-      "checkConstraint": {}
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.vendedores": {
+      "name": "vendedores",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "nombre": {
+          "name": "nombre",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "email": {
+          "name": "email",
+          "type": "varchar(320)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "telefono": {
+          "name": "telefono",
+          "type": "varchar(50)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "comisionPorcentaje": {
+          "name": "comisionPorcentaje",
+          "type": "numeric(5, 2)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "activo": {
+          "name": "activo",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": true
+        },
+        "createdAt": {
+          "name": "createdAt",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updatedAt": {
+          "name": "updatedAt",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
     }
   },
+  "enums": {
+    "public.estado_pago": {
+      "name": "estado_pago",
+      "schema": "public",
+      "values": [
+        "pendiente",
+        "pagado"
+      ]
+    },
+    "public.estatus_carga": {
+      "name": "estatus_carga",
+      "schema": "public",
+      "values": [
+        "procesando",
+        "completado",
+        "error"
+      ]
+    },
+    "public.estatus_contrato": {
+      "name": "estatus_contrato",
+      "schema": "public",
+      "values": [
+        "activo",
+        "cancelado"
+      ]
+    },
+    "public.estatus": {
+      "name": "estatus",
+      "schema": "public",
+      "values": [
+        "normal",
+        "cancelada"
+      ]
+    },
+    "public.estatus_proyeccion": {
+      "name": "estatus_proyeccion",
+      "schema": "public",
+      "values": [
+        "pendiente",
+        "vencido",
+        "pagado"
+      ]
+    },
+    "public.estatus_sinc": {
+      "name": "estatus_sinc",
+      "schema": "public",
+      "values": [
+        "activo",
+        "error",
+        "deshabilitado"
+      ]
+    },
+    "public.formato_moneda": {
+      "name": "formato_moneda",
+      "schema": "public",
+      "values": [
+        "completo",
+        "miles",
+        "millones"
+      ]
+    },
+    "public.role": {
+      "name": "role",
+      "schema": "public",
+      "values": [
+        "admin",
+        "operador",
+        "consulta"
+      ]
+    },
+    "public.sistema": {
+      "name": "sistema",
+      "schema": "public",
+      "values": [
+        "tim_transp",
+        "tim_value"
+      ]
+    },
+    "public.tipo_archivo": {
+      "name": "tipo_archivo",
+      "schema": "public",
+      "values": [
+        "tim_transp",
+        "tim_value",
+        "pendientes",
+        "contratos"
+      ]
+    },
+    "public.tipo_config": {
+      "name": "tipo_config",
+      "schema": "public",
+      "values": [
+        "string",
+        "number",
+        "boolean",
+        "json"
+      ]
+    },
+    "public.tipo_contrato": {
+      "name": "tipo_contrato",
+      "schema": "public",
+      "values": [
+        "arrendamiento_puro",
+        "arrendamiento_financiero",
+        "credito_simple"
+      ]
+    }
+  },
+  "schemas": {},
+  "sequences": {},
+  "roles": {},
+  "policies": {},
   "views": {},
   "_meta": {
+    "columns": {},
     "schemas": {},
-    "tables": {},
-    "columns": {}
-  },
-  "internal": {
-    "tables": {},
-    "indexes": {}
+    "tables": {}
   }
 }

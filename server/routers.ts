@@ -1,6 +1,5 @@
 import { COOKIE_NAME } from "@shared/const";
 import { getSessionCookieOptions } from "./_core/cookies";
-import { systemRouter } from "./_core/systemRouter";
 import { publicProcedure, protectedProcedure, router } from "./_core/trpc";
 import { adminProcedure } from "./adminMiddleware";
 import { z } from "zod";
@@ -16,7 +15,6 @@ import { TRPCError } from "@trpc/server";
 import { proyeccionContratosRouter } from "./routers/proyeccionContratos";
 
 export const appRouter = router({
-  system: systemRouter,
   auth: router({
     me: publicProcedure.query(opts => opts.ctx.user),
     logout: publicProcedure.mutation(({ ctx }) => {

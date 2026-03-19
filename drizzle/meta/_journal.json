@@ -1,33 +1,12 @@
 {
   "version": "7",
-  "dialect": "mysql",
+  "dialect": "postgresql",
   "entries": [
     {
       "idx": 0,
-      "version": "5",
-      "when": 1770598035308,
-      "tag": "0000_salty_karen_page",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "5",
-      "when": 1770598194880,
-      "tag": "0001_fuzzy_vermin",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "5",
-      "when": 1770599484568,
-      "tag": "0002_sweet_nightshade",
-      "breakpoints": true
-    },
-    {
-      "idx": 3,
-      "version": "5",
-      "when": 1770607720479,
-      "tag": "0003_rapid_texas_twister",
+      "version": "7",
+      "when": 1773885541339,
+      "tag": "0000_early_thor",
       "breakpoints": true
     }
   ]

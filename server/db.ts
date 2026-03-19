@@ -1,5 +1,6 @@
 import { eq, desc, and, sql, inArray, gte, lte } from "drizzle-orm";
-import { drizzle } from "drizzle-orm/mysql2";
+import { drizzle } from "drizzle-orm/node-postgres";
+import pg from "pg";
 import { 
   InsertUser, users, 
   gruposClientes, GrupoCliente, InsertGrupoCliente,
@@ -14,7 +15,8 @@ import {
   proyeccionMensual, ProyeccionMensual, InsertProyeccionMensual,
   partidasFactura, PartidaFactura, InsertPartidaFactura,
   facturasFaltantes, FacturaFaltante, InsertFacturaFaltante,
-  auditoriaBajasContratos, AuditoriaBajaContrato, InsertAuditoriaBajaContrato
+  auditoriaBajasContratos, AuditoriaBajaContrato, InsertAuditoriaBajaContrato,
+  magicLinks, MagicLink, InsertMagicLink
 } from "../drizzle/schema";
 import { ENV } from './_core/env';
 
@@ -23,7 +25,11 @@ let _db: ReturnType<typeof drizzle> | null = null;
 export async function getDb() {
   if (!_db && process.env.DATABASE_URL) {
     try {
-      _db = drizzle(process.env.DATABASE_URL);
+      const pool = new pg.Pool({
+        connectionString: process.env.DATABASE_URL,
+        ssl: { rejectUnauthorized: false },
+      });
+      _db = drizzle(pool);
     } catch (error) {
       console.warn("[Database] Failed to connect:", error);
       _db = null;
@@ -34,8 +40,8 @@ export async function getDb() {
 
 // ============ User Management ============
 export async function upsertUser(user: InsertUser): Promise<void> {
-  if (!user.openId) {
-    throw new Error("User openId is required for upsert");
+  if (!user.email) {
+    throw new Error("User email is required for upsert");
   }
 
   const db = await getDb();
@@ -46,11 +52,11 @@ export async function upsertUser(user: InsertUser): Promise<void> {
 
   try {
     const values: InsertUser = {
-      openId: user.openId,
+      email: user.email,
     };
     const updateSet: Record<string, unknown> = {};
 
-    const textFields = ["name", "email", "loginMethod"] as const;
+    const textFields = ["name", "loginMethod"] as const;
     type TextField = (typeof textFields)[number];
 
     const assignNullable = (field: TextField) => {
@@ -70,7 +76,7 @@ export async function upsertUser(user: InsertUser): Promise<void> {
     if (user.role !== undefined) {
       values.role = user.role;
       updateSet.role = user.role;
-    } else if (user.openId === ENV.ownerOpenId) {
+    } else if (user.email === ENV.adminEmail) {
       values.role = 'admin';
       updateSet.role = 'admin';
     }
@@ -90,7 +96,8 @@ export async function upsertUser(user: InsertUser): Promise<void> {
       updateSet.lastSignedIn = new Date();
     }
 
-    await db.insert(users).values(values).onDuplicateKeyUpdate({
+    await db.insert(users).values(values).onConflictDoUpdate({
+      target: users.email,
       set: updateSet,
     });
   } catch (error) {
@@ -99,14 +106,14 @@ export async function upsertUser(user: InsertUser): Promise<void> {
   }
 }
 
-export async function getUserByOpenId(openId: string) {
+export async function getUserByEmail(email: string) {
   const db = await getDb();
   if (!db) {
     console.warn("[Database] Cannot get user: database not available");
     return undefined;
   }
 
-  const result = await db.select().from(users).where(eq(users.openId, openId)).limit(1);
+  const result = await db.select().from(users).where(eq(users.email, email)).limit(1);
 
   return result.length > 0 ? result[0] : undefined;
 }
@@ -122,8 +129,8 @@ export async function createCliente(cliente: InsertCliente) {
     throw new Error(`Ya existe un cliente con el nombre "${cliente.nombre}"`);
   }
   
-  const result = await db.insert(clientes).values(cliente);
-  return result[0].insertId;
+  const result = await db.insert(clientes).values(cliente).returning({ id: clientes.id });
+  return result[0].id;
 }
 
 export async function getClienteByNombre(nombre: string) {
@@ -154,7 +161,8 @@ export async function upsertCliente(cliente: any) {
     notas: cliente.notas,
   };
   
-  await db.insert(clientes).values(insertData).onDuplicateKeyUpdate({
+  await db.insert(clientes).values(insertData).onConflictDoUpdate({
+    target: clientes.nombre,
     set: insertData,
   });
 }
@@ -169,8 +177,8 @@ export async function getClienteByRazonSocial(razonSocial: string) {
 export async function createGrupoCliente(grupo: any) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
-  const result = await db.insert(gruposClientes).values(grupo);
-  return { id: Number(result[0].insertId), ...grupo };
+  const result = await db.insert(gruposClientes).values(grupo).returning({ id: gruposClientes.id });
+  return { id: result[0].id, ...grupo };
 }
 
 export async function updateFacturaEstatus(id: number, estatus: string) {
@@ -190,8 +198,8 @@ export async function createFactura(factura: InsertFactura) {
     throw new Error(`Ya existe una factura con el folio "${factura.folio}"`);
   }
   
-  const result = await db.insert(facturas).values(factura);
-  return { id: Number(result[0].insertId), ...factura };
+  const result = await db.insert(facturas).values(factura).returning({ id: facturas.id });
+  return { id: result[0].id, ...factura };
 }
 
 export async function getFacturaByFolio(folio: string) {
@@ -251,7 +259,8 @@ export async function upsertFactura(factura: InsertFactura) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
   
-  await db.insert(facturas).values(factura).onDuplicateKeyUpdate({
+  await db.insert(facturas).values(factura).onConflictDoUpdate({
+    target: facturas.folio,
     set: {
       clienteId: factura.clienteId,
       nombreCliente: factura.nombreCliente,
@@ -335,7 +344,8 @@ export async function setConfiguracion(config: InsertConfiguracion) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
   
-  await db.insert(configuracion).values(config).onDuplicateKeyUpdate({
+  await db.insert(configuracion).values(config).onConflictDoUpdate({
+    target: configuracion.clave,
     set: {
       valor: config.valor,
       tipo: config.tipo,
@@ -655,8 +665,8 @@ export async function createGrupo(grupo: InsertGrupoCliente) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
   
-  const result = await db.insert(gruposClientes).values(grupo);
-  return result[0].insertId;
+  const result = await db.insert(gruposClientes).values(grupo).returning({ id: gruposClientes.id });
+  return result[0].id;
 }
 
 export async function updateGrupo(id: number, grupo: Partial<InsertGrupoCliente>) {
@@ -820,7 +830,7 @@ export async function upsertContrato(contrato: InsertContrato) {
     return existing.id;
   } else {
     const result = await createContrato(contrato);
-    return result[0].insertId;
+    return result;
   }
 }
 
@@ -1225,7 +1235,7 @@ export async function getFacturasPendientesPorCliente(clienteId: number) {
     .from(facturas)
     .where(and(
       eq(facturas.nombreCliente, cliente[0].nombre),
-      sql`CAST(${facturas.saldoPendiente} AS DECIMAL(10,2)) > 0`
+      sql`CAST(${facturas.saldoPendiente} AS NUMERIC) > 0`
     ))
     .orderBy(facturas.fecha);
 
@@ -1257,7 +1267,7 @@ export async function getFacturasPendientesPorGrupo(grupoId: number) {
     .innerJoin(clientes, eq(facturas.nombreCliente, clientes.nombre))
     .where(and(
       eq(clientes.grupoId, grupoId),
-      sql`CAST(${facturas.saldoPendiente} AS DECIMAL(10,2)) > 0`
+      sql`CAST(${facturas.saldoPendiente} AS NUMERIC) > 0`
     ))
     .orderBy(clientes.nombre, facturas.fecha);
 
@@ -1339,7 +1349,7 @@ export async function getClientesConDeuda() {
     })
     .from(clientes)
     .innerJoin(facturas, eq(facturas.nombreCliente, clientes.nombre))
-    .where(sql`CAST(${facturas.saldoPendiente} AS DECIMAL(10,2)) > 0`)
+    .where(sql`CAST(${facturas.saldoPendiente} AS NUMERIC) > 0`)
     .orderBy(clientes.nombre);
   
   return clientesConFacturasPendientes;
@@ -1362,7 +1372,7 @@ export async function getGruposConDeuda() {
     .from(gruposClientes)
     .innerJoin(clientes, eq(clientes.grupoId, gruposClientes.id))
     .innerJoin(facturas, eq(facturas.nombreCliente, clientes.nombre))
-    .where(sql`CAST(${facturas.saldoPendiente} AS DECIMAL(10,2)) > 0`)
+    .where(sql`CAST(${facturas.saldoPendiente} AS NUMERIC) > 0`)
     .orderBy(gruposClientes.nombre);
   
   return gruposConFacturasPendientes;
@@ -1377,10 +1387,10 @@ export async function getEvolucionCobranza() {
     // Usar SQL raw con números de posición para evitar problemas con GROUP BY
     const result: any = await db.execute(sql`
       SELECT 
-        DATE_FORMAT(fecha, '%Y-%m') as mes,
-        estadoPago,
+        TO_CHAR(fecha, 'YYYY-MM') as mes,
+        "estadoPago",
         COUNT(*) as cantidad,
-        SUM(importeTotal) as monto
+        SUM("importeTotal"::numeric) as monto
       FROM facturas
       WHERE fecha IS NOT NULL
       GROUP BY 1, 2
@@ -1439,16 +1449,16 @@ export async function getDistribucionPorAntiguedad() {
     const result: any = await db.execute(sql`
       SELECT 
         CASE 
-          WHEN DATEDIFF(CURDATE(), fecha) BETWEEN 1 AND 30 THEN '1-30 días'
-          WHEN DATEDIFF(CURDATE(), fecha) BETWEEN 31 AND 60 THEN '31-60 días'
-          WHEN DATEDIFF(CURDATE(), fecha) BETWEEN 61 AND 90 THEN '61-90 días'
-          WHEN DATEDIFF(CURDATE(), fecha) > 90 THEN '+90 días'
+          WHEN CURRENT_DATE - fecha::date BETWEEN 1 AND 30 THEN '1-30 días'
+          WHEN CURRENT_DATE - fecha::date BETWEEN 31 AND 60 THEN '31-60 días'
+          WHEN CURRENT_DATE - fecha::date BETWEEN 61 AND 90 THEN '61-90 días'
+          WHEN CURRENT_DATE - fecha::date > 90 THEN '+90 días'
           ELSE '0 días'
         END as rango,
-        COUNT(*) as cantidadFacturas,
-        SUM(importeTotal) as montoTotal
+        COUNT(*) as "cantidadFacturas",
+        SUM("importeTotal"::numeric) as "montoTotal"
       FROM facturas
-      WHERE estadoPago = 'pendiente'
+      WHERE "estadoPago" = 'pendiente'
       GROUP BY 1
     `);
 
@@ -1687,7 +1697,7 @@ export async function getDeudaTotalCliente(clienteId: number) {
     .where(
       and(
         eq(facturas.nombreCliente, nombreCliente),
-        sql`CAST(${facturas.saldoPendiente} AS DECIMAL(10,2)) > 0`
+        sql`CAST(${facturas.saldoPendiente} AS NUMERIC) > 0`
       )
     );
 
@@ -1871,13 +1881,13 @@ export async function getClientesConContratosActivos() {
     WHERE EXISTS (
       SELECT 1 FROM facturas f 
       WHERE f.nombreCliente = c.nombre 
-        AND f.descripcion REGEXP '[0-9]+ de [0-9]+'
-        AND CAST(f.saldoPendiente AS DECIMAL(10,2)) > 0
+        AND f.descripcion ~ '[0-9]+ de [0-9]+'
+        AND CAST(f."saldoPendiente" AS NUMERIC) > 0
     )
     OR EXISTS (
       SELECT 1 FROM contratos ct
       WHERE ct.clienteId = c.id
-        AND ct.activo = 1
+        AND ct.activo = true
     )
     ORDER BY c.nombre ASC
   `);
@@ -1901,13 +1911,13 @@ export async function getGruposConContratosActivos() {
     WHERE EXISTS (
       SELECT 1 FROM facturas f 
       WHERE f.nombreCliente = c.nombre 
-        AND f.descripcion REGEXP '[0-9]+ de [0-9]+'
-        AND CAST(f.saldoPendiente AS DECIMAL(10,2)) > 0
+        AND f.descripcion ~ '[0-9]+ de [0-9]+'
+        AND CAST(f."saldoPendiente" AS NUMERIC) > 0
     )
     OR EXISTS (
       SELECT 1 FROM contratos ct
       WHERE ct.clienteId = c.id
-        AND ct.activo = 1
+        AND ct.activo = true
     )
     ORDER BY g.nombre ASC
   `);
@@ -1941,7 +1951,7 @@ export async function getTotalesGlobalesPorEmpresa() {
       cl.nombre as nombreCliente
     FROM contratos c
     LEFT JOIN clientes cl ON c.clienteId = cl.id
-    WHERE c.activo = 1
+    WHERE c.activo = true
   `);
 
   const contratosActivos = Array.isArray(result) ? (result[0] || []) : (result.rows || []);
@@ -2085,7 +2095,8 @@ export async function upsertContratoFromFile(contrato: {
     fechaInicio: contrato.fechaInicio,
     fechaTermino: contrato.fechaTerminacion,
     activo: contrato.estado === 'ACTIVO',
-  }).onDuplicateKeyUpdate({
+  }).onConflictDoUpdate({
+    target: contratos.numeroContrato,
     set: {
       nombreCliente: contrato.nombreCliente,
       clienteId,

@@ -108,3 +108,7 @@ temp/
 
 # Webdev artifacts (checkpoint zips, migrations, etc.)
 .webdev/
+RespaldoDB/
+apply_migration.mjs
+setup_db.mjs
+setup_db_v2.mjs

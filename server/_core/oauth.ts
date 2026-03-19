@@ -1,53 +1,85 @@
 import { COOKIE_NAME, ONE_YEAR_MS } from "@shared/const";
 import type { Express, Request, Response } from "express";
-import * as db from "../db";
 import { getSessionCookieOptions } from "./cookies";
-import { sdk } from "./sdk";
+import { generateMagicLink, verifyMagicLink } from "./auth";
+import cookieParser from "cookie-parser";
 
-function getQueryParam(req: Request, key: string): string | undefined {
-  const value = req.query[key];
-  return typeof value === "string" ? value : undefined;
-}
+/**
+ * Registers Magic Link authentication HTTP routes.
+ * 
+ * POST /api/auth/magic-link  → Send magic link email
+ * GET  /api/auth/verify       → Verify token from email link
+ * POST /api/auth/logout       → Clear session cookie
+ */
+export function registerAuthRoutes(app: Express) {
+  // Ensure cookie parser is available
+  app.use(cookieParser());
 
-export function registerOAuthRoutes(app: Express) {
-  app.get("/api/oauth/callback", async (req: Request, res: Response) => {
-    const code = getQueryParam(req, "code");
-    const state = getQueryParam(req, "state");
+  /**
+   * POST /api/auth/magic-link
+   * Body: { email: string }
+   * Sends a magic link email to the given address.
+   */
+  app.post("/api/auth/magic-link", async (req: Request, res: Response) => {
+    const { email } = req.body;
 
-    if (!code || !state) {
-      res.status(400).json({ error: "code and state are required" });
+    if (!email || typeof email !== 'string') {
+      res.status(400).json({ error: "Email es requerido" });
       return;
     }
 
-    try {
-      const tokenResponse = await sdk.exchangeCodeForToken(code, state);
-      const userInfo = await sdk.getUserInfo(tokenResponse.accessToken);
-
-      if (!userInfo.openId) {
-        res.status(400).json({ error: "openId missing from user info" });
-        return;
-      }
-
-      await db.upsertUser({
-        openId: userInfo.openId,
-        name: userInfo.name || null,
-        email: userInfo.email ?? null,
-        loginMethod: userInfo.loginMethod ?? userInfo.platform ?? null,
-        lastSignedIn: new Date(),
-      });
-
-      const sessionToken = await sdk.createSessionToken(userInfo.openId, {
-        name: userInfo.name || "",
-        expiresInMs: ONE_YEAR_MS,
-      });
-
-      const cookieOptions = getSessionCookieOptions(req);
-      res.cookie(COOKIE_NAME, sessionToken, { ...cookieOptions, maxAge: ONE_YEAR_MS });
-
-      res.redirect(302, "/");
-    } catch (error) {
-      console.error("[OAuth] Callback failed", error);
-      res.status(500).json({ error: "OAuth callback failed" });
+    const result = await generateMagicLink(email);
+    
+    if (result.success) {
+      res.json({ message: result.message });
+    } else {
+      res.status(400).json({ error: result.message });
     }
+  });
+
+  /**
+   * GET /api/auth/verify?token=xxx
+   * Verifies the magic link token and sets session cookie.
+   */
+  app.get("/api/auth/verify", async (req: Request, res: Response) => {
+    const token = req.query.token as string;
+
+    if (!token) {
+      res.status(400).send("Token es requerido");
+      return;
+    }
+
+    const result = await verifyMagicLink(token);
+
+    if (result.success && result.sessionToken) {
+      const cookieOptions = getSessionCookieOptions(req);
+      res.cookie(COOKIE_NAME, result.sessionToken, {
+        ...cookieOptions,
+        maxAge: ONE_YEAR_MS,
+      });
+      // Redirect to main app
+      res.redirect(302, "/");
+    } else {
+      // Show error page
+      res.status(400).send(`
+        <!DOCTYPE html>
+        <html>
+        <head><title>Error de Acceso</title></head>
+        <body style="font-family: Arial; text-align: center; padding: 60px;">
+          <h2>⚠️ ${result.message || 'Error de verificación'}</h2>
+          <p><a href="/">Volver al inicio</a></p>
+        </body>
+        </html>
+      `);
+    }
+  });
+
+  /**
+   * POST /api/auth/logout
+   * Clears the session cookie.
+   */
+  app.post("/api/auth/logout", (req: Request, res: Response) => {
+    res.clearCookie(COOKIE_NAME);
+    res.json({ success: true });
   });
 }

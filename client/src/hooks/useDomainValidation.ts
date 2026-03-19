@@ -1,7 +1,7 @@
 import { useAuth } from "@/_core/hooks/useAuth";
 import { useMemo } from "react";
 
-const ALLOWED_DOMAINS = ['leasingtim.mx', 'bpads.mx'];
+const ALLOWED_DOMAINS = ['leasingtim.mx', 'bpads.mx', 'niumedia.mx'];
 
 export function useDomainValidation() {
   const { user, loading } = useAuth();
