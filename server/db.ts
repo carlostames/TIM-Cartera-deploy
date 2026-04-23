@@ -1426,6 +1426,7 @@ export async function getTopDeudores(limit: number = 10) {
       cantidadFacturas: sql<number>`COUNT(*)`,
       totalDeuda: sql<number>`SUM(COALESCE(${facturas.saldoPendiente}, ${facturas.importeTotal}))`,
       diasPromedioAtraso: sql<number>`AVG(${facturas.diasAtraso})`,
+      diasMaximoAtraso: sql<number>`MAX(${facturas.diasAtraso})`,
     })
     .from(facturas)
     .where(eq(facturas.estadoPago, 'pendiente'))

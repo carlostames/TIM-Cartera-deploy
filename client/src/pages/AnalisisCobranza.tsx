@@ -54,6 +54,7 @@ export default function AnalisisCobranza() {
       totalDeuda: Number(d.totalDeuda),
       porcentaje: Number(d.porcentaje),
       diasAtraso: Math.round(Number(d.diasPromedioAtraso || 0)),
+      diasMaximoAtraso: Math.round(Number(d.diasMaximoAtraso || 0)),
       facturas: Number(d.cantidadFacturas),
     };
   }) || [];
@@ -94,7 +95,8 @@ export default function AnalisisCobranza() {
           <div className="space-y-1 text-sm">
             <p><span className="text-muted-foreground">Monto:</span> {formatCurrency(data.totalDeuda)}</p>
             <p><span className="text-muted-foreground">Porcentaje:</span> {data.porcentaje.toFixed(1)}%</p>
-            <p><span className="text-muted-foreground">Días atraso:</span> {data.diasAtraso} días</p>
+            <p><span className="text-muted-foreground">Días promedio:</span> {data.diasAtraso} días</p>
+            <p><span className="text-muted-foreground">Factura más vieja:</span> {data.diasMaximoAtraso} días</p>
             <p><span className="text-muted-foreground">Facturas:</span> {data.facturas}</p>
           </div>
         </div>
