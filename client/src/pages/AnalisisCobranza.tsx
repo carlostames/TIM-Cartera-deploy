@@ -1,6 +1,6 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { trpc } from "@/lib/trpc";
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, Cell } from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, Cell, ScatterChart, Scatter, ZAxis } from 'recharts';
 import { TrendingUp, Users, Clock, DollarSign } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useState } from "react";
@@ -224,7 +224,7 @@ export default function AnalisisCobranza() {
                   tick={{ fontSize: 11 }}
                 />
                 <Tooltip content={<CustomTooltip />} />
-                <Bar dataKey="value" name={chartData[0]?.label || 'Valor'}>
+                <Bar dataKey="value" name={chartData[0]?.label || 'Valor'} radius={[0, 4, 4, 0]}>
                   {chartData.map((entry, index) => (
                     <Cell key={`cell-${index}`} fill={getBarColor(index)} />
                   ))}
@@ -233,6 +233,54 @@ export default function AnalisisCobranza() {
             </ResponsiveContainer>
           ) : (
             <div className="h-[600px] flex items-center justify-center">
+              <p className="text-muted-foreground">No hay datos disponibles</p>
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* Matriz de Riesgo */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Matriz de Riesgo: Deuda vs Días de Atraso</CardTitle>
+          <CardDescription>
+            Clientes en la esquina superior derecha representan el mayor riesgo (Monto alto y Atraso prolongado).
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          {loadingTop ? (
+            <div className="h-[400px] flex items-center justify-center">
+              <p className="text-muted-foreground">Cargando datos...</p>
+            </div>
+          ) : chartData.length > 0 ? (
+            <ResponsiveContainer width="100%" height={400}>
+              <ScatterChart margin={{ top: 20, right: 30, bottom: 20, left: 20 }}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis 
+                  type="number" 
+                  dataKey="diasAtraso" 
+                  name="Días Atraso" 
+                  unit=" días" 
+                  label={{ value: 'Días Promedio de Atraso', position: 'insideBottom', offset: -10 }} 
+                />
+                <YAxis 
+                  type="number" 
+                  dataKey="totalDeuda" 
+                  name="Monto" 
+                  tickFormatter={(val) => `$${(val / 1000).toFixed(0)}k`} 
+                  label={{ value: 'Deuda Total', angle: -90, position: 'insideLeft' }} 
+                />
+                <ZAxis type="category" dataKey="cliente" name="Cliente" />
+                <Tooltip cursor={{ strokeDasharray: '3 3' }} content={<CustomTooltip />} />
+                <Scatter data={chartData} fill="#ef4444" shape="circle">
+                  {chartData.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={getBarColor(index)} />
+                  ))}
+                </Scatter>
+              </ScatterChart>
+            </ResponsiveContainer>
+          ) : (
+            <div className="h-[400px] flex items-center justify-center">
               <p className="text-muted-foreground">No hay datos disponibles</p>
             </div>
           )}

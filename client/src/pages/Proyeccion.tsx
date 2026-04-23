@@ -8,7 +8,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { BarChart3, TrendingUp, AlertTriangle, Calendar, DollarSign, Building2, Users } from "lucide-react";
-import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
+import { AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
 import { format, addMonths, startOfMonth } from "date-fns";
 import { es } from "date-fns/locale";
 import { formatearMoneda } from "@/../../shared/formatoMoneda";
@@ -268,27 +268,44 @@ export default function Proyeccion() {
             </CardHeader>
             <CardContent>
               <ResponsiveContainer width="100%" height={350}>
-                <LineChart data={datosGraficoConsolidado}>
-                  <CartesianGrid strokeDasharray="3 3" />
+                <AreaChart data={datosGraficoConsolidado}>
+                  <defs>
+                    <linearGradient id="colorProyectado" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.8}/>
+                      <stop offset="95%" stopColor="#3b82f6" stopOpacity={0}/>
+                    </linearGradient>
+                    <linearGradient id="colorReal" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#10b981" stopOpacity={0.8}/>
+                      <stop offset="95%" stopColor="#10b981" stopOpacity={0}/>
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} />
                   <XAxis dataKey="mes" />
-                  <YAxis />
-                  <Tooltip formatter={(value) => formatCurrency(Number(value))} />
+                  <YAxis tickFormatter={(value) => `$${(value / 1000).toFixed(0)}k`} />
+                  <Tooltip 
+                    formatter={(value) => formatCurrency(Number(value))} 
+                    contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
+                  />
                   <Legend />
-                  <Line
+                  <Area
                     type="monotone"
                     dataKey="proyectado"
                     stroke="#3b82f6"
+                    fillOpacity={1}
+                    fill="url(#colorProyectado)"
                     strokeWidth={2}
                     name="Proyectado"
                   />
-                  <Line
+                  <Area
                     type="monotone"
                     dataKey="real"
                     stroke="#10b981"
+                    fillOpacity={1}
+                    fill="url(#colorReal)"
                     strokeWidth={2}
                     name="Real"
                   />
-                </LineChart>
+                </AreaChart>
               </ResponsiveContainer>
             </CardContent>
           </Card>
@@ -299,12 +316,14 @@ export default function Proyeccion() {
             </CardHeader>
             <CardContent>
               <ResponsiveContainer width="100%" height={250}>
-                <BarChart data={datosGraficoConsolidado}>
-                  <CartesianGrid strokeDasharray="3 3" />
+                <BarChart data={datosGraficoConsolidado} margin={{ top: 10 }}>
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} />
                   <XAxis dataKey="mes" />
                   <YAxis />
-                  <Tooltip />
-                  <Bar dataKey="contratos" fill="#8b5cf6" name="Contratos" />
+                  <Tooltip 
+                    contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
+                  />
+                  <Bar dataKey="contratos" fill="#8b5cf6" name="Contratos" radius={[4, 4, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
             </CardContent>
@@ -322,14 +341,17 @@ export default function Proyeccion() {
             </CardHeader>
             <CardContent>
               <ResponsiveContainer width="100%" height={350}>
-                <BarChart data={datosGraficoEmpresa}>
-                  <CartesianGrid strokeDasharray="3 3" />
+                <BarChart data={datosGraficoEmpresa} margin={{ top: 10 }}>
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} />
                   <XAxis dataKey="mes" />
-                  <YAxis />
-                  <Tooltip formatter={(value) => formatCurrency(Number(value))} />
+                  <YAxis tickFormatter={(value) => `$${(value / 1000).toFixed(0)}k`} />
+                  <Tooltip 
+                    formatter={(value) => formatCurrency(Number(value))} 
+                    contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
+                  />
                   <Legend />
-                  <Bar dataKey="tim_transp" fill="#3b82f6" name="Tim Transp" />
-                  <Bar dataKey="tim_value" fill="#10b981" name="Tim Value" />
+                  <Bar dataKey="tim_transp" fill="#3b82f6" name="Tim Transp" radius={[4, 4, 0, 0]} />
+                  <Bar dataKey="tim_value" fill="#10b981" name="Tim Value" radius={[4, 4, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
             </CardContent>
