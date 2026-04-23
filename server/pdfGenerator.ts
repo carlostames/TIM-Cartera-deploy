@@ -127,13 +127,17 @@ export async function generarEstadoCuentaClientePDF(
       // Filas de facturas
       doc.fontSize(8).font('Helvetica');
       data.facturas.forEach((factura) => {
-        const rowY = doc.y;
-        
+        const rowHeight = Math.max(
+          doc.heightOfString(factura.numeroContrato || 'N/A', { width: colWidths.contrato }),
+          doc.heightOfString(factura.folio, { width: colWidths.folio })
+        );
+
         // Verificar si necesitamos nueva página
-        if (rowY > 700) {
+        if (doc.y + rowHeight > 700) {
           doc.addPage();
-          doc.y = 50;
         }
+        
+        const rowY = doc.y;
 
         const saldoPendiente = Number(factura.saldoPendiente || 0);
         
@@ -153,7 +157,7 @@ export async function generarEstadoCuentaClientePDF(
         totalIntereses += intereses;
 
         x = 50;
-        doc.text(factura.numeroContrato || 'N/A', x, doc.y, { width: colWidths.contrato, align: 'left' });
+        doc.text(factura.numeroContrato || 'N/A', x, rowY, { width: colWidths.contrato, align: 'left' });
         x += colWidths.contrato;
         doc.text(factura.folio, x, rowY, { width: colWidths.folio, align: 'left' });
         x += colWidths.folio;
@@ -170,7 +174,7 @@ export async function generarEstadoCuentaClientePDF(
         x += colWidths.intereses;
         doc.text(String(factura.diasAtraso || 0), x, rowY, { width: colWidths.dias, align: 'right' });
 
-        doc.moveDown(0.8);
+        doc.y = rowY + rowHeight + 10;
       });
 
       doc.moveDown(0.5);
@@ -178,6 +182,9 @@ export async function generarEstadoCuentaClientePDF(
       doc.moveDown(0.5);
 
       // Totales
+      if (doc.y > 680) {
+        doc.addPage();
+      }
       const totalGeneral = subtotal + totalIntereses;
       
       doc.fontSize(10).font('Helvetica-Bold');
@@ -287,13 +294,18 @@ export async function generarEstadoCuentaGrupoPDF(
       // Filas de facturas
       doc.fontSize(8).font('Helvetica');
       data.facturas.forEach((factura) => {
-        const rowY = doc.y;
-        
+        const rowHeight = Math.max(
+          doc.heightOfString(factura.numeroContrato || 'N/A', { width: colWidths.contrato }),
+          doc.heightOfString(factura.clienteNombre || '', { width: colWidths.cliente }),
+          doc.heightOfString(factura.folio, { width: colWidths.folio })
+        );
+
         // Verificar si necesitamos nueva página
-        if (rowY > 700) {
+        if (doc.y + rowHeight > 700) {
           doc.addPage();
-          doc.y = 50;
         }
+        
+        const rowY = doc.y;
 
         const saldoPendiente = Number(factura.saldoPendiente || 0);
         
@@ -313,7 +325,7 @@ export async function generarEstadoCuentaGrupoPDF(
         totalIntereses += intereses;
 
         x = 50;
-        doc.text(factura.numeroContrato || 'N/A', x, doc.y, {
+        doc.text(factura.numeroContrato || 'N/A', x, rowY, {
           width: colWidths.contrato,
           align: 'left',
         });
@@ -333,7 +345,7 @@ export async function generarEstadoCuentaGrupoPDF(
         x += colWidths.intereses;
         doc.text(String(factura.diasAtraso || 0), x, rowY, { width: colWidths.dias, align: 'right' });
 
-        doc.moveDown(0.8);
+        doc.y = rowY + rowHeight + 10;
       });
 
       doc.moveDown(0.5);
@@ -341,6 +353,9 @@ export async function generarEstadoCuentaGrupoPDF(
       doc.moveDown(0.5);
 
       // Totales
+      if (doc.y > 680) {
+        doc.addPage();
+      }
       const totalGeneral = subtotal + totalIntereses;
       
       doc.fontSize(10).font('Helvetica-Bold');
