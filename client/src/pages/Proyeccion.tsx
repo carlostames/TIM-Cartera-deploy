@@ -7,7 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { BarChart3, TrendingUp, AlertTriangle, Calendar, DollarSign, Building2, Users } from "lucide-react";
+import { BarChart3, TrendingUp, AlertTriangle, Calendar, DollarSign, Building2, Users, Inbox } from "lucide-react";
 import { AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
 import { format, addMonths, startOfMonth } from "date-fns";
 import { es } from "date-fns/locale";
@@ -224,8 +224,10 @@ export default function Proyeccion() {
                   </TableBody>
                 </Table>
               ) : (
-                <div className="text-center py-8 text-muted-foreground">
-                  No hay contratos próximos a vencer
+                <div className="flex flex-col items-center justify-center py-12 text-muted-foreground">
+                  <Inbox className="h-12 w-12 mb-4 opacity-50" />
+                  <p className="text-lg font-medium">No hay contratos próximos a vencer</p>
+                  <p className="text-sm opacity-70">Todos los contratos tienen un periodo restante seguro.</p>
                 </div>
               )}
             </div>

@@ -1,7 +1,7 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { trpc } from "@/lib/trpc";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, Cell, ScatterChart, Scatter, ZAxis } from 'recharts';
-import { TrendingUp, Users, Clock, DollarSign } from "lucide-react";
+import { TrendingUp, Users, Clock, DollarSign, Inbox } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useState } from "react";
 import { formatearMoneda } from "@/../../shared/formatoMoneda";
@@ -232,8 +232,10 @@ export default function AnalisisCobranza() {
               </BarChart>
             </ResponsiveContainer>
           ) : (
-            <div className="h-[600px] flex items-center justify-center">
-              <p className="text-muted-foreground">No hay datos disponibles</p>
+            <div className="h-[600px] flex flex-col items-center justify-center text-muted-foreground">
+              <Inbox className="h-12 w-12 mb-4 opacity-50" />
+              <p className="text-lg font-medium">No hay datos disponibles</p>
+              <p className="text-sm opacity-70">Aún no hay clientes con deuda registrada.</p>
             </div>
           )}
         </CardContent>
@@ -280,8 +282,10 @@ export default function AnalisisCobranza() {
               </ScatterChart>
             </ResponsiveContainer>
           ) : (
-            <div className="h-[400px] flex items-center justify-center">
-              <p className="text-muted-foreground">No hay datos disponibles</p>
+            <div className="h-[400px] flex flex-col items-center justify-center text-muted-foreground">
+              <Inbox className="h-12 w-12 mb-4 opacity-50" />
+              <p className="text-lg font-medium">No hay datos disponibles</p>
+              <p className="text-sm opacity-70">Aún no hay clientes con deuda registrada.</p>
             </div>
           )}
         </CardContent>
